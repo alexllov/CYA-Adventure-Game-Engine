@@ -1,0 +1,8 @@
+load inventory
+load sound
+load dice
+
+i = Inventory
+s = Sound
+d = dice
+start = "INTRO"

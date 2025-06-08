@@ -1,0 +1,45 @@
+MENU
+> Contents -> CON
+> Save Game -> MENU [save]
+> Inventory -> INV
+> Back -> BACK [back]
+
+INV
+"Your Inventory:" [i.menu]
+> Back -> MENU
+
+CON
+"Contents" [contents]
+
+INTRO
+"Welcome to Occult. This is a tester game I have made."
+> start -> 1
+
+RULES
+"Well, there aren't many rules really."
+
+1
+"You awake in your bedroom."
+"This is a second string as a feature test."
+> Go Downstairs -> 2 [i.need slippers, socks][s.play ./sounds/world/door.wav]
+> Scream -> 3
+> Try to eat your laptop -> 4
+> Roll a dice HIGH -> 1 [d.2d6 >6 ? [i.add sword]: ->17]
+> Roll a dice LOW -> 1 [d.1d3 <3]
+> Roll a dice -> 1 [d.1d20]
+> Put on slippers -> 5 [i.add slippers]
+> Take off slippers -> 3 [i.need slippers]
+
+2
+"You went downstairs."
+
+3
+"You screamed."
+
+4
+"Why would you try and eat laptop??"
+
+5
+"You put on your slippers."
+> Go Downstairs -> 2 [i.need slippers][i.remove slippers][s.play ./Occult/sounds/battle/swing3.wav][s.play ./Occult/sounds/world/door.wav]
+> Take off slippers -> 1 [i.remove slippers]

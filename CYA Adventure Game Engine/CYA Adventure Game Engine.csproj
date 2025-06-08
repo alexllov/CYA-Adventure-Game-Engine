@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>CYA_Adventure_Game_Engine</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Occult\sounds\.DS_Store" />
+    <None Include="Occult\sounds\battle\.DS_Store" />
+    <None Include="Occult\sounds\interface\.DS_Store" />
+    <None Include="Occult\sounds\inventory\.DS_Store" />
+    <None Include="Occult\sounds\misc\.DS_Store" />
+    <None Include="Occult\sounds\NPC\.DS_Store" />
+    <None Include="Occult\sounds\NPC\beetle\.DS_Store" />
+    <None Include="Occult\sounds\NPC\giant\.DS_Store" />
+    <None Include="Occult\sounds\NPC\gutteral beast\.DS_Store" />
+    <None Include="Occult\sounds\NPC\misc\.DS_Store" />
+    <None Include="Occult\sounds\NPC\ogre\.DS_Store" />
+    <None Include="Occult\sounds\NPC\shade\.DS_Store" />
+    <None Include="Occult\sounds\NPC\slime\.DS_Store" />
+    <None Include="Occult\sounds\world\.DS_Store" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\" />
+    <Folder Include="Occult\modules\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Occult\Occult v6.cya">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Occult\setup.cya">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
