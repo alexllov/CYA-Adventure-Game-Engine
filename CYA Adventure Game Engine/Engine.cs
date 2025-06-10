@@ -49,12 +49,13 @@ namespace CYA_Adventure_Game_Engine
                 {
                     //HandleMenu()
                 }
-                else if (int.TryParse(input, out int i) && 0 < i && i < scene.Choices.Count)
+                else if (int.TryParse(input, out int i) 
+                        && 0 < i 
+                        && i < scene.Choices.Count)
                 {
-                        choice = scene.Choices[(i-1)];
-                        needInput = false;
-                        Console.WriteLine($"Choice registered, {i}");
-                        //return choice;
+                    choice = scene.Choices[(i-1)];
+                    needInput = false;
+                    //return choice;
                 }
                 else
                 {
@@ -84,28 +85,40 @@ namespace CYA_Adventure_Game_Engine
                 // ^^ this may acc already be handled by the loop itself. Just have the err msg -> NOT change scene.
                 Base_UI.ShowLine(currentScene.ToString());
 
+                // Check there are choices to make. Avoids end loop when hit end state.
                 if (currentScene.Choices.Count > 0)
                 {
-                    Choice choice = SelectChoice(currentScene);
-                    Scene lastScene = currentScene;
+                    // Placeholder choice to keep choice in scope.
+                    Choice choice = new("placeholder", currentScene.ID, []);
+                    // Keep presenting choices until a valid choice is made given state.
+                    while (true)
+                    {
+                        choice = SelectChoice(currentScene);
+                        Scene lastScene = currentScene;
 
-                    (bool, string) response = choice.QueryActions(State);
-                    Console.WriteLine("RESPONSE: ",response.Item2);
+                        (bool, string) response = choice.QueryActions(State);
+                        if (!response.Item1)
+                        {
+                            Base_UI.ShowLine(response.Item2);
+                        }
+                        else { break; }
+                    }
 
-                    //Console.WriteLine($"You selected the following choice:\n{choice.ToString()}\nTarget:{choice.Target}");
 
-                    /*
-                     *  process choice ->
-                     *      1. query all actions to check all are possible given current states.
-                     *      2. process all actions s.t. they return the appropriate functions.
-                     *      3. return the process info
-                     *          i. Failure at query -> str err msg explaining failure.
-                     *          ii.Functions required to exec all actions in order.
-                     *      NB. Actions CAN change choice.target.
-                     */
+                        //Console.WriteLine($"You selected the following choice:\n{choice.ToString()}\nTarget:{choice.Target}");
 
-                    // VERY  END OF THE LOOP
-                    currentScene = Scenes[choice.Target];
+                        /*
+                         *  process choice ->
+                         *      1. query all actions to check all are possible given current states.
+                         *      2. process all actions s.t. they return the appropriate functions.
+                         *      3. return the process info
+                         *          i. Failure at query -> str err msg explaining failure.
+                         *          ii.Functions required to exec all actions in order.
+                         *      NB. Actions CAN change choice.target.
+                         */
+
+                        // VERY  END OF THE LOOP
+                        currentScene = Scenes[choice.Target];
                 }
                 else { break; }
             } 

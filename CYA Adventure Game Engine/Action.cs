@@ -21,12 +21,13 @@ namespace CYA_Adventure_Game_Engine
 
         public (bool, string) Query(Dictionary<string, IModule> state)
         {
+            // TODO: setup handling for defaults (eg, save)
             List<(bool, string)> results = new();
             if (Address is not "")
             {
                 return state[Address].Query(Method, Body);
             }
-            return (true, "hello");
+            return (true, "");
         }
     }
 

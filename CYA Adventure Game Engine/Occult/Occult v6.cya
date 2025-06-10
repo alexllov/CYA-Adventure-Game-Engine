@@ -22,6 +22,7 @@ RULES
 "You awake in your bedroom."
 "This is a second string as a feature test."
 > Go Downstairs (need slippers & socks) -> 2 [i.need slippers, socks][s.play ./sounds/world/door.wav]
+> Add slippers & socks to your inventory -> 1 [i.add slippers, socks]
 > Scream -> 3 [action1][action2][action3]
 > Try to eat your laptop -> 4
 > Roll a dice LOW -> 1 [d.1d3 <3]

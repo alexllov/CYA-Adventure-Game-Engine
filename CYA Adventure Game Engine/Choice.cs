@@ -46,9 +46,8 @@ namespace CYA_Adventure_Game_Engine
             if (failures.Count > 0)
             {
                 flag = false;
-                msg = String.Join(", ", failures);
+                msg = string.Join(", ", failures);
             }
-
             return (flag, msg);
         }
     }

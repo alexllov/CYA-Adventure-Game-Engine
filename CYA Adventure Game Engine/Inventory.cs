@@ -54,7 +54,7 @@ namespace CYA_Adventure_Game_Engine
                             missing.Add(item);
                         }
                     }
-                    if (Items.Count is not 0)
+                    if (missing.Count is not 0)
                     {
                         return (false, $"You cannot take this action. Inventory missing {string.Join(", ", missing)}.");
                     }
