@@ -8,16 +8,30 @@ namespace CYA_Adventure_Game_Engine
 {
     public class Action
     {
-        private readonly string? Raw;
+        private readonly string Address;
+        private readonly string Method;
+        private readonly List<string> Body;
 
-        public Action(string? action)
+        public Action(string address, string method, List<string> body)
         {
-            this.Raw = action;
+            Address = address;
+            Method = method;
+            Body = body;
         }
 
-        public string DebugToString()
+        public (bool, string) Query(Dictionary<string, IModule> state)
         {
-            return $"{Raw}";
+            List<(bool, string)> results = new();
+            if (Address is not "")
+            {
+                return state[Address].Query(Method, Body);
+            }
+            return (true, "hello");
         }
     }
+
+    //public class BaseAction : Action
+    //{
+    //
+    //}
 }

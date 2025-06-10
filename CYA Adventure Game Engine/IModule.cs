@@ -12,5 +12,6 @@ namespace CYA_Adventure_Game_Engine
         // TODO: Query();
         (bool, string) Process (string method, List<string> body);
 
+        public (bool, string) Query(string method, List<string> body);
     }
 }

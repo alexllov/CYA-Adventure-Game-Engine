@@ -21,14 +21,13 @@ RULES
 1
 "You awake in your bedroom."
 "This is a second string as a feature test."
-> Go Downstairs -> 2 [i.need slippers, socks][s.play ./sounds/world/door.wav]
-> Scream -> 3
+> Go Downstairs (need slippers & socks) -> 2 [i.need slippers, socks][s.play ./sounds/world/door.wav]
+> Scream -> 3 [action1][action2][action3]
 > Try to eat your laptop -> 4
-> Roll a dice HIGH -> 1 [d.2d6 >6 ? [i.add sword]: ->17]
 > Roll a dice LOW -> 1 [d.1d3 <3]
 > Roll a dice -> 1 [d.1d20]
-> Put on slippers -> 5 [i.add slippers]
-> Take off slippers -> 3 [i.need slippers]
+> Put on slippers (adds slippers) -> 5 [i.add slippers]
+> Take off slippers (need slippers) -> 3 [i.need slippers]
 
 2
 "You went downstairs."

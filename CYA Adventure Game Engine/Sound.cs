@@ -10,6 +10,11 @@ namespace CYA_Adventure_Game_Engine
     // Does not need instances to be made, hence can be static.
     public class Sound : IModule
     {
+
+        (bool, string) IModule.Query(string method, List<string> body)
+        {
+            return (true, "");
+        }
         (bool, string) IModule.Process(string method, List<string> body)
         {
             return (true, "");

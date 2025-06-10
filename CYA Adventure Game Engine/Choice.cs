@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace CYA_Adventure_Game_Engine
 {
@@ -27,6 +28,28 @@ namespace CYA_Adventure_Game_Engine
         public override string ToString()
         {
             return Text;
+        }
+
+        public (bool, string) QueryActions(Dictionary<string, IModule>  state)
+        {
+            //Collect Failures.
+            List<string> failures = [];
+            foreach (Action action in Actions)
+            {
+                (bool, string) result = action.Query(state);
+                if (!result.Item1) { failures.Add(result.Item2); }
+            }
+
+            // Defaults assuming pass.
+            bool flag = true;
+            string msg = "";
+            if (failures.Count > 0)
+            {
+                flag = false;
+                msg = String.Join(", ", failures);
+            }
+
+            return (flag, msg);
         }
     }
 }

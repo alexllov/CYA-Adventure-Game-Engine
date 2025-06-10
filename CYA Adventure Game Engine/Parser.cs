@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CYA_Adventure_Game_Engine
 {
@@ -24,6 +25,59 @@ namespace CYA_Adventure_Game_Engine
             }
         }
 
+        private List<Action> ParseActions(string line)
+        {
+            List<Action> actions = new();
+            // TODO: this needs improving for nested actions later.
+            // Split line into actions based on []
+            // .Select(i => i[1..]) <- should hopefully knock off '['.
+            string targetDelim = "]";
+            List<string> lines = line
+                .Split(targetDelim, StringSplitOptions.RemoveEmptyEntries)
+                .Select(i => i.Trim())
+                .ToList();
+
+            foreach (string raw in lines)
+            {
+                string cleaned = raw;
+                if (raw.Length > 1) {cleaned = raw[1..];} 
+                // Set bases in case of missing parts.
+                string address;
+                string method;
+                List<string> body;
+                // TODO: check for base func vs modules
+                // 1, Split address off [i.add ...]
+                if (raw.Contains('.'))
+                {
+                    targetDelim = ".";
+                    var splitOffText = cleaned.Split(targetDelim, 2).Select(i => i.Trim()).ToList();
+                    address = splitOffText[0];
+                    var rest = splitOffText[1];
+
+                    // 2, Split method off [add shoe,...]
+                    if (rest.Contains(' '))
+                    {
+                        targetDelim = " ";
+                        splitOffText = rest.Split(targetDelim, 2).Select(i => i.Trim()).ToList();
+                        method = splitOffText[0];
+                        rest = splitOffText[1];
+
+                        if (rest.Contains(','))
+                        {
+                            targetDelim = ",";
+                            body = rest.Split(targetDelim).Select(i => i.Trim()).ToList();
+                        }
+                        else { body = [rest]; }
+                    }
+                    else { method = rest; body = [""]; }
+                }
+                else { address = ""; method = cleaned; body = [""]; }
+                //Console.WriteLine($"Built Action:\nAddress: {address}\nMethod: {method}\nBody: {body}\n####################");
+                Action action = new(address, method, body);
+                actions.Add(action);
+            }
+            return actions;
+        }
 
         private Choice ParseChoice(string line)
         {
@@ -39,13 +93,12 @@ namespace CYA_Adventure_Game_Engine
             text = splitOffText[0];
             var rest = splitOffText[1];
 
-            if (rest.Contains(' '))
+            if (rest.Contains(']'))
             {
                 List<string> parts = rest.Split(' ', 2).ToList();
                 target = parts[0];
                 // TODO: Scrat for now, gives RAW. Need to add Action processing.
-                Action action = new (parts[1]);
-                actions = [action];
+                actions = ParseActions(parts[1]);
             }
             else
             {
@@ -54,6 +107,11 @@ namespace CYA_Adventure_Game_Engine
 
             // USE THIS IN FUTURE.
             // Choice choice = new Choice(text, target, actions);
+            // DEBUG
+            //if (actions is not null)
+            //{
+            //Console.WriteLine("length actions = ", actions.Count);
+            //}
             return new Choice (text, target, actions);
         }
 
@@ -108,8 +166,6 @@ namespace CYA_Adventure_Game_Engine
                     choices.Add(choice);
                 }
             }
-
-            //Console.WriteLine($"Parsed {data.Count} entries");
 
             return data;
         }

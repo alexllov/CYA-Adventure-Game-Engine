@@ -35,7 +35,7 @@ namespace CYA_Adventure_Game_Engine
 
         // Verify if the requested action can be completed.
         // -> tuple (true/false, "error msg")
-        private (bool, string) Query(string method, List<string> body)
+        (bool, string) IModule.Query(string method, List<string> body)
         {
             switch (method)
             {
@@ -71,8 +71,8 @@ namespace CYA_Adventure_Game_Engine
 
         (bool, string) IModule.Process(string method, List<string> body)
         {
-            var queryCheck = Query(method, body);
-            if (queryCheck.Item1) {
+            //var queryCheck = Query(method, body);
+            //if (queryCheck.Item1) {}
                 switch (method)
                 {
                     case "add":
@@ -95,8 +95,8 @@ namespace CYA_Adventure_Game_Engine
                     default:
                         break;
                 }
-            }
-            return queryCheck;
+            
+            return (true, "");
         }
     }
 }

@@ -3,10 +3,16 @@ using CYA_Adventure_Game_Engine;
 //using CYA_Adventure_Game_Engine.Modules;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 SetupLoader setup = new("./Occult/setup.cya");
 Dictionary<string, IModule> state = setup.State;
+foreach (var kvp in state)
+{
+    Console.WriteLine($"{kvp.Key}:\n{kvp.Value}");
+}
+state["i"] = new Inventory();
 
 Tokenizer tokenizer = new ("./Occult/Occult v6.cya");
 Parser parser = new(tokenizer);
