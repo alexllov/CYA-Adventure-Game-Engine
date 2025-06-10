@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Media;
 
 namespace CYA_Adventure_Game_Engine
 {
@@ -17,6 +18,7 @@ namespace CYA_Adventure_Game_Engine
         }
         (bool, string) IModule.Process(string method, List<string> body)
         {
+            new SoundPlayer (body.First()).Play();
             return (true, "");
         }
     }

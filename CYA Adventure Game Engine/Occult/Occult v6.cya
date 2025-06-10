@@ -21,7 +21,7 @@ RULES
 1
 "You awake in your bedroom."
 "This is a second string as a feature test."
-> Go Downstairs (need slippers & socks) -> 2 [i.need slippers, socks][s.play ./sounds/world/door.wav]
+> Go Downstairs (need slippers & socks) -> 2 [i.need slippers, socks][s.play ./Occult/sounds/world/door.wav]
 > Add slippers & socks to your inventory -> 1 [i.add slippers, socks]
 > Scream -> 3 [action1][action2][action3]
 > Try to eat your laptop -> 4
@@ -32,6 +32,7 @@ RULES
 
 2
 "You went downstairs."
+> Placeholder -> 1 [s.play ./sounds/world/door.wav]
 
 3
 "You screamed."

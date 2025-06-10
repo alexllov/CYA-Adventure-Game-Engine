@@ -25,7 +25,7 @@ namespace CYA_Adventure_Game_Engine
             bool needInput = true;
 
             // Set to 1 as dummy for return parsing...?
-            Choice choice = scene.Choices[1];
+            Choice choice = scene.Choices[0];
 
             //foreach (Choice c in scene.Choices)
             //{
@@ -101,24 +101,13 @@ namespace CYA_Adventure_Game_Engine
                         {
                             Base_UI.ShowLine(response.Item2);
                         }
-                        else { break; }
+                        else 
+                        {
+                            choice.ProcessActions(State);
+                            break; 
+                        }
                     }
-
-
-                        //Console.WriteLine($"You selected the following choice:\n{choice.ToString()}\nTarget:{choice.Target}");
-
-                        /*
-                         *  process choice ->
-                         *      1. query all actions to check all are possible given current states.
-                         *      2. process all actions s.t. they return the appropriate functions.
-                         *      3. return the process info
-                         *          i. Failure at query -> str err msg explaining failure.
-                         *          ii.Functions required to exec all actions in order.
-                         *      NB. Actions CAN change choice.target.
-                         */
-
-                        // VERY  END OF THE LOOP
-                        currentScene = Scenes[choice.Target];
+                currentScene = Scenes[choice.Target];
                 }
                 else { break; }
             } 

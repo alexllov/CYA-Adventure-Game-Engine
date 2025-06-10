@@ -50,5 +50,13 @@ namespace CYA_Adventure_Game_Engine
             }
             return (flag, msg);
         }
+
+        public void ProcessActions(Dictionary<string, IModule> state)
+        {
+            foreach (Action action in Actions)
+            {
+                action.Process(state);
+            }
+        }
     }
 }

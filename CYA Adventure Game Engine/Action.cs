@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine
 {
+    //TODO: set up handling s.t. Address defaluts to Base rather than ""?
     public class Action
     {
         private readonly string Address;
@@ -28,6 +29,14 @@ namespace CYA_Adventure_Game_Engine
                 return state[Address].Query(Method, Body);
             }
             return (true, "");
+        }
+
+        public void Process(Dictionary<string, IModule> state)
+        {
+            if (Address is not "")
+            {
+                state[Address].Process(Method, Body);
+            }
         }
     }
 

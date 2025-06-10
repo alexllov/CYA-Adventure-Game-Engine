@@ -31,10 +31,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Windows.Extensions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Occult\Occult v6.cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Occult\setup.cya">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Occult\sounds\world\door.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
