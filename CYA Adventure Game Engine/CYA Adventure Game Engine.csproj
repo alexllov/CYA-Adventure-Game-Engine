@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Occult\Occult basic.cya">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Occult\Occult v6.cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -17,7 +17,7 @@ namespace CYA_Adventure_Game_Engine
             Data = ParseLines(lines);
         }
 
-        private void Show()
+        public void Show()
         {
             foreach (var kvp in Data)
             {
@@ -123,15 +123,17 @@ namespace CYA_Adventure_Game_Engine
             List<Choice> choices = new ();
             List<Action> sceneActions = new ();
 
-            foreach (string line in lines)
+            for (int i = 0; i < lines.Count; i++)
             {
+                string line = lines[i];
                 // Skip blanks & comments.
                 if (line == "" || line.StartsWith("//")){
                     continue;
                 }
 
                 // Setting up new scene.
-                else if (char.IsLetterOrDigit(line[0]))
+                // i == lines.Count.. used to fix EOF, s.t. the final scene is loaded correctly - otherwise as no next scene starts, the last is nevere built.
+                else if (char.IsLetterOrDigit(line[0]) || i == lines.Count - 1)
                 {
                     if (currentScene is not null)
                     {

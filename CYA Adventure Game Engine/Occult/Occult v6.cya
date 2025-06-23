@@ -21,18 +21,17 @@ RULES
 1
 "You awake in your bedroom."
 "This is a second string as a feature test."
-> Go Downstairs (need slippers & socks) -> 2 [i.need slippers, socks][s.play ./Occult/sounds/world/door.wav]
-> Add slippers & socks to your inventory -> 1 [i.add slippers, socks]
-> Scream -> 3 [action1][action2][action3]
-> Try to eat your laptop -> 4
-> Roll a dice LOW -> 1 [d.1d3 <3]
-> Roll a dice -> 1 [d.1d20]
-> Put on slippers (adds slippers) -> 5 [i.add slippers]
-> Take off slippers (need slippers) -> 3 [i.need slippers]
+> "Go Downstairs (need slippers & socks)" -> 2 [i.need slippers, socks][s.play ./Occult/sounds/world/door.wav]
+> "Scream" -> 3
+> "Try to eat your laptop" -> 4
+> "Win a sword (1d6 <4 roll)" -> 1 [if [d.1d6] <4 then [s.play]]
+> "Roll a dice" -> 1 [d.1d20]
+> "Put on slippers and socks (adds slippers and socks)" -> 5 [i.add slippers, socks]
+> "Take off slippers (need slippers)" -> 3 [i.need slippers]
 
 2
 "You went downstairs."
-> Placeholder -> 1 [s.play ./sounds/world/door.wav]
+> "Placeholder" -> 1
 
 3
 "You screamed."
@@ -42,5 +41,14 @@ RULES
 
 5
 "You put on your slippers."
-> Go Downstairs -> 2 [i.need slippers][i.remove slippers][s.play ./Occult/sounds/battle/swing3.wav][s.play ./Occult/sounds/world/door.wav]
-> Take off slippers -> 1 [i.remove slippers]
+> "Go Downstairs" -> 2 [i.need slippers][i.remove slippers][s.play ./Occult/sounds/world/door.wav]
+> "Take off slippers" -> 1 [i.remove slippers]
+
+Tavern
+"You are in a tavern. Where will you go?"
+> "Go to the bar" -> TavernBar
+> "Go to bedroom" -> TavernBedroom
+> "Roll a dice to try and win a sword" -> Tavern [if d.1d6 <3 then inv.add sword else -> Fail]
+
+Fail
+"You failed to win a sword."
