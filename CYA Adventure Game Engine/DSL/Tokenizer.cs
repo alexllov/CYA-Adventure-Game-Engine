@@ -11,8 +11,12 @@ namespace CYA_Adventure_Game_Engine.DSL
 {
     internal class Tokenizer
     {
+        // Unprocessed source code as str.
         private string Source;
+        // Start is the start of the current token,
+        // Pos is the current position in the source code.
         private int Start = 0, Pos = 0;
+        // Pointer pos, used for debugging.
         private int Line = 1, Col = 1;
         private static Dictionary<string, TokenType> Keywords = new()
         {
@@ -26,6 +30,18 @@ namespace CYA_Adventure_Game_Engine.DSL
         };
         private List<Token> Tokens = new();
 
+        /// <summary>
+        /// Tokenier constructor. Takes filepath to use as source code.
+        /// Tokenizes the source code and stores it in the Tokens list.
+        /// </summary>
+        /// <param name="filepath">file path of game code</param>
+        public Tokenizer(string filepath)
+        {
+            Source = File.ReadAllText(filepath);
+            Console.WriteLine($"Source code loaded from {filepath} with {Source.Length} characters.");
+            Console.WriteLine($"{Source}");
+            Tokenize();
+        }
         public void Show()
         {
             Console.WriteLine("Tokens:");
@@ -35,18 +51,11 @@ namespace CYA_Adventure_Game_Engine.DSL
                 Console.WriteLine(token);
             }
         }
-        public Tokenizer(string filepath)
-        {
-            Source = File.ReadAllText(filepath);
-            Console.WriteLine($"Source code loaded from {filepath} with {Source.Length} characters.");
-            Console.WriteLine($"{Source}");
-            Tokenize();
-        }
 
         /// <summary>
         /// Tokenizes the source code, returning a list of tokens.
         /// </summary>
-        /// <returns>List<Token></returns>
+        /// <returns>List<Token> obj containing processed game code.</returns>
         private List<Token> Tokenize()
         {
             while (!IsAtEnd())
@@ -58,16 +67,9 @@ namespace CYA_Adventure_Game_Engine.DSL
             return Tokens;
         }
 
-        private char Advance()
-        {
-            Pos++;
-            Col++;
-            return Source[Pos - 1];
-        }
-        private bool IsAtEnd()
-        {
-            return Pos >= Source.Length;
-        }
+        /// <summary>
+        /// Large match-case statement that scans the next token to identify its type.
+        /// </summary>
         private void ScanToken()
         {
             char c = Advance();
@@ -107,6 +109,26 @@ namespace CYA_Adventure_Game_Engine.DSL
                     break;
                 case ')':
                     AddToken(TokenType.RParent);
+                    break;
+
+                // Dot, Comma.
+                case '.':
+                    AddToken(TokenType.Dot);
+                    break;
+                case ',':
+                    AddToken(TokenType.Comma);
+                    break;
+
+                // Pipes.
+                case '|':
+                    if (Match('>'))
+                    {
+                        AddToken(TokenType.PipeGreater);
+                    }
+                    else
+                    {
+                        AddToken(TokenType.Pipe);
+                    }
                     break;
 
                 // Operators & GoTo.
@@ -193,10 +215,30 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
 
         /// <summary>
-        /// Returns current char w/o advancing position, or consuming char.
+        /// Moves the current position forward by one character.
+        /// </summary>
+        /// <returns>Character at new position.</returns>
+        private char Advance()
+        {
+            Pos++;
+            Col++;
+            return Source[Pos - 1];
+        }
+
+        /// <summary>
+        /// Bool, is current pos the EOF.
+        /// </summary>
+        /// <returns>Bool</returns>
+        private bool IsAtEnd()
+        {
+            return Pos >= Source.Length;
+        }
+
+        /// <summary>
+        /// Returns current char w/o advancing position.
         /// If EOF, returns '\0' identifier.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Char</returns>
         private char Peek()
         {
             if (IsAtEnd())
@@ -206,6 +248,11 @@ namespace CYA_Adventure_Game_Engine.DSL
             return Source[Pos];
         }
 
+        /// <summary>
+        /// Returns next char w/o advancing position.
+        /// If EOF, returns '\0' identifier.
+        /// </summary>
+        /// <returns>Char</returns>
         private char PeekNext()
         {
             if (Pos + 1 >= Source.Length)
@@ -214,6 +261,13 @@ namespace CYA_Adventure_Game_Engine.DSL
             }
             return Source[Pos + 1];
         }
+
+        /// <summary>
+        /// IDs the next char, and advances position, "consuming" it, if it matches.
+        /// Used to identify 2-character tokens like "->".
+        /// </summary>
+        /// <param name="expected">Takes a char to match on</param>
+        /// <returns>Bool</returns>
         private bool Match(char expected)
         {
             if (IsAtEnd() || Source[Pos] != expected)
@@ -227,6 +281,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             }
         }
 
+        // TODO: Add {} support to id identifiers to create $strings, eg "hello {name}".
+        /// <summary>
+        /// Reads String literals, id'd by ""s
+        /// </summary>
         private void ReadString()
         {
             while (Peek() != '"' && !IsAtEnd())
@@ -256,6 +314,9 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         }
 
+        /// <summary>
+        /// Finds numbers, inc decimals.
+        /// </summary>
         private void ReadNumber()
         {
             while (Char.IsDigit(Peek()))
@@ -273,6 +334,9 @@ namespace CYA_Adventure_Game_Engine.DSL
             AddToken(TokenType.Number);
         }
 
+        /// <summary>
+        /// Finds var names and keywords.
+        /// </summary>
         private void ReadIdentifier()
         {
             while (Char.IsLetterOrDigit(Peek()) || Peek() == '_')
@@ -284,12 +348,19 @@ namespace CYA_Adventure_Game_Engine.DSL
             AddToken(type);
         }
 
+        /// <summary>
+        /// Creates a token of the specified type with the current source substring.
+        /// </summary>
+        /// <param>TokenType</param>
         private void AddToken(TokenType type)
         {
             string text = Source[Start..Pos];
             Tokens.Add(new Token(type, text, Line, Col));
         }
 
+        /// <summary>
+        /// Creates err msg with location info.
+        /// </summary>
         private Exception Error(string message, [CallerLineNumber] int line = 0, [CallerFilePath] string file = "")
         {
             return new Exception($"Error at line {Line}, Col {Col}: {message}");

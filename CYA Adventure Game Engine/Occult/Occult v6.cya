@@ -24,7 +24,7 @@ RULES
 > "Go Downstairs (need slippers & socks)" -> 2 [i.need slippers, socks][s.play ./Occult/sounds/world/door.wav]
 > "Scream" -> 3
 > "Try to eat your laptop" -> 4
-> "Win a sword (1d6 <4 roll)" -> 1 [if [d.1d6] <4 then [s.play]]
+> "Win a sword (1d6 <4 roll)" -> 1 [if [d.1d6] < 4 then [s.play ./success.wav] else [s.play ./fail.wav]]
 > "Roll a dice" -> 1 [d.1d20]
 > "Put on slippers and socks (adds slippers and socks)" -> 5 [i.add slippers, socks]
 > "Take off slippers (need slippers)" -> 3 [i.need slippers]

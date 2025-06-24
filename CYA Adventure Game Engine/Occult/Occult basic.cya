@@ -1,11 +1,14 @@
 
+import Inventory as i
+
 1
-"You awake in your bedroom."
-"This is a second string as a feature test."
-> "Go Downstairs (need slippers & socks)" -> 2
-> "Scream" -> 3
-> "Try to eat your laptop" -> 4
-> "Win a sword (1d6 <4 roll)" -> 1
-> "Roll a dice" -> 1
-> "Put on slippers and socks (adds slippers and socks)" -> 5
-> "Take off slippers (need slippers)" -> 3
+|name = ask "what is your name?"
+|"You awake in your bedroom."
+|"{name}, you are armed with a sword."
+|[i.add sword]
+|* "Sword?"
+|> "Go Downstairs (need slippers & socks)" -> 2
+|> "Win a sword (1d6 <4)" -> 1
+|> "Put on slippers and socks (adds slippers and socks)" -> 5 [i.add slippers, socks]
+|[if [i.need slippers, socks] then |> "Take off slippers" -> 1 [i.remove slippers]]
+

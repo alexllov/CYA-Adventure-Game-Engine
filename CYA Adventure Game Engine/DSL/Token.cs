@@ -12,6 +12,8 @@ namespace CYA_Adventure_Game_Engine.DSL
         Import, As,
         Identifier, Number, String,
         Dot,
+        Comma,
+        Pipe, PipeGreater,
         Plus, Minus, Multiply, Divide,
         Assign, Equal, NotEqual, Not, GreaterThan, GreaterEqual, LessThan, LessEqual,
         Comment,
