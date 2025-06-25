@@ -28,6 +28,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"then", TokenType.Then },
             {"else", TokenType.Else },
             {"while", TokenType.While },
+            {"and", TokenType.And },
+            {"or", TokenType.Or },
         };
         private List<Token> Tokens = new();
 

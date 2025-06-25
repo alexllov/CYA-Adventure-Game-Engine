@@ -16,6 +16,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         Pipe, PipeGreater,
         Plus, Minus, Multiply, Divide,
         Assign, Equal, NotEqual, Not, GreaterThan, GreaterEqual, LessThan, LessEqual,
+        And, Or,
         Comment,
         If, Then, Else, While,
         Scene,

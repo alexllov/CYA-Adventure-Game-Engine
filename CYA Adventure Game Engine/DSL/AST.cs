@@ -56,13 +56,13 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     // Binary operations: e.g. 1 + 2,
     // made up of a left side, an operator, & right side.
-    public class Binary : Expr
+    public class BinaryExpr : Expr
     {
         public Expr Left;
-        public Token Operator;
+        public TokenType Operator;
         public Expr Right;
 
-        public Binary(Expr left, Token oper, Expr right)
+        public BinaryExpr(Expr left, TokenType oper, Expr right)
         {
             Left = left;
             Operator = oper;

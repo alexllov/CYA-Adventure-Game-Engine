@@ -11,14 +11,28 @@ namespace CYA_Adventure_Game_Engine.DSL
     public class Parser
     {
         // Part Dicts for Pratt.
-        Dictionary<TokenType, PrefixParcelet> PrefixParts = new()
+        Dictionary<TokenType, PrefixParselet> PrefixParts = new()
         {
-            {TokenType.Identifier, new NameParcelet()},
-            {TokenType.Number, new NameParcelet()},
-            {TokenType.String, new NameParcelet()},
-            {TokenType.Plus, new PrefixOperatorParcelet()},
-            {TokenType.Minus, new PrefixOperatorParcelet()},
-            {TokenType.Not, new PrefixOperatorParcelet()}
+            {TokenType.Identifier, new NameParselet()},
+            {TokenType.Number, new NameParselet()},
+            {TokenType.String, new NameParselet()},
+            {TokenType.Plus, new PrefixOperatorParselet()},
+            {TokenType.Minus, new PrefixOperatorParselet()},
+            {TokenType.Not, new PrefixOperatorParselet()}
+        };
+
+        Dictionary<TokenType, InfixParselet> InfixParts = new()
+        {
+            {TokenType.Plus, new BinaryOperatorParselet()},
+            {TokenType.Minus, new BinaryOperatorParselet()},
+            {TokenType.Multiply, new BinaryOperatorParselet()},
+            {TokenType.Divide, new BinaryOperatorParselet()},
+            {TokenType.Equal, new BinaryOperatorParselet()},
+            {TokenType.NotEqual, new BinaryOperatorParselet()},
+            {TokenType.LessThan, new BinaryOperatorParselet()},
+            {TokenType.GreaterThan, new BinaryOperatorParselet()},
+            {TokenType.And, new BinaryOperatorParselet()},
+            {TokenType.Or, new BinaryOperatorParselet()}
         };
 
         // Parser Components.
@@ -47,12 +61,32 @@ namespace CYA_Adventure_Game_Engine.DSL
         public Expr ParseExpression()
         {
             Token token = Advance();
-            PrefixParcelet prefix = PrefixParts[token.Type];
-            if (prefix == null)
+
+            PrefixParselet prefix;
+            if (PrefixParts.ContainsKey(token.Type))
             {
-                throw new Exception($"Unexpected token type: {token.Type}.");
+                prefix = PrefixParts[token.Type];
             }
-            return prefix.Parse(this, token);
+            else
+            {
+                throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
+            }
+            Expr left = prefix.Parse(this, token);
+
+            // Identify Infix.
+            // token = Peek(0); <- might be needed, check later TODO
+            InfixParselet infix;
+            if (InfixParts.ContainsKey(token.Type))
+            {
+                prefix = PrefixParts[token.Type];
+            }
+            else
+            {
+                throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
+            }
+
+            Advance();
+            return infix.Parse(this, left, token);
         }
 
         // TODO: Construct giant SwitchCase here i guess.
@@ -147,27 +181,18 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private Token Consume(TokenType type)
         {
-            if (Peek().Type == type)
+            if (Peek(0).Type == type)
             {
                 return Advance();
             }
-            throw new Exception($"Expected token type {type}, but found {Peek().Type}.");
+            throw new Exception($"Expected token type {type}, but found {Peek(0).Type}.");
         }
 
-        private Token Peek()
+        private Token Peek(int dist)
         {
-            if (!IsAtEnd())
+            if (Pos + dist >= Tokens.Count)
             {
-                return Tokens[Pos];
-            }
-            return new Token(TokenType.EOF, "", -1, -1);
-        }
-
-        private Token PeekNext()
-        {
-            if (Pos + 1 < Tokens.Count)
-            {
-                return Tokens[Pos + 1];
+                return Tokens[Pos+dist];
             }
             return new Token(TokenType.EOF, "", -1, -1);
         }
@@ -176,7 +201,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             foreach (var type in types)
             {
-                if (Peek().Type == type)
+                if (Peek(0).Type == type)
                 {
                     Advance();
                     return true;

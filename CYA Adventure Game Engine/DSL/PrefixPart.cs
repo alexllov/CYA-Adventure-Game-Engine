@@ -11,7 +11,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     /// Interface for Prefix Parcelets.
     /// Requirement: Parse method that takes a Parser and a Token, producing an expression (Expr).
     /// </summary>
-    internal interface PrefixParcelet
+    internal interface PrefixParselet
     {
         Expr Parse(Parser parser, Token token);
     }
@@ -20,7 +20,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     /// Handles parsing of names, numbers, and variables into the appropriate Expression types.
     /// These are grouped as the non-operator prefix expressions in the Pratt Parser.
     /// </summary>
-    public class NameParcelet : PrefixParcelet
+    public class NameParselet : PrefixParselet
     {
         public Expr Parse(Parser parser, Token token)
         {
@@ -42,7 +42,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     /// Handles prefix operators like '+' Plus, '-' Minus, & '!' Not.
     /// Currently these are the only three implemented.
     /// </summary>
-    public class PrefixOperatorParcelet : PrefixParcelet
+    public class PrefixOperatorParselet : PrefixParselet
     {
         public Expr Parse(Parser parser, Token token)
         {
