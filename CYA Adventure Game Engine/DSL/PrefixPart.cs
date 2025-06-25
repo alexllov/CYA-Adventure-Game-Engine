@@ -7,12 +7,20 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL
 {
-    internal interface PrefixPart
+    /// <summary>
+    /// Interface for Prefix Parcelets.
+    /// Requirement: Parse method that takes a Parser and a Token, producing an expression (Expr).
+    /// </summary>
+    internal interface PrefixParcelet
     {
         Expr Parse(Parser parser, Token token);
     }
 
-    public class NamePart : PrefixPart
+    /// <summary>
+    /// Handles parsing of names, numbers, and variables into the appropriate Expression types.
+    /// These are grouped as the non-operator prefix expressions in the Pratt Parser.
+    /// </summary>
+    public class NameParcelet : PrefixParcelet
     {
         public Expr Parse(Parser parser, Token token)
         {
@@ -22,7 +30,6 @@ namespace CYA_Adventure_Game_Engine.DSL
                     return new StringLitExpr(token.Lexeme);
                 case TokenType.Number:
                     return new NumberLitExpr(double.Parse(token.Lexeme));
-                // May need to modify this depending on how Vars are to be stored.
                 case TokenType.String:
                     return new VariableExpr(token.Lexeme);
                 default:
@@ -31,14 +38,18 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
     }
 
-    public class PrefixOperatorPart : PrefixPart
+    /// <summary>
+    /// Handles prefix operators like '+' Plus, '-' Minus, & '!' Not.
+    /// Currently these are the only three implemented.
+    /// </summary>
+    public class PrefixOperatorParcelet : PrefixParcelet
     {
-        public Expr parse(Parser parser, Token token)
+        public Expr Parse(Parser parser, Token token)
         {
             // Consume the operator token.
             parser.Advance();
             // Parse the next part of the expression.
-            Expr operand = parser.ParsePrefixPart();
+            Expr operand = parser.ParseExpression();
             // Return a new prefix expression with the operator and right side.
             return new PrefixExpr(token.Type, operand);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,17 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     public class Parser
     {
+        // Part Dicts for Pratt.
+        Dictionary<TokenType, PrefixParcelet> PrefixParts = new()
+        {
+            {TokenType.Identifier, new NameParcelet()},
+            {TokenType.Number, new NameParcelet()},
+            {TokenType.String, new NameParcelet()},
+            {TokenType.Plus, new PrefixOperatorParcelet()},
+            {TokenType.Minus, new PrefixOperatorParcelet()},
+            {TokenType.Not, new PrefixOperatorParcelet()}
+        };
+
         // Parser Components.
         private readonly List<Token> Tokens;
         private int Pos = 0;
@@ -25,6 +37,22 @@ namespace CYA_Adventure_Game_Engine.DSL
             {
                 AST.Add(ParseStatement());
             }
+        }
+
+        /// <summary>
+        /// Expression Parsing - Implements a Pratt Parser.
+        /// </summary>
+        /// <returns>Expr</returns>
+        /// <exception cref="Exception"></exception>
+        public Expr ParseExpression()
+        {
+            Token token = Advance();
+            PrefixParcelet prefix = PrefixParts[token.Type];
+            if (prefix == null)
+            {
+                throw new Exception($"Unexpected token type: {token.Type}.");
+            }
+            return prefix.Parse(this, token);
         }
 
         // TODO: Construct giant SwitchCase here i guess.
@@ -97,7 +125,8 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private Expr ParseExpression()
         {
-            
+            Token token = Advance();
+            PrefixPart prefix = 
         }
 
         private bool IsAtEnd()
