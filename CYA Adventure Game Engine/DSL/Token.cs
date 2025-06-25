@@ -18,6 +18,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         Assign, Equal, NotEqual, Not, GreaterThan, GreaterEqual, LessThan, LessEqual,
         Comment,
         If, Then, Else, While,
+        Scene,
         GoTo,
         LBracket, RBracket, LParent, RParent,
         EOF,

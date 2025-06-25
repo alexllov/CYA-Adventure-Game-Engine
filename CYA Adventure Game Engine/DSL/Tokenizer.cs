@@ -23,6 +23,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"import", TokenType.Import },
             {"as", TokenType.As },
             {"->", TokenType.GoTo },
+            { "scene", TokenType.Scene },
             {"if", TokenType.If },
             {"then", TokenType.Then },
             {"else", TokenType.Else },
