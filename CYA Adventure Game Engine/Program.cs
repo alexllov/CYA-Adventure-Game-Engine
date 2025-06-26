@@ -16,7 +16,7 @@ Dictionary<string, IModule> state = setup.State;
 
 // "./Occult/Occult basic.cya"
 CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Math_Tests.txt");
-tokenizer.Show();
+//tokenizer.Show();
 
 CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
 parser.Show();

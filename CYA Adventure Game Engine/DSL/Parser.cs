@@ -19,7 +19,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.String, new NameParselet()},
             {TokenType.Plus, new PrefixOperatorParselet()},
             {TokenType.Minus, new PrefixOperatorParselet()},
-            {TokenType.Not, new PrefixOperatorParselet()}
+            {TokenType.Not, new PrefixOperatorParselet()},
+            {TokenType.Ask, new AskParselet()}
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -42,17 +43,18 @@ namespace CYA_Adventure_Game_Engine.DSL
         private int Pos = 0;
 
         // TODO: Re-Add this once Stmt implemented.
-        //public List<Stmt> AST;
+        public List<Stmt> AST = new List<Stmt>();
 
         // TODO: Remove this once Stmt implemented.
         public List<Expr> Expressions = new List<Expr>();
 
+        // TODO: UPDATE TO STMTS RATHER THAN EXPRS.
         public void Show()
         {
-            Console.WriteLine("Parser Expressions:");
-            foreach (var expr in Expressions)
+            Console.WriteLine("AST Statements:");
+            foreach (var stmt in AST)
             {
-                Console.WriteLine(expr);
+                Console.WriteLine(stmt);
             }
         }
 
@@ -64,14 +66,9 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private void Parse()
         {
-            // TODO: Reimplement this once Stmt handling is added.
-            // while (!IsAtEnd())
-            // {
-            //     AST.Add(ParseStatement());
-            // }
             while (Peek(0).Type != TokenType.EOF)
             {
-                Expressions.Add(ParseExpression(0));
+                AST.Add(ParseStatement());
             }
         }
 
@@ -83,9 +80,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         public Expr ParseExpression(int precedence)
         {
             Token token = Advance();
-            Console.WriteLine($"ParseExpression: consumed token {token.Type} '{token.Lexeme}'");
-            Token peek = Peek(0);
-            Console.WriteLine($"Peeked next: {peek.Type} '{peek.Lexeme}'");
 
             IPrefixParselet prefix;
             if (PrefixParts.ContainsKey(token.Type))
@@ -143,19 +137,19 @@ namespace CYA_Adventure_Game_Engine.DSL
                 case TokenType.Import:
                     return ParseImportStmt();
 
-                // TODO: Keep working on this Identifier case.
-                //case TokenType.Identifier:
-                //    // Check if it's a variable declaration or an expression.
-                //    if (PeekNext().Type == TokenType.Pipe)
-                //    {
-                //        return ParseImportStmt();
-                //    }
+                case TokenType.Say:
+                    return ParseSayStmt();
 
-                case TokenType.RBracket:
-                    return ParseBracketStmt();
+                //case TokenType.RBracket:
+                //    return ParseBracketStmt();
+
+                case TokenType.If:
+                    return ParseIfStmt();
                     
                 default:
-                    throw new Exception($"Unexpected token: {token}");
+                    Expr expr = (ParseExpression(0));
+                    ExprStmt stmt = new(expr);
+                    return stmt;
             }
         }
 
@@ -172,25 +166,18 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new ImportStmt(module.Lexeme);
         }
 
-        private Stmt ParseBracketStmt()
+        private Stmt ParseSayStmt()
         {
-            Token token = Tokens[Pos];
-            // Consume the opening bracket.
-            Consume(TokenType.RBracket);
-            switch (token.Type)
-            {
-                case TokenType.If:
-                    return ParseIfStmt();
-                default:
-                    throw new Exception($"Unexpected token: {token}");
-            }
+            Advance();
+            Expr expr = ParseExpression(0);
+            return new SayStmt(expr);
         }
 
         private Stmt ParseIfStmt()
         {
             // Consume the 'if' token.
             Advance();
-            Expr condition = ParseExpression(Precedence.CONDITIONAL);
+            Expr condition = ParseExpression(0);
             Consume(TokenType.Then);
             Stmt thenBranch = ParseStatement();
             Stmt elseBranch = null;
@@ -201,9 +188,23 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
+        // TODO: This Needs Refining.
+        // private Stmt ParseBracketStmt()
+        // {
+        //     Token token = Tokens[Pos];
+        //     // Consume the opening bracket.
+        //     Consume(TokenType.RBracket);
+        //     switch (token.Type)
+        //     {
+        //         case TokenType.If:
+        //             return ParseIfStmt();
+        //         default:
+        //             throw new Exception($"Unexpected token: {token}");
+        //     }
+        // }
+
         private bool IsAtEnd()
         {
-            Console.WriteLine($"Pos: {Pos}, Len: {Tokens.Count}");
             return Pos >= Tokens.Count;
         }
 

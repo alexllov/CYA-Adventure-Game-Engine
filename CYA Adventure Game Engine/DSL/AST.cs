@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL
 {
+    // =============== Expressions ===============
 
     // Expression: evaluates to a value.
     public abstract class Expr { }
@@ -88,6 +89,9 @@ namespace CYA_Adventure_Game_Engine.DSL
         }   
     }
 
+    /// <summary>
+    /// Used to register Identifiers to values, eg Variable assignment.
+    /// </summary>
     public class AssignExpr: Expr
     {
         public string Name;
@@ -105,6 +109,41 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
     }
 
+    // Func, Generally Expands upon AssignExpr.
+    // Used for Processing user inputs in some way.
+    public class AskExpr : Expr
+    {
+        public Expr Text;
+
+        public AskExpr(Expr text)
+        {
+            Text = text;
+        }
+        public override string ToString()
+        {
+            return $"AskStmt(Prompt: {Text})";
+        }
+    }
+
+    // =============== Statements ===============
+
+    // Default Expr catch to convert Exprs w/o type to a Stmt.
+
+    public class ExprStmt : Stmt
+    {
+        public Expr _Expr;
+        public ExprStmt(Expr expr)
+        {
+            _Expr = expr;
+
+        }
+        public override string ToString() 
+        {
+            return $"ExprStmt({_Expr})";
+        }
+    }
+
+    // TODO: Required??
     // Declaration of variables.
     public class VarDeclr : Stmt
     {
@@ -114,6 +153,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Name = name;
             Value = val;
+        }
+        public override string ToString() 
+        {
+            return $"VarDeclr(Name: {Name}, Value: {Value})";
         }
     }
 
@@ -130,6 +173,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             ThenBranch = thenBranch;
             ElseBranch = elseBranch;
         }
+        public override string ToString() 
+        {
+            return $"IfStmt(Condition: {Condition}, ThenBranch: {ThenBranch}, ElseBranch: {ElseBranch})";
+        }
     }
 
     // Block statements. Used for const of Scenes & Choices(?).
@@ -140,6 +187,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         public BlockStmt(List<Stmt> statements)
         {
             Statements = statements;
+        }
+        public override string ToString() 
+        {
+            return $"BlockStmt(Statements: [{string.Join(", ", Statements)}])";
         }
     }
 
@@ -153,6 +204,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             Module = module;
             Alias = alias;
         }
+        public override string ToString() 
+        {
+            return Alias == null ? $"ImportStmt(Module: {Module})" : $"ImportStmt(Module: {Module}, Alias: {Alias})";
+        }
     }
 
     // Personal Stmt Types for repr game objects.
@@ -165,6 +220,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Name = name;
             Body = body;
+        }
+        public override string ToString() 
+        {
+            return $"SceneStmt(Name: {Name}, Body: {Body})";
         }
     }
 
@@ -184,14 +243,20 @@ namespace CYA_Adventure_Game_Engine.DSL
         public string Label;
         public string TargetScene;
         public BlockStmt Events;
+        public ChoiceStmt(string label, string targetScene, BlockStmt events)
+        {
+            Label = label;
+            TargetScene = targetScene;
+            Events = events;
+        }
     }
 
     // TODO: needs reworking probably.
-    public class Event : Stmt
+    public class EventStmt : Stmt
     {
         public string Name;
         public BlockStmt Body;
-        public Event(string name, BlockStmt body)
+        public EventStmt(string name, BlockStmt body)
         {
             Name = name;
             Body = body;
@@ -199,30 +264,20 @@ namespace CYA_Adventure_Game_Engine.DSL
     }
 
     // Base IO Events
-    /// <summary>
-    /// Ask stmt: used to take a user input & record to var for Personalisation.
-    /// </summary>
-    public class AskStmt : Stmt
-    {
-        public string Prompt;
-        public string VarName;
-
-        public AskStmt(string prompt, string varName)
-        {
-            Prompt = prompt;
-            VarName = varName;
-        }
-    }
 
     /// <summary>
     /// Say stmt: used to output text to the user.
     /// </summary>
     public class SayStmt : Stmt
     {
-        public string Text;
-        public SayStmt(string text)
+        public Expr Text;
+        public SayStmt(Expr text)
         {
             Text = text;
+        }
+        public override string ToString() 
+        {
+            return $"SayStmt({Text})";
         }
     }
 

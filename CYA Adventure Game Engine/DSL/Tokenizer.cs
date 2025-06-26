@@ -30,6 +30,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"while", TokenType.While },
             {"and", TokenType.And },
             {"or", TokenType.Or },
+            {"say", TokenType.Say },
+            {"ask", TokenType.Ask },
+            {"save", TokenType.Save },
+            {"back", TokenType.Back },
         };
         
         // The Actual Tokens List.
@@ -43,8 +47,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         public Tokenizer(string filepath)
         {
             Source = File.ReadAllText(filepath);
-            Console.WriteLine($"Source code loaded from {filepath} with {Source.Length} characters.");
-            Console.WriteLine($"{Source}");
             Tokenize();
         }
         public void Show()
