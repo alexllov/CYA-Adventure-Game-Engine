@@ -12,6 +12,38 @@ namespace CYA_Adventure_Game_Engine.DSL
         int GetPrecedence();
     }
 
+    public class AssignParselet : IInfixParselet
+    {
+        int _Precedence;
+
+        public AssignParselet(int precedence)
+        {
+            _Precedence = precedence;
+        }
+
+        public Expr Parse(Parser parser, Expr left, Token token)
+        {
+            Expr right = parser.ParseExpression(Precedence.ASSIGNMENT - 1);
+
+            if (!(left is VariableExpr))
+            {
+                throw new Exception($"Left hand side must be a var. Got {left.GetType()} instead.");
+            }
+            else
+            {
+                // Type casing to ge the Name property.
+                string name = ((VariableExpr)left).Name;
+                return new AssignExpr(name, right);
+            }
+        }
+
+        public int GetPrecedence()
+        {
+            return _Precedence;
+        }
+    
+    }
+
     public class BinaryOperatorParselet : IInfixParselet
     {
         int _Precedence;
@@ -22,8 +54,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public Expr Parse(Parser parser, Expr left, Token token)
         {
-            // Consume the operator token? This should be handled in ParseExpression anyway.
-            // parser.Advance();
             // Parse the right side of the expression.
             Expr right = parser.ParseExpression(_Precedence);
             // Return a new binary expression with the left side, operator, and right side.

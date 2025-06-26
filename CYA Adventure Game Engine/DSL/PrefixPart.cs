@@ -28,11 +28,11 @@ namespace CYA_Adventure_Game_Engine.DSL
             switch (token.Type)
             {
                 case TokenType.Identifier:
-                    return new StringLitExpr(token.Lexeme);
+                    return new VariableExpr(token.Lexeme);
                 case TokenType.Number:
                     return new NumberLitExpr(double.Parse(token.Lexeme));
                 case TokenType.String:
-                    return new VariableExpr(token.Lexeme);
+                    return new StringLitExpr(token.Lexeme);
                 default:
                     throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
             }
@@ -53,10 +53,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public Expr Parse(Parser parser, Token token)
         {
-            // TODO: Clean Comments here
-            // Consume the operator token.
-            // parser.Advance();
-
             // Parse the next part of the expression.
             Expr operand = parser.ParseExpression(_Precedence);
             // Return a new prefix expression with the operator and right side.

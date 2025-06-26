@@ -88,6 +88,23 @@ namespace CYA_Adventure_Game_Engine.DSL
         }   
     }
 
+    public class AssignExpr: Expr
+    {
+        public string Name;
+        public Expr Value;
+
+        public AssignExpr(string name, Expr value)
+        {
+            Name = name;
+            Value = value;
+        }
+
+        public override string ToString() 
+        {
+            return $"AssignExpr({Name}, {Value})";
+        }
+    }
+
     // Declaration of variables.
     public class VarDeclr : Stmt
     {

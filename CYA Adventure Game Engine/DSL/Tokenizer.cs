@@ -239,31 +239,18 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
 
         /// <summary>
-        /// Returns current char w/o advancing position.
+        /// Returns char at the position "distance" from the current position w/o advancing position.
         /// If EOF, returns '\0' identifier.
         /// </summary>
-        /// <returns>Char</returns>
-        private char Peek()
+        /// <param name="dist">integer, gives distance relative to current token to observe.</param>
+        /// <returns></returns>
+        private char Peek(int dist)
         {
-            if (IsAtEnd())
+            if (Pos + dist >= Source.Length)
             {
                 return '\0';
             }
-            return Source[Pos];
-        }
-
-        /// <summary>
-        /// Returns next char w/o advancing position.
-        /// If EOF, returns '\0' identifier.
-        /// </summary>
-        /// <returns>Char</returns>
-        private char PeekNext()
-        {
-            if (Pos + 1 >= Source.Length)
-            {
-                return '\0';
-            }
-            return Source[Pos + 1];
+            return Source[Pos + dist];
         }
 
         /// <summary>
@@ -291,9 +278,9 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         private void ReadString()
         {
-            while (Peek() != '"' && !IsAtEnd())
+            while (Peek(0) != '"' && !IsAtEnd())
             {
-                if (Peek() == '\n')
+                if (Peek(0) == '\n')
                 {
                     Line++;
                     Col = 1;
@@ -323,14 +310,14 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         private void ReadNumber()
         {
-            while (Char.IsDigit(Peek()))
+            while (Char.IsDigit(Peek(0)))
             {
                 Advance();
             }
-            while (Peek() == '.' && Char.IsDigit(PeekNext()))
+            while (Peek(0) == '.' && Char.IsDigit(Peek(1)))
             {
                 Advance();
-                while (Char.IsDigit(Peek()))
+                while (Char.IsDigit(Peek(0)))
                 {
                     Advance();
                 }
@@ -343,7 +330,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         private void ReadIdentifier()
         {
-            while (Char.IsLetterOrDigit(Peek()) || Peek() == '_')
+            while (Char.IsLetterOrDigit(Peek(0)) || Peek(0) == '_')
             {
                 Advance();
             }

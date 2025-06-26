@@ -24,6 +24,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
         {
+            {TokenType.Assign, new AssignParselet(Precedence.ASSIGNMENT)},
             {TokenType.Plus, new BinaryOperatorParselet(Precedence.SUM)},
             {TokenType.Minus, new BinaryOperatorParselet(Precedence.SUM)},
             {TokenType.Multiply, new BinaryOperatorParselet(Precedence.PRODUCT)},
