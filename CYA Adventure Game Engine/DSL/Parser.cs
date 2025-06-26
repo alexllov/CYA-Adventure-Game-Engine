@@ -137,19 +137,34 @@ namespace CYA_Adventure_Game_Engine.DSL
                 case TokenType.Import:
                     return ParseImportStmt();
 
+                case TokenType.LBracket:
+                    return ParseBracket();
+
                 case TokenType.Say:
                     return ParseSayStmt();
 
                 //case TokenType.RBracket:
                 //    return ParseBracketStmt();
-
-                case TokenType.If:
-                    return ParseIfStmt();
                     
                 default:
                     Expr expr = (ParseExpression(0));
                     ExprStmt stmt = new(expr);
                     return stmt;
+            }
+        }
+
+        private Stmt ParseBracket()
+        {
+            Advance();
+            Token token = Tokens[Pos];
+
+            switch (token.Type)
+            {
+                case TokenType.If:
+                    return ParseIfStmt();
+
+                default:
+                    throw new Exception($"Unexpected token type following '[': {token.Type}");
             }
         }
 
@@ -173,18 +188,45 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new SayStmt(expr);
         }
 
+        /// <summary>
+        /// Func to compile possible blocks of statements either into a BlockStmt or single Stmt depending on how many.
+        /// Example use: IF stmt processing to collect all statements in the 'then' & 'else' branches
+        /// Collects statements until it finds the dedicated 'stopping' token.
+        /// </summary>
+        /// <param name="stoppingPoint">Token types list representing end point for Stmt collection.</param>
+        /// <returns>Stmt</returns>
+        private Stmt ParseBlock(params TokenType[] stoppingPoint)
+        {
+            List<Stmt> stmts = new();
+            while (!stoppingPoint.Contains(Peek(0).Type))
+            {
+                stmts.Add(ParseStatement());
+            }
+            if (stmts.Count > 1)
+            {
+                return new BlockStmt(stmts);
+            }
+            else
+            {
+                return stmts[0];
+            }
+        }
+
         private Stmt ParseIfStmt()
         {
             // Consume the 'if' token.
             Advance();
             Expr condition = ParseExpression(0);
             Consume(TokenType.Then);
-            Stmt thenBranch = ParseStatement();
+            Stmt thenBranch = ParseBlock(TokenType.Else, TokenType.RBracket);
             Stmt elseBranch = null;
             if (Match(TokenType.Else))
             {
-                elseBranch = ParseStatement();
+                elseBranch = ParseBlock(TokenType.RBracket);
             }
+            // TODO: Consider moving this into the Bracket Parsing space to avoid duplication.
+            // Consume closing bracket.
+            Consume(TokenType.RBracket);
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
