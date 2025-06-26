@@ -21,6 +21,11 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Value = val;
         }
+
+        public override string ToString() 
+        {
+            return $"NumberLitExpr({Value})";
+        }
     }
 
     public class StringLitExpr : Expr
@@ -30,6 +35,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Value = val;
         }
+        public override string ToString() 
+        {
+            return $"StringLitExpr({Value})";
+        }   
     }
 
     // Variable: named values.
@@ -52,6 +61,11 @@ namespace CYA_Adventure_Game_Engine.DSL
             Operator = type;
             Operand = operand;
         }
+
+        public override string ToString() 
+        {
+            return $"PrefixExpr({Operator}, {Operand})";
+        }
     }
 
     // Binary operations: e.g. 1 + 2,
@@ -68,6 +82,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             Operator = oper;
             Right = right;
         }
+        public override string ToString() 
+        {
+            return $"BinaryExpr({Left}, {Operator}, {Right})";
+        }   
     }
 
     // Declaration of variables.

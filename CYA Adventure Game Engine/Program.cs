@@ -13,12 +13,14 @@ Dictionary<string, IModule> state = setup.State;
 //    Console.WriteLine($"{kvp.Key}:\n{kvp.Value}");
 //}
 
-Console.WriteLine("Started UP");
-CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./Occult/Occult basic.cya");
-Console.WriteLine("Tokenized source code...");
+
+// "./Occult/Occult basic.cya"
+CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Math_Tests.txt");
 tokenizer.Show();
 
-//Parser parser = new(tokenizer);
+CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
+parser.Show();
+
 //Dictionary<string, Scene> data = parser.Data;
 //parser.Show();
 

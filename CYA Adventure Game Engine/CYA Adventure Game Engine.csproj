@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DSL\Math_Tests.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Occult\Occult basic.cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

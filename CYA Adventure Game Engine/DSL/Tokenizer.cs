@@ -31,7 +31,9 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"and", TokenType.And },
             {"or", TokenType.Or },
         };
-        private List<Token> Tokens = new();
+        
+        // The Actual Tokens List.
+        public List<Token> Tokens = new();
 
         /// <summary>
         /// Tokenier constructor. Takes filepath to use as source code.
@@ -76,7 +78,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         private void ScanToken()
         {
             char c = Advance();
-            Console.WriteLine(c);
             switch (c)
             {
                 case '#':

@@ -8,7 +8,7 @@ scene "1"
 |"You awake in your bedroom."
 |"{name}, you are armed with a sword."
 |[i.add sword]
-|* "Sword?"
+|> "Sword?" -> 1 [say "Its an old family heirloom. It was your great grandfathers originally, you think. Or maybe uncle Bill bought it from a pawn shop..."]
 |> "Go Downstairs (need slippers & socks)" -> 2 [i.need slippers, socks]
 |> "Win a sword (1d6 <4)" -> 1
 |> [if [i.need slippers, socks] then "Take off slippers and socks" -> 1 [i.remove slippers, socks]]

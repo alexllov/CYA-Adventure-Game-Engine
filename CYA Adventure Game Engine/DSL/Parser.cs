@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     public class Parser
     {
         // Part Dicts for Pratt.
-        Dictionary<TokenType, PrefixParselet> PrefixParts = new()
+        Dictionary<TokenType, IPrefixParselet> PrefixParts = new()
         {
             {TokenType.Identifier, new NameParselet()},
             {TokenType.Number, new NameParselet()},
@@ -21,24 +22,39 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Not, new PrefixOperatorParselet()}
         };
 
-        Dictionary<TokenType, InfixParselet> InfixParts = new()
+        Dictionary<TokenType, IInfixParselet> InfixParts = new()
         {
-            {TokenType.Plus, new BinaryOperatorParselet()},
-            {TokenType.Minus, new BinaryOperatorParselet()},
-            {TokenType.Multiply, new BinaryOperatorParselet()},
-            {TokenType.Divide, new BinaryOperatorParselet()},
-            {TokenType.Equal, new BinaryOperatorParselet()},
-            {TokenType.NotEqual, new BinaryOperatorParselet()},
-            {TokenType.LessThan, new BinaryOperatorParselet()},
-            {TokenType.GreaterThan, new BinaryOperatorParselet()},
-            {TokenType.And, new BinaryOperatorParselet()},
-            {TokenType.Or, new BinaryOperatorParselet()}
+            {TokenType.Plus, new BinaryOperatorParselet(Precedence.SUM)},
+            {TokenType.Minus, new BinaryOperatorParselet(Precedence.SUM)},
+            {TokenType.Multiply, new BinaryOperatorParselet(Precedence.PRODUCT)},
+            {TokenType.Divide, new BinaryOperatorParselet(Precedence.PRODUCT)},
+            {TokenType.Equal, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.NotEqual, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.LessThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.GreaterThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.And, new BinaryOperatorParselet(Precedence.AND)},
+            {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)}
         };
 
         // Parser Components.
         private readonly List<Token> Tokens;
         private int Pos = 0;
-        public List<Stmt> AST;
+
+        // TODO: Re-Add this once Stmt implemented.
+        //public List<Stmt> AST;
+
+        // TODO: Remove this once Stmt implemented.
+        public List<Expr> Expressions = new List<Expr>();
+
+        public void Show()
+        {
+            Console.WriteLine("Parser Expressions:");
+            foreach (var expr in Expressions)
+            {
+                Console.WriteLine(expr);
+            }
+        }
+
         public Parser(List<Token> tokens) 
         {
             Tokens = tokens;
@@ -47,9 +63,14 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private void Parse()
         {
-            while (!IsAtEnd())
+            // TODO: Reimplement this once Stmt handling is added.
+            // while (!IsAtEnd())
+            // {
+            //     AST.Add(ParseStatement());
+            // }
+            while (Peek(0).Type != TokenType.EOF)
             {
-                AST.Add(ParseStatement());
+                Expressions.Add(ParseExpression(0));
             }
         }
 
@@ -58,11 +79,14 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         /// <returns>Expr</returns>
         /// <exception cref="Exception"></exception>
-        public Expr ParseExpression()
+        public Expr ParseExpression(int precedence)
         {
             Token token = Advance();
+            Console.WriteLine($"ParseExpression: consumed token {token.Type} '{token.Lexeme}'");
+            Token peek = Peek(0);
+            Console.WriteLine($"Peeked next: {peek.Type} '{peek.Lexeme}'");
 
-            PrefixParselet prefix;
+            IPrefixParselet prefix;
             if (PrefixParts.ContainsKey(token.Type))
             {
                 prefix = PrefixParts[token.Type];
@@ -75,19 +99,38 @@ namespace CYA_Adventure_Game_Engine.DSL
 
             // Identify Infix.
             // token = Peek(0); <- might be needed, check later TODO
-            InfixParselet infix;
-            if (InfixParts.ContainsKey(token.Type))
+            while (precedence < GetPrecedence())
             {
-                prefix = PrefixParts[token.Type];
+                token = Advance();
+                IInfixParselet infix;
+                if (InfixParts.ContainsKey(token.Type))
+                {
+                    infix = InfixParts[token.Type];
+                    left = infix.Parse(this, left, token);
+                }
+                else
+                {
+                    throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
+                }
             }
-            else
-            {
-                throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
-            }
-
-            Advance();
-            return infix.Parse(this, left, token);
+            return left;
         }
+
+        /// <summary>
+        /// Helper func to get precedence of the next token.
+        /// </summary>
+        /// <returns>int</returns>
+        private int GetPrecedence()
+        {
+            IInfixParselet infix;
+            if (InfixParts.ContainsKey(Peek(0).Type))
+            {
+                infix = InfixParts[Peek(0).Type];
+                return infix.GetPrecedence();
+            }
+            else { return 0; }
+        }
+
 
         // TODO: Construct giant SwitchCase here i guess.
         private Stmt ParseStatement()
@@ -146,7 +189,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             // Consume the 'if' token.
             Advance();
-            Expr condition = ParseExpression();
+            Expr condition = ParseExpression(Precedence.CONDITIONAL);
             Consume(TokenType.Then);
             Stmt thenBranch = ParseStatement();
             Stmt elseBranch = null;
@@ -157,14 +200,9 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
-        private Expr ParseExpression()
-        {
-            Token token = Advance();
-            PrefixPart prefix = 
-        }
-
         private bool IsAtEnd()
         {
+            Console.WriteLine($"Pos: {Pos}, Len: {Tokens.Count}");
             return Pos >= Tokens.Count;
         }
 
@@ -190,7 +228,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private Token Peek(int dist)
         {
-            if (Pos + dist >= Tokens.Count)
+            if (Pos + dist < Tokens.Count)
             {
                 return Tokens[Pos+dist];
             }
