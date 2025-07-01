@@ -64,6 +64,39 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
     }
 
+    // TODO: Add support for module.func style stuff.
+//    public class CallParselet : IPrefixParselet
+//    {
+//
+//        int _Precedence;
+//
+//        public CallParselet(int precedence = Precedence.PREFIX)
+//        {
+//            _Precedence = precedence;
+//        }
+//
+//        public Expr Parse(Parser parser, Token token)
+//        {
+//            // Parse the func.
+//            Expr function = parser.ParseExpression(Precedence.CALL);
+//            // Parse the arguments for the call.
+//            List<Expr> args = new List<Expr>();
+//            if (parser.Match(TokenType.LParent))
+//            {
+//                // If we have a left parenthesis, parse arguments until we hit a right parenthesis.
+//                while (!parser.Match(TokenType.RParent))
+//                {
+//                    args.Add(parser.ParseExpression(Precedence.CALL));
+//                    if (!parser.Match(TokenType.Comma)) break; // Break on comma or end of arguments.
+//                }
+//            }
+//            return new CallExpr(function, args);
+//        }
+//    }
+
+
+
+    // TODO: Remove this & Integrate into the CallParselet.
     public class AskParselet : IPrefixParselet
     {
         public Expr Parse(Parser parser, Token token)

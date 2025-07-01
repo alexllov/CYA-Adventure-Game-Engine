@@ -53,6 +53,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Name = name;
         }
+        public override string ToString() 
+        {
+            return $"VariableExpr({Name})";
+        }
     }
 
     // Prefix Expr (operands for Pratt Parser): e.g. '-'1, '!'true, '+'a...
@@ -97,10 +101,10 @@ namespace CYA_Adventure_Game_Engine.DSL
     /// </summary>
     public class AssignExpr: Expr
     {
-        public string Name;
+        public Expr Name;
         public Expr Value;
 
-        public AssignExpr(string name, Expr value)
+        public AssignExpr(Expr name, Expr value)
         {
             Name = name;
             Value = value;
@@ -125,6 +129,36 @@ namespace CYA_Adventure_Game_Engine.DSL
         public override string ToString()
         {
             return $"AskExpr(Prompt: {Text})";
+        }
+    }
+
+    public class DotExpr : Expr
+    {
+        public Expr Left;
+        public Expr Right;
+        public DotExpr(Expr left, Expr right)
+        {
+            Left = left;
+            Right = right;
+        }
+        public override string ToString() 
+        {
+            return $"DotExpr({Left}, {Right})";
+        }
+    }
+
+    public class FuncExpr : Expr
+    {
+        public string Method;
+        public List<Expr> Arguments;
+        public FuncExpr(string method, List<Expr> arguments)
+        {
+            Method = method;
+            Arguments = arguments;
+        }
+        public override string ToString() 
+        {
+            return $"FuncExpr(Name: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
         }
     }
 

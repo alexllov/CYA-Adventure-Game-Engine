@@ -20,8 +20,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Plus, new PrefixOperatorParselet()},
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
-            {TokenType.Ask, new AskParselet()}
-            {TokenType.LParent new  }
+            {TokenType.Ask, new AskParselet()},
+            //{TokenType.LParent, new CallParselet()}
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -36,7 +36,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.LessThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.GreaterThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.And, new BinaryOperatorParselet(Precedence.AND)},
-            {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)}
+            {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)},
+            {TokenType.Dot, new DotParselet(Precedence.DOT)},
         };
 
         /// <summary>
@@ -258,6 +259,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             List<Stmt> parts = new();
             while (!(HeaderEnds.Contains(Peek(0).Type)))
             {
+                Console.WriteLine($"Peeked: {Peek(0).Type}");
                 // Scenes have special sugar for strings,
                 // & can contain special components: interactables.
                 // So we will filter for those.
@@ -281,7 +283,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                         }
                         else
                         {
-                            throw new Exception($"Unexpected expression type: {assignment.GetType()} on line {Peek(0).position[0]}.");
+                          throw new Exception($"Unexpected expression type: {assignment.GetType()} on line {Peek(0).position[0]}.");
                         }
                         break;
                     case TokenType.LBracket:
@@ -293,6 +295,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             // Consume the End Token if found.
             if (Peek(0).Type is TokenType.End)
             {
+                Console.WriteLine("Found End Token.");
                 Consume(TokenType.End);
             }
 

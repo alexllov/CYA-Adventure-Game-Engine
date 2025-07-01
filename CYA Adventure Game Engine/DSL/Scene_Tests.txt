@@ -1,3 +1,6 @@
 
 scene "a"
 "Hello World"
+
+simon.reed = "VALUE"
+end

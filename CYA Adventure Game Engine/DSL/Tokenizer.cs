@@ -26,7 +26,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"scene", TokenType.Scene },
             {"table", TokenType.Table },
             {"code", TokenType.Code },
-            {"End", TokenType.End },
+            {"end", TokenType.End },
             {"if", TokenType.If },
             {"then", TokenType.Then },
             {"else", TokenType.Else },

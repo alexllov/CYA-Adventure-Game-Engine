@@ -18,6 +18,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         public const int PREFIX = 8;
         public const int POSTFIX = 9;
         public const int CALL = 10;
+        public const int DOT = 11;
     }
 }
 

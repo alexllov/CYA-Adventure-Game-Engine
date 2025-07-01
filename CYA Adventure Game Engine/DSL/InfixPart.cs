@@ -25,15 +25,13 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             Expr right = parser.ParseExpression(Precedence.ASSIGNMENT - 1);
 
-            if (!(left is VariableExpr))
+            if (!(left is VariableExpr or DotExpr))
             {
                 throw new Exception($"Left hand side must be a var. Got {left.GetType()} instead.");
             }
             else
             {
-                // Type casing to ge the Name property.
-                string name = ((VariableExpr)left).Name;
-                return new AssignExpr(name, right);
+                return new AssignExpr(left, right);
             }
         }
 
@@ -60,6 +58,25 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new BinaryExpr(left, token.Type, right);
         }
 
+        public int GetPrecedence()
+        {
+            return _Precedence;
+        }
+    }
+
+    public class DotParselet : IInfixParselet
+    {
+        int _Precedence;
+        public DotParselet(int precedence)
+        {
+            _Precedence = precedence;
+        }
+        public Expr Parse(Parser parser, Expr left, Token token)
+        {
+            // Parse the right side of the expression.
+            Expr right = parser.ParseExpression(_Precedence);
+            return new DotExpr(left, right);
+        }
         public int GetPrecedence()
         {
             return _Precedence;
