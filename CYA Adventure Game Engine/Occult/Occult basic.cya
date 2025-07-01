@@ -1,18 +1,31 @@
 
-import Inventory as i
+import Inventory as inv
+import Sound as s
 
-wolf = "testcase"
+table forestEncounters
+| Name | Health | Stats           | Attacks              | Chance |
+| Wolf | 20     | STR: 10, DEX: 4 | Bite: 1d6, Claw: 1d4 | 50%    |
+
 
 scene "1"
-|name = ask "what is your name?"
-|"You awake in your bedroom."
-|"{name}, you are armed with a sword."
-|[i.add sword]
-|> "Sword?" [say "Its an old family heirloom. It was your great grandfathers originally, you think. Or maybe uncle Bill bought it from a pawn shop..."]
-|> "Go Downstairs (need slippers & socks)" -> 2 [i.need slippers, socks]
-|> "Win a sword (1d6 <4)" -> 1
-|> [if [i.need slippers, socks] then "Take off slippers and socks" [i.remove slippers, socks] -> 1]
-|> "Put on slippers and socks (adds slippers and socks)" [i.add slippers, socks] -> 1]
+name = (ask "what is your name?")
+"You awake in your bedroom."
+"{name}, you are armed with a sword."
+(inv.add sword)
+["Sword?" [say "Its an old family heirloom."][s.play sound.wav]]
+["Go Downstairs (need slippers & socks)" (inv.need slippers, socks) -> "2"]
+(if [inv.need slippers, socks]
+	then 
+		["Take off slippers and socks" (inv.remove slippers, socks)]
+	else 
+		["Put on slippers and socks (adds slippers and socks)" (inv.add slippers, socks)]
+)
 
 scene "2"
-|"You made it downstairs."
+"you make your way downstairs."
+"{"Honey":blue bold}, breakfast is ready!"
+["Who called?" (say "Your mum called from the kitchen. Smells like pancakes.")]
+["Go to the kitchen" -> "3"]
+["Go outside" -> "4"]
+
+

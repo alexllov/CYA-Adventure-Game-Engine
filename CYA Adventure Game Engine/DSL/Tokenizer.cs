@@ -87,7 +87,8 @@ namespace CYA_Adventure_Game_Engine.DSL
                     {
                         Advance();
                     }
-                    AddToken(TokenType.Comment);
+                    // Removed Adding comments s.t. they are discarded immediately & never seen at parsing.
+                    //AddToken(TokenType.Comment);
                     break;
 
                 // Skip whitespace.

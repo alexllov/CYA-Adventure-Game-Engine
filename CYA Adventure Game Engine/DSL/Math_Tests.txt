@@ -1,24 +1,27 @@
 ﻿
-1 + 2
-3 * 4
 
-[if 1 == 1
-	then
-		say "hello"
-		say "then EXTRA 1"
-		say "then EXTRA 2"
-else
-	[if 2 == 2
-		then
-			say "ELSE PASS"
-		else
-			say "ELSE FAIL"
-	]
-	1 + 2
-]
+# first test case
+say "hello world, this is blue"
 
-[if 1 == 1 then say "hello 1" say "hello 2"]
+# Assignment test
+x = 17
 
-trouble = ask "This will be hard..."
+# Prefix Expr test / "Unary" Expr
+!5
 
-say "hello"
+# Binary expr sample test
+1 == 2
+
+# Nested Binary Expr sample test
+1 + 2 == 3
+
+# Binary expr test w/ diff Operators
+4 > 5
+6 < 7
+8 * 9
+10 / 11
+
+# Trials && Tribulations
+# NEED TO ADD PARENTHESES PROCESSING STILL. SHOVE IN HIERARCHY && INTO PREFIX OPERATORS.
+
+say "text here with a {variable:red} or a {"colored string":blue}"

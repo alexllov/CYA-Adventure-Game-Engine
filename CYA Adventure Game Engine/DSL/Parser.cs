@@ -146,6 +146,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                 //case TokenType.RBracket:
                 //    return ParseBracketStmt();
                     
+                // NOT adding if stmt here to separate BinaryExpr from others as a binary should not exist in isolation.
                 default:
                     Expr expr = (ParseExpression(0));
                     ExprStmt stmt = new(expr);

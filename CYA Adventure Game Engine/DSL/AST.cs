@@ -25,7 +25,8 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         public override string ToString() 
         {
-            return $"NumberLitExpr({Value})";
+            return $"{Value}";
+            //return $"NumberLitExpr({Value})";
         }
     }
 
@@ -38,7 +39,9 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString() 
         {
-            return $"StringLitExpr({Value})";
+            // TODO: Set up a DebugToString for parser purposes that contians this return.
+            //return $"StringLitExpr({Value})";
+            return $"{Value}";
         }   
     }
 
@@ -121,7 +124,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString()
         {
-            return $"AskStmt(Prompt: {Text})";
+            return $"AskExpr(Prompt: {Text})";
         }
     }
 
@@ -277,6 +280,8 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString() 
         {
+            //return $"{Text}";
+            // TODO: Consider setting this as a DebugToString for parser purposes.
             return $"SayStmt({Text})";
         }
     }
@@ -284,7 +289,12 @@ namespace CYA_Adventure_Game_Engine.DSL
 
 
     // TODO
-    internal class AST
+    public class AST
     {
+        public List<Stmt> Tree = new List<Stmt>();
+        public AST(List<Stmt> statements)
+        {
+            Tree = statements;
+        }
     }
 }

@@ -8,18 +8,15 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 SetupLoader setup = new("./Occult/setup.cya");
 Dictionary<string, IModule> state = setup.State;
-//foreach (var kvp in state)
-//{
-//    Console.WriteLine($"{kvp.Key}:\n{kvp.Value}");
-//}
-
 
 // "./Occult/Occult basic.cya"
 CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Math_Tests.txt");
-//tokenizer.Show();
 
 CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
 parser.Show();
+
+Console.WriteLine("Entering Interpreter.");
+CYA_Adventure_Game_Engine.DSL.Interpreter interpreter = new(parser.AST);
 
 //Dictionary<string, Scene> data = parser.Data;
 //parser.Show();
