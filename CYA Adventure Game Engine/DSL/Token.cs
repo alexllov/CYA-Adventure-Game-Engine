@@ -10,7 +10,6 @@ namespace CYA_Adventure_Game_Engine.DSL
     {
         None,
         Import, As,
-        Say, Ask, Save, Back,
         Identifier, Number, String,
         Dot,
         Comma,

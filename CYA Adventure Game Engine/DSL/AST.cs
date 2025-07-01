@@ -55,7 +55,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString() 
         {
-            return $"VariableExpr({Name})";
+            return $"{Name}";
         }
     }
 
@@ -116,22 +116,6 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
     }
 
-    // Func, Generally Expands upon AssignExpr.
-    // Used for Processing user inputs in some way.
-    public class AskExpr : Expr
-    {
-        public Expr Text;
-
-        public AskExpr(Expr text)
-        {
-            Text = text;
-        }
-        public override string ToString()
-        {
-            return $"AskExpr(Prompt: {Text})";
-        }
-    }
-
     public class DotExpr : Expr
     {
         public Expr Left;
@@ -156,9 +140,16 @@ namespace CYA_Adventure_Game_Engine.DSL
             Method = method;
             Arguments = arguments;
         }
-        public override string ToString() 
+        public override string ToString()
         {
-            return $"FuncExpr(Name: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
+            if (Arguments != null)
+            {
+                return $"FuncExpr(Method: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
+            }
+            else
+            {
+                return $"FuncExpr(Method: {Method}";
+            }
         }
     }
 
@@ -177,6 +168,20 @@ namespace CYA_Adventure_Game_Engine.DSL
         public override string ToString() 
         {
             return $"ExprStmt({_Expr})";
+        }
+    }
+
+    public class FuncExprStmt : Stmt
+    {
+        public FuncExpr _Expr;
+        public FuncExprStmt(FuncExpr expr)
+        {
+            _Expr = expr;
+
+        }
+        public override string ToString()
+        {
+            return $"FuncExprStmt({_Expr})";
         }
     }
 
@@ -225,7 +230,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString() 
         {
-            return $"BlockStmt(Statements: [{string.Join(", ", Statements)}])";
+            return $"BlockStmt(Statements: [\n    {string.Join("\n    ", Statements)}])";
         }
     }
 
@@ -258,7 +263,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
         public override string ToString() 
         {
-            return $"SceneStmt(Name: {Name}, Body: {Body})";
+            return $"SceneStmt(\n  Name: {Name}, \n  Body: {Body})";
         }
     }
 
@@ -297,28 +302,6 @@ namespace CYA_Adventure_Game_Engine.DSL
             Body = body;
         }
     }
-
-    // Base IO Events
-
-    /// <summary>
-    /// Say stmt: used to output text to the user.
-    /// </summary>
-    public class SayStmt : Stmt
-    {
-        public Expr Text;
-        public SayStmt(Expr text)
-        {
-            Text = text;
-        }
-        public override string ToString() 
-        {
-            //return $"{Text}";
-            // TODO: Consider setting this as a DebugToString for parser purposes.
-            return $"SayStmt({Text})";
-        }
-    }
-
-
 
     // TODO
     public class AST

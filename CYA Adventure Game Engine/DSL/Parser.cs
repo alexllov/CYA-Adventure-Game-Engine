@@ -20,7 +20,6 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Plus, new PrefixOperatorParselet()},
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
-            {TokenType.Ask, new AskParselet()},
             {TokenType.LParent, new CallParselet()}
         };
 
@@ -149,8 +148,6 @@ namespace CYA_Adventure_Game_Engine.DSL
                 case TokenType.LBracket:
                     return ParseBracket();
 
-                case TokenType.Say:
-                    return ParseSayStmt();
 
                 // Scene & Components.
                 case TokenType.Scene:
@@ -160,8 +157,15 @@ namespace CYA_Adventure_Game_Engine.DSL
                 default:
                     // TODO: Add a switch/case here to const ...Stmts of the proper type to make interpreting easier.
                     Expr expr = (ParseExpression(0));
-                    ExprStmt stmt = new(expr);
-                    return stmt;
+                    switch (expr)
+                    {
+                        case FuncExpr:
+                            FuncExprStmt funcStmt = new((FuncExpr)expr);
+                            return funcStmt;
+                        default:
+                            ExprStmt stmt = new(expr);
+                            return stmt;
+                    }
             }
         }
 
@@ -191,22 +195,6 @@ namespace CYA_Adventure_Game_Engine.DSL
                 return new ImportStmt(module.Lexeme, alias.Lexeme);
             }
             return new ImportStmt(module.Lexeme);
-        }
-
-        private Stmt ParseSayStmt()
-        {
-            if (Peek(0).Type == TokenType.Say)
-            {
-                Advance();
-            }
-            /*
-             * TODO: Consider adding a safety check here for the Scene sugar.
-             * Will need to detect Strings or $Strings.
-             * elif (Peek(0).Type == TokenType.String)
-             * else THROW ERROR...
-            */
-            Expr expr = ParseExpression(0);
-            return new SayStmt(expr);
         }
 
         /// <summary>
@@ -260,16 +248,22 @@ namespace CYA_Adventure_Game_Engine.DSL
             List<Stmt> parts = new();
             while (!(HeaderEnds.Contains(Peek(0).Type)))
             {
-                Console.WriteLine($"Peeked: {Peek(0).Type}");
                 // Scenes have special sugar for strings,
                 // & can contain special components: interactables.
                 // So we will filter for those.
                 switch (Peek(0).Type)
                 {
-                    // Strings treated as automatic say stmts.
+                    /*
+                     * TODO: test this, may need reworking.
+                     * May need to change s.t. say func can be reassigned?
+                     * OR include some sort of safety blocks to make keywords unable to be reassigned??
+                     * ^^ THIS is probably the correct solution.
+                     */
                     case TokenType.String:
-                        Stmt say = ParseSayStmt();
+                        FuncExprStmt say = new(new FuncExpr(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]));
                         parts.Add(say);
+                        // Advance needed as Stmt hand made, so string part isn't being consumed.
+                        Advance();
                         break;
 
                     // Ident should be an assignment expression.
@@ -290,13 +284,22 @@ namespace CYA_Adventure_Game_Engine.DSL
                     case TokenType.LBracket:
                         break;
                     case TokenType.LParent:
+                        Expr expr = ParseExpression(0);
+                        if (expr is FuncExpr)
+                        {
+                            FuncExprStmt func = new((FuncExpr)expr);
+                            parts.Add(func);
+                        }
+                        else
+                        {
+                            throw new Exception("Error, detected '(', expected Func expression to process but received unexpected Expr.");
+                        }
                         break;
                 }
             }
             // Consume the End Token if found.
             if (Peek(0).Type is TokenType.End)
             {
-                Console.WriteLine("Found End Token.");
                 Consume(TokenType.End);
             }
 

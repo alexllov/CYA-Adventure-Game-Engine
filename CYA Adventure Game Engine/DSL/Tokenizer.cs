@@ -33,10 +33,6 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"while", TokenType.While },
             {"and", TokenType.And },
             {"or", TokenType.Or },
-            {"say", TokenType.Say },
-            {"ask", TokenType.Ask },
-            {"save", TokenType.Save },
-            {"back", TokenType.Back },
         };
         
         // The Actual Tokens List.

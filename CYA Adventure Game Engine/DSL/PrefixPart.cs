@@ -97,16 +97,4 @@ namespace CYA_Adventure_Game_Engine.DSL
             }
         }
     }
-
-
-
-    // TODO: Remove this & Integrate into the CallParselet.
-    public class AskParselet : IPrefixParselet
-    {
-        public Expr Parse(Parser parser, Token token)
-        {
-            Expr text = parser.ParseExpression(Precedence.CALL);
-            return new AskExpr(text);
-        } 
-    }
 }

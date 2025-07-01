@@ -14,6 +14,15 @@ namespace CYA_Adventure_Game_Engine.DSL
         // TODO: Properly set up AST && Appending stuff for parser s.t. this can take an AST proper.
         public List<Stmt> baseAST;
 
+        // Base default functions.
+        public List<string> DefaultFuncs = new List<string>
+        {
+            "say",
+            "ask",
+            "save",
+            "back",
+        };
+
         public Interpreter(List<Stmt> Tree)
         {
             baseAST = Tree;
@@ -26,8 +35,26 @@ namespace CYA_Adventure_Game_Engine.DSL
             {
                 switch (stmt)
                 {
-                    case SayStmt sayStmt:
-                        Console.WriteLine(sayStmt.Text);
+                    case FuncExprStmt funcStmt:
+                        if (funcStmt._Expr.Method is VariableExpr &&
+                            DefaultFuncs.Contains(funcStmt._Expr.Method.ToString()))
+                        {
+                            switch (funcStmt._Expr.Method.ToString())
+                            {
+                                case "say":
+                                    if (funcStmt._Expr.Arguments == null)
+                                    {
+                                        throw new Exception("Error, received a 'say' func missing required argument.");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{string.Join(", ", funcStmt._Expr.Arguments)}");
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("Error, received an unknown default func?? (This should not be possible.)");
+                            }
+                        }
                         break;
 
                     //case BinaryStmt binaryStmt:

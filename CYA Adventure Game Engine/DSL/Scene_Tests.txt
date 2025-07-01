@@ -1,9 +1,8 @@
 
-scene "a"
+
 "Hello World"
-
+name = (ask "What is your name?")
+(say "Hello World" "this is a second test string" "this is a third! wowee")
 simon.reed = "VALUE"
-end
 
-say "outside"
-(test.(case alpha) "arg1")
+
