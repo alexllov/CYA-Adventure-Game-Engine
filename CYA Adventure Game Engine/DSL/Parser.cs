@@ -21,7 +21,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
             {TokenType.Ask, new AskParselet()},
-            //{TokenType.LParent, new CallParselet()}
+            {TokenType.LParent, new CallParselet()}
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -158,6 +158,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                     
                 // NOT adding if stmt here to separate BinaryExpr from others as a binary should not exist in isolation.
                 default:
+                    // TODO: Add a switch/case here to const ...Stmts of the proper type to make interpreting easier.
                     Expr expr = (ParseExpression(0));
                     ExprStmt stmt = new(expr);
                     return stmt;
@@ -320,7 +321,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new Token(TokenType.EOF, "", -1, -1);
         }
 
-        private Token Consume(TokenType type)
+        public Token Consume(TokenType type)
         {
             if (Peek(0).Type == type)
             {
@@ -329,7 +330,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             throw new Exception($"Expected token type {type}, but found {Peek(0).Type}.");
         }
 
-        private Token Peek(int dist)
+        public Token Peek(int dist)
         {
             if (Pos + dist < Tokens.Count)
             {
@@ -338,7 +339,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new Token(TokenType.EOF, "", -1, -1);
         }
 
-        private bool Match(params TokenType[] types)
+        public bool Match(params TokenType[] types)
         {
             foreach (var type in types)
             {

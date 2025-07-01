@@ -4,3 +4,6 @@ scene "a"
 
 simon.reed = "VALUE"
 end
+
+say "outside"
+(test.(case alpha) "arg1")

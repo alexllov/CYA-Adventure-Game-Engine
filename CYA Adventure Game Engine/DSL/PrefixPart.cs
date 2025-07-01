@@ -65,34 +65,38 @@ namespace CYA_Adventure_Game_Engine.DSL
     }
 
     // TODO: Add support for module.func style stuff.
-//    public class CallParselet : IPrefixParselet
-//    {
-//
-//        int _Precedence;
-//
-//        public CallParselet(int precedence = Precedence.PREFIX)
-//        {
-//            _Precedence = precedence;
-//        }
-//
-//        public Expr Parse(Parser parser, Token token)
-//        {
-//            // Parse the func.
-//            Expr function = parser.ParseExpression(Precedence.CALL);
-//            // Parse the arguments for the call.
-//            List<Expr> args = new List<Expr>();
-//            if (parser.Match(TokenType.LParent))
-//            {
-//                // If we have a left parenthesis, parse arguments until we hit a right parenthesis.
-//                while (!parser.Match(TokenType.RParent))
-//                {
-//                    args.Add(parser.ParseExpression(Precedence.CALL));
-//                    if (!parser.Match(TokenType.Comma)) break; // Break on comma or end of arguments.
-//                }
-//            }
-//            return new CallExpr(function, args);
-//        }
-//    }
+    public class CallParselet : IPrefixParselet
+    {
+
+        int _Precedence;
+
+        public CallParselet(int precedence = Precedence.PREFIX)
+        {
+            _Precedence = precedence;
+        }
+
+        public Expr Parse(Parser parser, Token token)
+        {
+            List<Expr> parts = new List<Expr>();
+            while (!(parser.Peek(0).Type is TokenType.RParent))
+            {
+                // TODO: May need to fiddle with Precedence value here. Could be _Precedence.
+                Expr part = parser.ParseExpression(0);
+                parts.Add(part);
+            }
+            parser.Consume(TokenType.RParent);
+            Expr function = parts[0];
+            if (parts.Count > 1)
+            {
+                List<Expr> args = parts[1..];
+                return new FuncExpr(function, args);
+            }
+            else
+            {
+                return new FuncExpr(function);
+            }
+        }
+    }
 
 
 
