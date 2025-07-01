@@ -21,6 +21,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
             {TokenType.Ask, new AskParselet()}
+            {TokenType.LParent new  }
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -37,6 +38,12 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.And, new BinaryOperatorParselet(Precedence.AND)},
             {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)}
         };
+
+        /// <summary>
+        /// Header ends: the list of Token Types that will end the collection of stmts into any Header.
+        /// These Include: 'Scene', 'Table', 'Code', 'End', 'EOF'.
+        /// </summary>
+        List<TokenType> HeaderEnds = [TokenType.Scene, TokenType.Table, TokenType.Code, TokenType.End, TokenType.EOF];
 
         // Parser Components.
         private readonly List<Token> Tokens;
@@ -137,14 +144,16 @@ namespace CYA_Adventure_Game_Engine.DSL
                 case TokenType.Import:
                     return ParseImportStmt();
 
+                // TODO: THIS NEEDS EDIT AS FUNCTIONALITY CHANGED
                 case TokenType.LBracket:
                     return ParseBracket();
 
                 case TokenType.Say:
                     return ParseSayStmt();
 
-                //case TokenType.RBracket:
-                //    return ParseBracketStmt();
+                // Scene & Components.
+                case TokenType.Scene:
+                    return ParseSceneStmt();
                     
                 // NOT adding if stmt here to separate BinaryExpr from others as a binary should not exist in isolation.
                 default:
@@ -184,7 +193,16 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private Stmt ParseSayStmt()
         {
-            Advance();
+            if (Peek(0).Type == TokenType.Say)
+            {
+                Advance();
+            }
+            /*
+             * TODO: Consider adding a safety check here for the Scene sugar.
+             * Will need to detect Strings or $Strings.
+             * elif (Peek(0).Type == TokenType.String)
+             * else THROW ERROR...
+            */
             Expr expr = ParseExpression(0);
             return new SayStmt(expr);
         }
@@ -231,20 +249,57 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
-        // TODO: This Needs Refining.
-        // private Stmt ParseBracketStmt()
-        // {
-        //     Token token = Tokens[Pos];
-        //     // Consume the opening bracket.
-        //     Consume(TokenType.RBracket);
-        //     switch (token.Type)
-        //     {
-        //         case TokenType.If:
-        //             return ParseIfStmt();
-        //         default:
-        //             throw new Exception($"Unexpected token: {token}");
-        //     }
-        // }
+        private Stmt ParseSceneStmt()
+        {
+            // Consume the 'scene' token.
+            Advance();
+            // Very next Token should be string with ID for scene.
+            Token ID = Consume(TokenType.String);
+            List<Stmt> parts = new();
+            while (!(HeaderEnds.Contains(Peek(0).Type)))
+            {
+                // Scenes have special sugar for strings,
+                // & can contain special components: interactables.
+                // So we will filter for those.
+                switch (Peek(0).Type)
+                {
+                    // Strings treated as automatic say stmts.
+                    case TokenType.String:
+                        Stmt say = ParseSayStmt();
+                        parts.Add(say);
+                        break;
+
+                    // Ident should be an assignment expression.
+                    // We process & convert to AssignStmt.
+                    // Err thrown if unexpected Expr type found, as other should not be top level in this context.
+                    case TokenType.Identifier:
+                        Expr assignment = ParseExpression(0);
+                        if (assignment.GetType() == typeof(AssignExpr))
+                        {
+                            AssignStmt assign = new AssignStmt((AssignExpr)assignment);
+                            parts.Add(assign);
+                        }
+                        else
+                        {
+                            throw new Exception($"Unexpected expression type: {assignment.GetType()} on line {Peek(0).position[0]}.");
+                        }
+                        break;
+                    case TokenType.LBracket:
+                        break;
+                    case TokenType.LParent:
+                        break;
+                }
+            }
+            // Consume the End Token if found.
+            if (Peek(0).Type is TokenType.End)
+            {
+                Consume(TokenType.End);
+            }
+
+            // Convert List parts to BlockStmt.
+            BlockStmt body = new(parts);
+            return new SceneStmt(ID.Lexeme, body);
+        }
 
         private bool IsAtEnd()
         {

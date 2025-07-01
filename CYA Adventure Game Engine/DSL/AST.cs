@@ -148,18 +148,16 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     // TODO: Required??
     // Declaration of variables.
-    public class VarDeclr : Stmt
+    public class AssignStmt : Stmt
     {
-        public string Name;
-        public Expr Value;
-        public VarDeclr(string name, Expr val)
+        public AssignExpr Value;
+        public AssignStmt(AssignExpr val)
         {
-            Name = name;
             Value = val;
         }
         public override string ToString() 
         {
-            return $"VarDeclr(Name: {Name}, Value: {Value})";
+            return $"AssignStmt({Value})";
         }
     }
 

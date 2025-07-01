@@ -24,4 +24,5 @@ x = 17
 # Trials && Tribulations
 # NEED TO ADD PARENTHESES PROCESSING STILL. SHOVE IN HIERARCHY && INTO PREFIX OPERATORS.
 
-say "text here with a {variable:red} or a {"colored string":blue}"
+say "text here with a {variable:red} or a {test:blue}"
+

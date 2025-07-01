@@ -23,7 +23,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             {"import", TokenType.Import },
             {"as", TokenType.As },
             {"->", TokenType.GoTo },
-            { "scene", TokenType.Scene },
+            {"scene", TokenType.Scene },
+            {"table", TokenType.Table },
+            {"code", TokenType.Code },
+            {"End", TokenType.End },
             {"if", TokenType.If },
             {"then", TokenType.Then },
             {"else", TokenType.Else },
@@ -128,14 +131,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
                 // Pipes.
                 case '|':
-                    if (Match('>'))
-                    {
-                        AddToken(TokenType.PipeGreater);
-                    }
-                    else
-                    {
-                        AddToken(TokenType.Pipe);
-                    }
+                    AddToken(TokenType.Pipe);
                     break;
 
                 // Operators & GoTo.

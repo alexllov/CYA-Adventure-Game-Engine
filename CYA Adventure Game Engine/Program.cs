@@ -10,7 +10,7 @@ SetupLoader setup = new("./Occult/setup.cya");
 Dictionary<string, IModule> state = setup.State;
 
 // "./Occult/Occult basic.cya"
-CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Math_Tests.txt");
+CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Scene_Tests.txt");
 
 CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
 parser.Show();
