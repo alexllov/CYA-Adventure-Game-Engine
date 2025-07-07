@@ -25,17 +25,22 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
         {
+            // Assignment.
             {TokenType.Assign, new AssignParselet(Precedence.ASSIGNMENT)},
+            // Arithmetic Operators.
             {TokenType.Plus, new BinaryOperatorParselet(Precedence.SUM)},
             {TokenType.Minus, new BinaryOperatorParselet(Precedence.SUM)},
             {TokenType.Multiply, new BinaryOperatorParselet(Precedence.PRODUCT)},
             {TokenType.Divide, new BinaryOperatorParselet(Precedence.PRODUCT)},
+            // Comparative.
             {TokenType.Equal, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.NotEqual, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.LessThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.GreaterThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            // Boolean.
             {TokenType.And, new BinaryOperatorParselet(Precedence.AND)},
             {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)},
+            // Dot.
             {TokenType.Dot, new DotParselet(Precedence.DOT)},
         };
 
@@ -148,12 +153,10 @@ namespace CYA_Adventure_Game_Engine.DSL
                 case TokenType.LBracket:
                     return ParseBracket();
 
-
                 // Scene & Components.
                 case TokenType.Scene:
                     return ParseSceneStmt();
                     
-                // NOT adding if stmt here to separate BinaryExpr from others as a binary should not exist in isolation.
                 default:
                     // TODO: Add a switch/case here to const ...Stmts of the proper type to make interpreting easier.
                     Expr expr = (ParseExpression(0));
@@ -166,21 +169,6 @@ namespace CYA_Adventure_Game_Engine.DSL
                             ExprStmt stmt = new(expr);
                             return stmt;
                     }
-            }
-        }
-
-        private Stmt ParseBracket()
-        {
-            Advance();
-            Token token = Tokens[Pos];
-
-            switch (token.Type)
-            {
-                case TokenType.If:
-                    return ParseIfStmt();
-
-                default:
-                    throw new Exception($"Unexpected token type following '[': {token.Type}");
             }
         }
 
@@ -239,6 +227,32 @@ namespace CYA_Adventure_Game_Engine.DSL
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
+        private Stmt ParseInteractable()
+        { 
+            Expr name = ParseExpression(0);
+            Stmt body = ParseBlock(TokenType.RBracket);
+            Consume(TokenType.RBracket);
+            return new InteractableStmt(name, body);
+        }
+
+        private Stmt ParseBracket()
+        {
+            Token token = Consume(TokenType.LBracket);
+
+            switch (Peek(0).Type)
+            {
+                case TokenType.If:
+                    return ParseIfStmt();
+
+                //TODO: THIS NEEDS EXPADING TO COPE WITH $Strings && OTHER IN FUTURE.
+                case TokenType.String:
+                    return ParseInteractable();
+
+                default:
+                    throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}");
+            }
+        }
+
         private Stmt ParseSceneStmt()
         {
             // Consume the 'scene' token.
@@ -266,34 +280,10 @@ namespace CYA_Adventure_Game_Engine.DSL
                         Advance();
                         break;
 
-                    // Ident should be an assignment expression.
-                    // We process & convert to AssignStmt.
-                    // Err thrown if unexpected Expr type found, as other should not be top level in this context.
-                    case TokenType.Identifier:
-                        Expr assignment = ParseExpression(0);
-                        if (assignment.GetType() == typeof(AssignExpr))
-                        {
-                            AssignStmt assign = new AssignStmt((AssignExpr)assignment);
-                            parts.Add(assign);
-                        }
-                        else
-                        {
-                          throw new Exception($"Unexpected expression type: {assignment.GetType()} on line {Peek(0).position[0]}.");
-                        }
-                        break;
-                    case TokenType.LBracket:
-                        break;
-                    case TokenType.LParent:
-                        Expr expr = ParseExpression(0);
-                        if (expr is FuncExpr)
-                        {
-                            FuncExprStmt func = new((FuncExpr)expr);
-                            parts.Add(func);
-                        }
-                        else
-                        {
-                            throw new Exception("Error, detected '(', expected Func expression to process but received unexpected Expr.");
-                        }
+                    // Default -> ParseStmt using recursive calls to process.
+                    default:
+                        Stmt stmt = ParseStatement();
+                        parts.Add(stmt);
                         break;
                 }
             }

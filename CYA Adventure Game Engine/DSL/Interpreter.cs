@@ -48,7 +48,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"{string.Join(", ", funcStmt._Expr.Arguments)}");
+                                        Console.WriteLine($"{string.Join("", funcStmt._Expr.Arguments)}");
                                     }
                                     break;
                                 default:

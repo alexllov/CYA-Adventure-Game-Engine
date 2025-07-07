@@ -134,7 +134,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     public class FuncExpr : Expr
     {
         public Expr Method;
-        public List<Expr>? Arguments;
+        public List<Expr>? Arguments { get; init; }
         public FuncExpr(Expr method, List<Expr> arguments = null)
         {
             Method = method;
@@ -144,6 +144,10 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             if (Arguments != null)
             {
+                foreach (Expr arg in Arguments)
+                {
+                    Console.WriteLine($"arg: {arg}, type: {arg.GetType()}");
+                }
                 return $"FuncExpr(Method: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
             }
             else
@@ -251,7 +255,7 @@ namespace CYA_Adventure_Game_Engine.DSL
     }
 
     // Personal Stmt Types for repr game objects.
-    // Scenes.
+    // Scene.
     public class SceneStmt : Stmt
     {
         public string Name;
@@ -267,41 +271,22 @@ namespace CYA_Adventure_Game_Engine.DSL
         }
     }
 
-    // Text.
-    public class TextStmt : Stmt
+    // Interactable.
+    public class InteractableStmt : Stmt
     {
-        public string Text;
-        public TextStmt(string text)
-        {
-            Text = text;
-        }
-    }
-
-    // Choice.
-    public class ChoiceStmt : Stmt
-    {
-        public string Label;
-        public string TargetScene;
-        public BlockStmt Events;
-        public ChoiceStmt(string label, string targetScene, BlockStmt events)
-        {
-            Label = label;
-            TargetScene = targetScene;
-            Events = events;
-        }
-    }
-
-    // TODO: needs reworking probably.
-    public class EventStmt : Stmt
-    {
-        public string Name;
-        public BlockStmt Body;
-        public EventStmt(string name, BlockStmt body)
+        public Expr Name;
+        public Stmt Body;
+        public InteractableStmt(Expr name, Stmt body)
         {
             Name = name;
             Body = body;
         }
+        public override string ToString()
+        {
+            return $"InteractableStmt(Name: {Name}, Body: {Body})";
+        }
     }
+
 
     // TODO
     public class AST

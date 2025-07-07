@@ -1,8 +1,5 @@
 
 
-"Hello World"
-name = (ask "What is your name?")
-(say "Hello World" "this is a second test string" "this is a third! wowee")
-simon.reed = "VALUE"
-
-
+#[if condition then (say "condition met") else (say "condition failed")]
+[if cond then (say "hello")]
+["string" (say "test")]
