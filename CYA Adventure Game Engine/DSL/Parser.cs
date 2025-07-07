@@ -20,7 +20,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             {TokenType.Plus, new PrefixOperatorParselet()},
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
-            {TokenType.LParent, new CallParselet()}
+            {TokenType.LParent, new ParentParselet()},
+            {TokenType.GoTo, new GoToParselet()}
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -172,6 +173,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             }
         }
 
+        /// <summary>
+        /// Constructs Node for imports. Allows for optional aliasing.
+        /// </summary>
+        /// <returns>ImportStmt</returns>
         private Stmt ParseImportStmt()
         {
             // Consume the 'import' token that IDd the stmt.
@@ -209,6 +214,10 @@ namespace CYA_Adventure_Game_Engine.DSL
             }
         }
 
+        /// <summary>
+        /// Creates an If statement, allowing for conditional branching down a 'then' and optional 'else' branch.
+        /// </summary>
+        /// <returns>IfStmt</returns>
         private Stmt ParseIfStmt()
         {
             // Consume the 'if' token.

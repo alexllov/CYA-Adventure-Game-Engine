@@ -58,19 +58,15 @@ namespace CYA_Adventure_Game_Engine.DSL
             // Return a new prefix expression with the operator and right side.
             return new PrefixExpr(token.Type, operand);
         }
-        public int GetPrecedence()
-        {
-            return _Precedence;
-        }
     }
 
     // TODO: Add support for module.func style stuff.
-    public class CallParselet : IPrefixParselet
+    public class ParentParselet : IPrefixParselet
     {
 
         int _Precedence;
 
-        public CallParselet(int precedence = Precedence.PREFIX)
+        public ParentParselet(int precedence = Precedence.PREFIX)
         {
             _Precedence = precedence;
         }
@@ -85,16 +81,37 @@ namespace CYA_Adventure_Game_Engine.DSL
                 parts.Add(part);
             }
             parser.Consume(TokenType.RParent);
-            Expr function = parts[0];
-            if (parts.Count > 1)
+
+            switch (parts[0])
             {
-                List<Expr> args = parts[1..];
-                return new FuncExpr(function, args);
+                case BinaryExpr:
+                    return parts[0];
+                default:
+                    Expr function = parts[0];
+                    if (parts.Count > 1)
+                    {
+                        List<Expr> args = parts[1..];
+                        return new FuncExpr(function, args);
+                    }
+                    else
+                    {
+                        return new FuncExpr(function);
+                    }
             }
-            else
-            {
-                return new FuncExpr(function);
-            }
+        }
+    }
+
+    public class GoToParselet : IPrefixParselet
+    {
+        int _Precedence;
+        public GoToParselet(int precedence = Precedence.PREFIX)
+        {
+            _Precedence = precedence;
+        }
+        public Expr Parse(Parser parser, Token token)
+        {
+            Expr location = parser.ParseExpression(_Precedence);
+            return new GoToExpr(location);
         }
     }
 }

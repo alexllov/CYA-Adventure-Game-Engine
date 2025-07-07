@@ -144,16 +144,29 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             if (Arguments != null)
             {
-                foreach (Expr arg in Arguments)
-                {
-                    Console.WriteLine($"arg: {arg}, type: {arg.GetType()}");
-                }
+                //foreach (Expr arg in Arguments)
+                //{
+                //    Console.WriteLine($"arg: {arg}, type: {arg.GetType()}");
+                //}
                 return $"FuncExpr(Method: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
             }
             else
             {
                 return $"FuncExpr(Method: {Method}";
             }
+        }
+    }
+
+    public class GoToExpr : Expr
+    {
+        public Expr Location;
+        public GoToExpr(Expr location)
+        {
+            Location = location;
+        }
+        public override string ToString()
+        {
+            return $"GoToExpr(Location: {Location})";
         }
     }
 
@@ -186,6 +199,15 @@ namespace CYA_Adventure_Game_Engine.DSL
         public override string ToString()
         {
             return $"FuncExprStmt({_Expr})";
+        }
+    }
+
+    public  class GoToStmt : Stmt
+    {
+        public GoToExpr _Expr;
+        public GoToStmt(GoToExpr expr)
+        {
+            _Expr = expr;
         }
     }
 

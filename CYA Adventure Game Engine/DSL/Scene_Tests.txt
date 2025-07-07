@@ -1,5 +1,26 @@
 
 
-#[if condition then (say "condition met") else (say "condition failed")]
-[if cond then (say "hello")]
-["string" (say "test")]
+
+#scene "Home"
+#"Hello player, you are at home."
+#name = (ask "what is your name?")
+#[if 1 == 1 then name = "reassigned"]
+#["How do you know my name?" (say "I am able to store your responses to reuse information you give me.")]
+#["Go downstairs" -> "Downstairs"]
+#
+#scene "Downstairs"
+#"Well, this is the downstairs. Theres nothing here yet."
+#["Go back home" -> "Home"]
+#
+#test = 1
+#1 * (2 + 3)
+#(2 * 3) + 1
+#
+#!(2+3)
+
+
+(say "hello")
+
+2 * (3 * (1 + 3))
+
+!(3 / 3)
