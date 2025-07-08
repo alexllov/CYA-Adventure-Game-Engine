@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +30,6 @@ namespace CYA_Adventure_Game_Engine.DSL
             { "arithmetic", [TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide] },
             { "relational", [TokenType.Equal,TokenType.NotEqual, TokenType.GreaterEqual, TokenType.GreaterThan, TokenType.LessEqual, TokenType.LessThan] },
             { "logical", [TokenType.And, TokenType.Or] },
-            { "assign", [TokenType.Assign] },
         };
 
         public Interpreter(List<Node> Tree)
@@ -102,6 +102,26 @@ namespace CYA_Adventure_Game_Engine.DSL
             throw new Exception($"Unknown Node type encountered: {node}, type: {node.GetType()}");
         }
 
+        /// <summary>
+        /// Helper func. Pass a type & list of args. If any are not of the expected type, Error thrown.
+        /// </summary>
+        /// <param name="type">object type</param>
+        /// <param name="items">list of args</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private bool CheckType(Type type, params object[] items)
+        {
+            foreach (object item in items) 
+            { 
+                if (!type.IsInstanceOfType(item))
+                {
+                    throw new Exception($"Invalid argument type detected. Expeected {type}, but got {item.GetType()} instead.");
+                }
+            }
+            return true;
+        }
+
+
         private object ProcessBinaryExpr(BinaryExpr expr)
         {
             var left = Evaluate(expr.Left);
@@ -110,11 +130,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             if (BinaryOperators["arithmetic"].Contains(expr.Operator))
             {
                 // Check type validity for numeric operators
-                if (left is not double ||
-                    right is not double)
-                {
-                    throw new Exception($"Invalid argument types given to arithmetic binary operator: left: {left.GetType()}; right: {right.GetType()}");
-                }
+                CheckType(typeof(double), [left, right]);
 
                 switch (expr.Operator)
                 {
@@ -127,15 +143,53 @@ namespace CYA_Adventure_Game_Engine.DSL
                     case TokenType.Divide:
                         return (double)left / (double)right;
                     default:
-                        throw new Exception("How did we end up here? Valid operator detected but not present");
+                        throw new Exception("How did we end up here? Valid arithmetic operator detected but not present");
+                }
+            }
+            else if (BinaryOperators["relational"].Contains(expr.Operator))
+            {
+                switch (expr.Operator)
+                { 
+                    case TokenType.Equal:
+                        return left == right;
+                    case TokenType.NotEqual:
+                        return left != right;
+                    case TokenType.GreaterEqual:
+                        CheckType(typeof(double), [left, right]);
+                        return (double)left >= (double)right;
+                    case TokenType.GreaterThan:
+                        CheckType(typeof(double), [left, right]);
+                        return (double)left > (double)right;
+                    case TokenType.LessEqual:
+                        CheckType(typeof(double), [left, right]);
+                        return (double)left <= (double)right;
+                    case TokenType.LessThan:
+                        CheckType(typeof(double), [left, right]);
+                        return (double)left < (double)right;
+                    default:
+                        throw new Exception("How did we end up here? Valid relational operator detected but not present");
+                }
+            }
+            else if (BinaryOperators["logical"].Contains(expr.Operator))
+            {
+                switch (expr.Operator) 
+                {
+                    case TokenType.And:
+                        CheckType(typeof(bool), [left, right]);
+                        return (bool)left && (bool)right;
+                    case TokenType.Or:
+                        CheckType(typeof(bool), [left, right]);
+                        return (bool)left || (bool)right;
+                    default:
+                        throw new Exception("How did we end up here? Valid logical detected but not present");
                 }
             }
             else
             {
-                var val = 1;
-                return val;
+                throw new Exception("Invalid binary expression operator found.");
             }
         }
+
 
         private object ProcessPrefixExpr(PrefixExpr expr)
         {
