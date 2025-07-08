@@ -56,7 +56,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         private int Pos = 0;
 
         // TODO: Re-Add this once Stmt implemented.
-        public List<Stmt> AST = new List<Stmt>();
+        public List<Node> AST = new List<Node>();
 
         // TODO: Remove this once Stmt implemented.
         public List<Expr> Expressions = new List<Expr>();
@@ -81,7 +81,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         {
             while (Peek(0).Type != TokenType.EOF)
             {
-                AST.Add(ParseStatement());
+                AST.Add(ParseNode());
             }
         }
 
@@ -141,7 +141,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
 
         // TODO: Construct giant SwitchCase here i guess.
-        private Stmt ParseStatement()
+        private Node ParseNode()
         {
             Token token = Tokens[Pos];
 
@@ -159,17 +159,8 @@ namespace CYA_Adventure_Game_Engine.DSL
                     return ParseSceneStmt();
                     
                 default:
-                    // TODO: Add a switch/case here to const ...Stmts of the proper type to make interpreting easier.
                     Expr expr = (ParseExpression(0));
-                    switch (expr)
-                    {
-                        case FuncExpr:
-                            FuncExprStmt funcStmt = new((FuncExpr)expr);
-                            return funcStmt;
-                        default:
-                            ExprStmt stmt = new(expr);
-                            return stmt;
-                    }
+                    return expr;
             }
         }
 
@@ -197,12 +188,12 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         /// <param name="stoppingPoint">Token types list representing end point for Stmt collection.</param>
         /// <returns>Stmt</returns>
-        private Stmt ParseBlock(params TokenType[] stoppingPoint)
+        private Node ParseBlock(params TokenType[] stoppingPoint)
         {
-            List<Stmt> stmts = new();
+            List<Node> stmts = new();
             while (!stoppingPoint.Contains(Peek(0).Type))
             {
-                stmts.Add(ParseStatement());
+                stmts.Add(ParseNode());
             }
             if (stmts.Count > 1)
             {
@@ -224,8 +215,8 @@ namespace CYA_Adventure_Game_Engine.DSL
             Advance();
             Expr condition = ParseExpression(0);
             Consume(TokenType.Then);
-            Stmt thenBranch = ParseBlock(TokenType.Else, TokenType.RBracket);
-            Stmt elseBranch = null;
+            Node thenBranch = ParseBlock(TokenType.Else, TokenType.RBracket);
+            Node elseBranch = null;
             if (Match(TokenType.Else))
             {
                 elseBranch = ParseBlock(TokenType.RBracket);
@@ -239,7 +230,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         private Stmt ParseInteractable()
         { 
             Expr name = ParseExpression(0);
-            Stmt body = ParseBlock(TokenType.RBracket);
+            Node body = ParseBlock(TokenType.RBracket);
             Consume(TokenType.RBracket);
             return new InteractableStmt(name, body);
         }
@@ -268,7 +259,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             Advance();
             // Very next Token should be string with ID for scene.
             Token ID = Consume(TokenType.String);
-            List<Stmt> parts = new();
+            List<Node> parts = new();
             while (!(HeaderEnds.Contains(Peek(0).Type)))
             {
                 // Scenes have special sugar for strings,
@@ -283,7 +274,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                      * ^^ THIS is probably the correct solution.
                      */
                     case TokenType.String:
-                        FuncExprStmt say = new(new FuncExpr(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]));
+                        FuncExpr say = new(new FuncExpr(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]));
                         parts.Add(say);
                         // Advance needed as Stmt hand made, so string part isn't being consumed.
                         Advance();
@@ -291,8 +282,8 @@ namespace CYA_Adventure_Game_Engine.DSL
 
                     // Default -> ParseStmt using recursive calls to process.
                     default:
-                        Stmt stmt = ParseStatement();
-                        parts.Add(stmt);
+                        Node node = ParseNode();
+                        parts.Add(node);
                         break;
                 }
             }

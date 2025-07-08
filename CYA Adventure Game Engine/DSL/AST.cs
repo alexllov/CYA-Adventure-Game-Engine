@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL
 {
-    // =============== Expressions ===============
+    // =============== Abstracts ===============
+
+    // Node: the supertype
+    public abstract class Node { }
 
     // Expression: evaluates to a value.
-    public abstract class Expr { }
+    public abstract class Expr : Node { }
 
     // Statement: an action to be performed.
-    public abstract class Stmt { }
+    public abstract class Stmt : Node { }
+
+    // =============== Expressions ===============
 
     // Literal values: number, string lit...
     public class NumberLitExpr : Expr
@@ -172,68 +177,14 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     // =============== Statements ===============
 
-    // Default Expr catch to convert Exprs w/o type to a Stmt.
-
-    public class ExprStmt : Stmt
-    {
-        public Expr _Expr;
-        public ExprStmt(Expr expr)
-        {
-            _Expr = expr;
-
-        }
-        public override string ToString() 
-        {
-            return $"ExprStmt({_Expr})";
-        }
-    }
-
-    public class FuncExprStmt : Stmt
-    {
-        public FuncExpr _Expr;
-        public FuncExprStmt(FuncExpr expr)
-        {
-            _Expr = expr;
-
-        }
-        public override string ToString()
-        {
-            return $"FuncExprStmt({_Expr})";
-        }
-    }
-
-    public  class GoToStmt : Stmt
-    {
-        public GoToExpr _Expr;
-        public GoToStmt(GoToExpr expr)
-        {
-            _Expr = expr;
-        }
-    }
-
-    // TODO: Required??
-    // Declaration of variables.
-    public class AssignStmt : Stmt
-    {
-        public AssignExpr Value;
-        public AssignStmt(AssignExpr val)
-        {
-            Value = val;
-        }
-        public override string ToString() 
-        {
-            return $"AssignStmt({Value})";
-        }
-    }
-
     // Conditional Statements.
     public class IfStmt : Stmt
     {
         public Expr Condition;
-        public Stmt ThenBranch;
-        public Stmt ElseBranch;
+        public Node ThenBranch;
+        public Node ElseBranch;
 
-        public IfStmt(Expr condition, Stmt thenBranch, Stmt elseBranch = null)
+        public IfStmt(Expr condition, Node thenBranch, Node elseBranch = null)
         {
             Condition = condition;
             ThenBranch = thenBranch;
@@ -249,8 +200,8 @@ namespace CYA_Adventure_Game_Engine.DSL
     //TODO ^^ clean up this comment.
     public class BlockStmt : Stmt
     {
-        public List<Stmt> Statements;
-        public BlockStmt(List<Stmt> statements)
+        public List<Node> Statements;
+        public BlockStmt(List<Node> statements)
         {
             Statements = statements;
         }
@@ -297,8 +248,8 @@ namespace CYA_Adventure_Game_Engine.DSL
     public class InteractableStmt : Stmt
     {
         public Expr Name;
-        public Stmt Body;
-        public InteractableStmt(Expr name, Stmt body)
+        public Node Body;
+        public InteractableStmt(Expr name, Node body)
         {
             Name = name;
             Body = body;
