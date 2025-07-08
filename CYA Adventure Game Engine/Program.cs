@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CYA_Adventure_Game_Engine;
-using CYA_Adventure_Game_Engine.DSL;
+using CYA_Adventure_Game_Engine.DSL.Runtime;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -10,13 +10,13 @@ SetupLoader setup = new("./Occult/setup.cya");
 Dictionary<string, IModule> state = setup.State;
 
 // "./Occult/Occult basic.cya"
-CYA_Adventure_Game_Engine.DSL.Tokenizer tokenizer = new ("./DSL/Scene_Tests.txt");
+CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer tokenizer = new ("./DSL/Scene_Tests.txt");
 
-CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
+CYA_Adventure_Game_Engine.DSL.Frontend.Parser parser = new(tokenizer.Tokens);
 parser.Show();
 
 Console.WriteLine("Entering Interpreter.");
-CYA_Adventure_Game_Engine.DSL.Interpreter interpreter = new(parser.AST, "debug");
+Interpreter interpreter = new(parser.AST, "debug");
 
 //Dictionary<string, Scene> data = parser.Data;
 //parser.Show();

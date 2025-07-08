@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine.DSL
+namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
     {
@@ -37,7 +38,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         public Interpreter(List<Stmt> Tree, string mode="default")
         {
             AST = Tree;
-            DebugMode = (mode == "debug") ? true : false;
+            DebugMode = mode == "debug" ? true : false;
             Interpret();
         }
 
@@ -118,14 +119,17 @@ namespace CYA_Adventure_Game_Engine.DSL
                     throw new Exception("Assign Not Yet Implemented");
                 case NumberLitExpr num:
                     return num.Value;
+                case StringLitExpr str:
+                    return str.Value;
                 default:
-                    throw new Exception("Unknown Expr type detected.");
+                    throw new Exception($"Unknown Expr type detected. Expr: {expr.GetType()}");
             }
         }
 
         private void EvalIfStmt(IfStmt stmt)
         {
             var condition = EvaluateExpr(stmt.Condition);
+            Console.WriteLine($"Condition = {condition}");
             if (condition is not bool) { throw new Exception("Error, If statement condition does not evaluate to true or false."); }
             if ((bool)condition)
             {
@@ -187,9 +191,12 @@ namespace CYA_Adventure_Game_Engine.DSL
                 switch (expr.Operator)
                 { 
                     case TokenType.Equal:
-                        return left == right;
+                        Console.WriteLine($"Left: {left.GetType()}");
+                        Console.WriteLine($"Right: {right.GetType()}");
+                        if (left == right) { Console.WriteLine("They are equal"); }
+                        return left.Equals(right);
                     case TokenType.NotEqual:
-                        return left != right;
+                        return !(left.Equals(right));
                     case TokenType.GreaterEqual:
                         CheckType(typeof(double), [left, right]);
                         return (double)left >= (double)right;

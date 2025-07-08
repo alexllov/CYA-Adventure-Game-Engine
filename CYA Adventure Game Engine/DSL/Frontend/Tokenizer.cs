@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine.DSL
+namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
     internal class Tokenizer
     {
@@ -197,11 +197,11 @@ namespace CYA_Adventure_Game_Engine.DSL
                     break;
 
                 default:
-                    if (Char.IsDigit(c))
+                    if (char.IsDigit(c))
                     {
                         ReadNumber();
                     }
-                    else if (Char.IsLetterOrDigit(c))
+                    else if (char.IsLetterOrDigit(c))
                     {
                         ReadIdentifier();
                     }
@@ -305,14 +305,14 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         private void ReadNumber()
         {
-            while (Char.IsDigit(Peek(0)))
+            while (char.IsDigit(Peek(0)))
             {
                 Advance();
             }
-            while (Peek(0) == '.' && Char.IsDigit(Peek(1)))
+            while (Peek(0) == '.' && char.IsDigit(Peek(1)))
             {
                 Advance();
-                while (Char.IsDigit(Peek(0)))
+                while (char.IsDigit(Peek(0)))
                 {
                     Advance();
                 }
@@ -325,7 +325,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         private void ReadIdentifier()
         {
-            while (Char.IsLetterOrDigit(Peek(0)) || Peek(0) == '_')
+            while (char.IsLetterOrDigit(Peek(0)) || Peek(0) == '_')
             {
                 Advance();
             }

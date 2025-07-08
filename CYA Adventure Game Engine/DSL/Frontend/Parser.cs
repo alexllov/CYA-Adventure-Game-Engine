@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine.DSL
+namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
 
     public class Parser
@@ -154,8 +154,8 @@ namespace CYA_Adventure_Game_Engine.DSL
                     return ParseSceneStmt();
                     
                 default:
-                    Expr expr = (ParseExpression(0));
-                    if (expr is AssignExpr){ return new AssignStmt(expr); }
+                    Expr expr = ParseExpression(0);
+                    if (expr is AssignExpr){ return new AssignStmt((AssignExpr)expr); }
                     else { return new ExprStmt(expr); }
             }
         }
@@ -256,7 +256,7 @@ namespace CYA_Adventure_Game_Engine.DSL
             // Very next Token should be string with ID for scene.
             Token ID = Consume(TokenType.String);
             List<Stmt> parts = new();
-            while (!(HeaderEnds.Contains(Peek(0).Type)))
+            while (!HeaderEnds.Contains(Peek(0).Type))
             {
                 // Scenes have special sugar for strings,
                 // & can contain special components: interactables.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine.DSL
+namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
     internal interface IInfixParselet
     {
