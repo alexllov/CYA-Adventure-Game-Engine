@@ -16,7 +16,7 @@ CYA_Adventure_Game_Engine.DSL.Parser parser = new(tokenizer.Tokens);
 parser.Show();
 
 Console.WriteLine("Entering Interpreter.");
-CYA_Adventure_Game_Engine.DSL.Interpreter interpreter = new(parser.AST);
+CYA_Adventure_Game_Engine.DSL.Interpreter interpreter = new(parser.AST, "debug");
 
 //Dictionary<string, Scene> data = parser.Data;
 //parser.Show();

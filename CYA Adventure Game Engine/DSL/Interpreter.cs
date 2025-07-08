@@ -14,7 +14,9 @@ namespace CYA_Adventure_Game_Engine.DSL
         // TODO: Fix type declr
         public string Code;
         // TODO: Properly set up AST && Appending stuff for parser s.t. this can take an AST proper.
-        public List<Node> AST;
+        public List<Stmt> AST;
+
+        private bool DebugMode;
 
         // Base default functions.
         public List<string> DefaultFuncs = new List<string>
@@ -32,18 +34,18 @@ namespace CYA_Adventure_Game_Engine.DSL
             { "logical", [TokenType.And, TokenType.Or] },
         };
 
-        public Interpreter(List<Node> Tree)
+        public Interpreter(List<Stmt> Tree, string mode="default")
         {
             AST = Tree;
+            DebugMode = (mode == "debug") ? true : false;
             Interpret();
         }
 
         public void Interpret()
         {
-            foreach (Node node in AST)
+            foreach (Stmt stmt in AST)
             {
-                object ans = Evaluate(node);
-                Console.WriteLine(ans);
+                EvaluateStmt(stmt);
             }
         }
 
@@ -53,9 +55,9 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         /// <param name="node">Node: the next node within the AST to be parsed</param>
         /// <exception cref="Exception"></exception>
-        private object Evaluate(Node node)
+        private void EvaluateStmt(Stmt stmt)
         {
-            switch (node)
+            switch (stmt)
             {
                 //case FuncExpr func:
                 //    if (func._Expr.Method is VariableExpr &&
@@ -85,21 +87,54 @@ namespace CYA_Adventure_Game_Engine.DSL
 
 
                 // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
-                case Expr expr:
-                    switch (expr)
-                    {
-                        case BinaryExpr bExpr:
-                            return ProcessBinaryExpr(bExpr);
-                        case PrefixExpr pExpr:
-                            return ProcessPrefixExpr(pExpr);
-                        case AssignExpr:
-                            break;
-                        case NumberLitExpr num:
-                            return num.Value;
-                    }
+
+                case IfStmt istmt:
+                    EvalIfStmt(istmt);
                     break;
+
+                case ExprStmt:
+                    Expr expr = ((ExprStmt)stmt).Expr;
+                    EvaluateExpr(expr);
+                    break;
+
+                default:
+                    throw new Exception($"Unknown Node type encountered: {stmt}, type: {stmt.GetType()}");
             }
-            throw new Exception($"Unknown Node type encountered: {node}, type: {node.GetType()}");
+        }
+
+        private object EvaluateExpr(Expr expr)
+        {
+            switch (expr)
+            {
+                case BinaryExpr bExpr:
+                    object bResult = ProcessBinaryExpr(bExpr);
+                    if (DebugMode) { Console.WriteLine(bResult); }
+                    return bResult;
+                case PrefixExpr pExpr:
+                    object pResult = ProcessPrefixExpr(pExpr);
+                    if (DebugMode) { Console.WriteLine(pResult); }
+                    return pResult;
+                case AssignExpr:
+                    throw new Exception("Assign Not Yet Implemented");
+                case NumberLitExpr num:
+                    return num.Value;
+                default:
+                    throw new Exception("Unknown Expr type detected.");
+            }
+        }
+
+        private void EvalIfStmt(IfStmt stmt)
+        {
+            var condition = EvaluateExpr(stmt.Condition);
+            if (condition is not bool) { throw new Exception("Error, If statement condition does not evaluate to true or false."); }
+            if ((bool)condition)
+            {
+                EvaluateStmt(stmt.ThenBranch);
+            }
+            else if (stmt.ElseBranch is not null)
+            {
+                EvaluateStmt(stmt.ElseBranch);
+            }
         }
 
         /// <summary>
@@ -124,8 +159,8 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private object ProcessBinaryExpr(BinaryExpr expr)
         {
-            var left = Evaluate(expr.Left);
-            var right = Evaluate(expr.Right);
+            var left = EvaluateExpr(expr.Left);
+            var right = EvaluateExpr(expr.Right);
 
             if (BinaryOperators["arithmetic"].Contains(expr.Operator))
             {
@@ -141,6 +176,7 @@ namespace CYA_Adventure_Game_Engine.DSL
                     case TokenType.Multiply:
                         return (double)left * (double)right;
                     case TokenType.Divide:
+                        if ((double)right == 0) { throw new Exception("Division by 0 error."); }
                         return (double)left / (double)right;
                     default:
                         throw new Exception("How did we end up here? Valid arithmetic operator detected but not present");
@@ -193,7 +229,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         private object ProcessPrefixExpr(PrefixExpr expr)
         {
-            var operand = Evaluate(expr.Operand);
+            var operand = EvaluateExpr(expr.Operand);
             switch (expr.Operator)
             {
                 case TokenType.Plus:

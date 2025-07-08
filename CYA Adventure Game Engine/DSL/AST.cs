@@ -8,14 +8,14 @@ namespace CYA_Adventure_Game_Engine.DSL
 {
     // =============== Abstracts ===============
 
-    // Node: the supertype
+    // Node: the supertype?
     public abstract class Node { }
 
     // Expression: evaluates to a value.
-    public abstract class Expr : Node { }
+    public abstract class Expr { }
 
     // Statement: an action to be performed.
-    public abstract class Stmt : Node { }
+    public abstract class Stmt { }
 
     // =============== Expressions ===============
 
@@ -175,14 +175,44 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     // =============== Statements ===============
 
+    // Expr Stmt: basic wrapper to promote Exprs for Stmt positions.
+    public class ExprStmt : Stmt
+    {
+        public Expr Expr;
+        public ExprStmt(Expr expr)
+        {
+            Expr = expr;
+        }
+
+        public override string ToString()
+        {
+            return $"ExprStmt({Expr})";
+        }
+    }
+
+    public class AssignStmt: Stmt
+    {
+        public AssignExpr Expr;
+        public AssignStmt(AssignExpr expr)
+        {
+            Expr = expr;
+        }
+
+        public override string ToString()
+        {
+            return $"AssignStmt({Expr})";
+        }
+    }
+
+
     // Conditional Statements.
     public class IfStmt : Stmt
     {
         public Expr Condition;
-        public Node ThenBranch;
-        public Node ElseBranch;
+        public Stmt ThenBranch;
+        public Stmt ElseBranch;
 
-        public IfStmt(Expr condition, Node thenBranch, Node elseBranch = null)
+        public IfStmt(Expr condition, Stmt thenBranch, Stmt elseBranch = null)
         {
             Condition = condition;
             ThenBranch = thenBranch;
@@ -198,8 +228,8 @@ namespace CYA_Adventure_Game_Engine.DSL
     //TODO ^^ clean up this comment.
     public class BlockStmt : Stmt
     {
-        public List<Node> Statements;
-        public BlockStmt(List<Node> statements)
+        public List<Stmt> Statements;
+        public BlockStmt(List<Stmt> statements)
         {
             Statements = statements;
         }
@@ -246,8 +276,8 @@ namespace CYA_Adventure_Game_Engine.DSL
     public class InteractableStmt : Stmt
     {
         public Expr Name;
-        public Node Body;
-        public InteractableStmt(Expr name, Node body)
+        public Stmt Body;
+        public InteractableStmt(Expr name, Stmt body)
         {
             Name = name;
             Body = body;
