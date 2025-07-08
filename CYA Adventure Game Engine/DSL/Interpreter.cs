@@ -13,7 +13,7 @@ namespace CYA_Adventure_Game_Engine.DSL
         // TODO: Fix type declr
         public string Code;
         // TODO: Properly set up AST && Appending stuff for parser s.t. this can take an AST proper.
-        public List<Node> baseAST;
+        public List<Node> AST;
 
         // Base default functions.
         public List<string> DefaultFuncs = new List<string>
@@ -24,17 +24,26 @@ namespace CYA_Adventure_Game_Engine.DSL
             "back",
         };
 
+        public Dictionary<string, List<TokenType>> BinaryOperators = new()
+        {
+            { "arithmetic", [TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide] },
+            { "relational", [TokenType.Equal,TokenType.NotEqual, TokenType.GreaterEqual, TokenType.GreaterThan, TokenType.LessEqual, TokenType.LessThan] },
+            { "logical", [TokenType.And, TokenType.Or] },
+            { "assign", [TokenType.Assign] },
+        };
+
         public Interpreter(List<Node> Tree)
         {
-            baseAST = Tree;
+            AST = Tree;
             Interpret();
         }
 
         public void Interpret()
         {
-            foreach (var stmt in baseAST)
+            foreach (Node node in AST)
             {
-                Evaluate(stmt);
+                object ans = Evaluate(node);
+                Console.WriteLine(ans);
             }
         }
 
@@ -44,93 +53,118 @@ namespace CYA_Adventure_Game_Engine.DSL
         /// </summary>
         /// <param name="node">Node: the next node within the AST to be parsed</param>
         /// <exception cref="Exception"></exception>
-        private void Evaluate(Node node)
-        { }
-        //    switch (node)
-        //    {
-        //        case FuncExprStmt funcStmt:
-        //            if (funcStmt._Expr.Method is VariableExpr &&
-        //                DefaultFuncs.Contains(funcStmt._Expr.Method.ToString()))
-        //            {
-        //                switch (funcStmt._Expr.Method.ToString())
-        //                {
-        //                    case "say":
-        //                        if (funcStmt._Expr.Arguments == null)
-        //                        {
-        //                            throw new Exception("Error, received a 'say' func missing required argument.");
-        //                        }
-        //                        else
-        //                        {
-        //                            Console.WriteLine($"{string.Join("", funcStmt._Expr.Arguments)}");
-        //                        }
-        //                        break;
-        //                    default:
-        //                        throw new Exception("Error, received an unknown default func?? (This should not be possible.)");
-        //                }
-        //            }
-        //            break;
-        //
-        //        //case BinaryStmt binaryStmt:
-        //        //    Console.WriteLine($"Binary Expression: {binaryExpr.Left} {binaryExpr.Operator} {binaryExpr.Right}");
-        //        //    break;
-        //
-        //
-        //        // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
-        //        case ExprStmt exprStmt:
-        //            switch (exprStmt._Expr)
-        //            {
-        //                case BinaryExpr bExpr:
-        //                    ProcessBinaryExpr(bExpr);
-        //                    break;
-        //                case PrefixExpr:
-        //                    break;
-        //                case AssignExpr:
-        //                    break;
-        //            }
-        //            break;
-        //    }
-        //}
+        private object Evaluate(Node node)
+        {
+            switch (node)
+            {
+                //case FuncExpr func:
+                //    if (func._Expr.Method is VariableExpr &&
+                //        DefaultFuncs.Contains(func._Expr.Method.ToString()))
+                //    {
+                //        switch (func._Expr.Method.ToString())
+                //        {
+                //            case "say":
+                //                if (func._Expr.Arguments == null)
+                //                {
+                //                    throw new Exception("Error, received a 'say' func missing required argument.");
+                //                }
+                //                else
+                //                {
+                //                    Console.WriteLine($"{string.Join("", func._Expr.Arguments)}");
+                //                }
+                //                break;
+                //            default:
+                //                throw new Exception("Error, received an unknown default func?? (This should not be possible.)");
+                //        }
+                //    }
+                //    break;
 
-        //private void ProcessBinaryExpr(BinaryExpr expr)
-        //{
-        //    switch (expr.Operator)
-        //    {
-        //        case TokenType.Equal:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} == {expr.Right}");
-        //            break;
-        //        case TokenType.GreaterEqual:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} >= {expr.Right}");
-        //            break;
-        //        case TokenType.GreaterThan:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} > {expr.Right}");
-        //            break;
-        //        case TokenType.LessEqual:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} <= {expr.Right}");
-        //            break;
-        //        case TokenType.LessThan:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} < {expr.Right}");
-        //            break;
-        //        case TokenType.Plus:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} + {expr.Right}");
-        //            break;
-        //        case TokenType.Minus:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} - {expr.Right}");
-        //            break;
-        //        case TokenType.Multiply:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} * {expr.Right}");
-        //            break;
-        //        case TokenType.Divide:
-        //            Console.WriteLine($"Binary Expression: {expr.Left} / {expr.Right}");
-        //            break;
-        //        default:
-        //            Console.WriteLine($"Unknown Operator: {expr.Operator}");
-        //            break;
-        //    }
-        //}
+                //case BinaryStmt binaryStmt:
+                //    Console.WriteLine($"Binary Expression: {binaryExpr.Left} {binaryExpr.Operator} {binaryExpr.Right}");
+                //    break;
 
-        //private void ProcessBinaryExpr(BinaryExpr expr)
-        //{
-        //    Expr left = Evaluate((Expr)expr.Left);
-        //}
+
+                // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
+                case Expr expr:
+                    switch (expr)
+                    {
+                        case BinaryExpr bExpr:
+                            return ProcessBinaryExpr(bExpr);
+                        case PrefixExpr pExpr:
+                            return ProcessPrefixExpr(pExpr);
+                        case AssignExpr:
+                            break;
+                        case NumberLitExpr num:
+                            return num.Value;
+                    }
+                    break;
+            }
+            throw new Exception($"Unknown Node type encountered: {node}, type: {node.GetType()}");
+        }
+
+        private object ProcessBinaryExpr(BinaryExpr expr)
+        {
+            var left = Evaluate(expr.Left);
+            var right = Evaluate(expr.Right);
+
+            if (BinaryOperators["arithmetic"].Contains(expr.Operator))
+            {
+                // Check type validity for numeric operators
+                if (left is not double ||
+                    right is not double)
+                {
+                    throw new Exception($"Invalid argument types given to arithmetic binary operator: left: {left.GetType()}; right: {right.GetType()}");
+                }
+
+                switch (expr.Operator)
+                {
+                    case TokenType.Plus:
+                        return (double)left + (double)right;
+                    case TokenType.Minus:
+                        return (double)left - (double)right;
+                    case TokenType.Multiply:
+                        return (double)left * (double)right;
+                    case TokenType.Divide:
+                        return (double)left / (double)right;
+                    default:
+                        throw new Exception("How did we end up here? Valid operator detected but not present");
+                }
+            }
+            else
+            {
+                var val = 1;
+                return val;
+            }
+        }
+
+        private object ProcessPrefixExpr(PrefixExpr expr)
+        {
+            var operand = Evaluate(expr.Operand);
+            switch (expr.Operator)
+            {
+                case TokenType.Plus:
+                    return operand;
+                case TokenType.Minus:
+                    if (operand is not double)
+                    {
+                        throw new Exception($"Invalid value taking '-' prefix of type: {operand.GetType()}");
+                    }
+                    else
+                    {
+                        return -(double)operand;
+                    }
+                case TokenType.Not:
+                    if (operand is not bool)
+                    {
+                        throw new Exception($"Invalid value taking '!' prefix of type: {operand.GetType()}");
+                    }
+                    else
+                    {
+                        return !(bool)operand;
+                    }
+                default:
+                    throw new Exception($"Error, prefix of type {expr.Operator.GetType()} not yet supported.");
+            }
+        }
     }
 }

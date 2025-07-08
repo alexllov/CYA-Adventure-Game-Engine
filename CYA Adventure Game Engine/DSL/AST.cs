@@ -21,7 +21,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
     // Literal values: number, string lit...
     public class NumberLitExpr : Expr
-    {
+    { 
         public double Value;
         public NumberLitExpr(double val)
         {
@@ -30,8 +30,7 @@ namespace CYA_Adventure_Game_Engine.DSL
 
         public override string ToString() 
         {
-            return $"{Value}";
-            //return $"NumberLitExpr({Value})";
+            return $"NumberLitExpr({Value})";
         }
     }
 
@@ -45,22 +44,21 @@ namespace CYA_Adventure_Game_Engine.DSL
         public override string ToString() 
         {
             // TODO: Set up a DebugToString for parser purposes that contians this return.
-            //return $"StringLitExpr({Value})";
-            return $"{Value}";
+            return $"StringLitExpr({Value})";
         }   
     }
 
     // Variable: named values.
     public class VariableExpr : Expr
     {
-        public string Name;
+        public string Value;
         public VariableExpr(string name)
         {
-            Name = name;
+            Value = name;
         }
         public override string ToString() 
         {
-            return $"{Name}";
+            return $"VariableExpr({Value})";
         }
     }
 
