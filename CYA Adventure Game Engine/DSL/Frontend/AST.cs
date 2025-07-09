@@ -134,7 +134,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     public class FuncExpr : Expr
     {
         public Expr Method;
-        public List<Expr>? Arguments { get; init; }
+        public List<Expr>? Arguments;
         public FuncExpr(Expr method, List<Expr> arguments = null)
         {
             Method = method;

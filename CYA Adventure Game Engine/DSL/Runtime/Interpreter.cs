@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,18 +114,20 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             switch (expr)
             {
+                case AssignExpr:
+                    throw new Exception("Untreated Assign Expression found. Parser Problem.");
                 case BinaryExpr bExpr:
                     object bResult = ProcessBinaryExpr(bExpr);
                     if (DebugMode) { Console.WriteLine(bResult); }
                     return bResult;
+                case FuncExpr fExpr:
+                    return ProcessFuncExpr(fExpr);
+                case NumberLitExpr num:
+                    return num.Value;
                 case PrefixExpr pExpr:
                     object pResult = ProcessPrefixExpr(pExpr);
                     if (DebugMode) { Console.WriteLine(pResult); }
                     return pResult;
-                case AssignExpr:
-                    throw new Exception("Untreated Assign Expression found. Parser Problem.");
-                case NumberLitExpr num:
-                    return num.Value;
                 case StringLitExpr str:
                     return str.Value;
                 case VariableExpr variable:
@@ -279,6 +283,27 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 default:
                     throw new Exception($"Error, prefix of type {expr.Operator.GetType()} not yet supported.");
             }
+        }
+
+        private object ProcessFuncExpr(FuncExpr expr)
+        {
+            object result = null;
+            // TODO: this needs reworign s.t. proper funcs & dot funcs will work & other things can throw appropriate errors.
+            var function = EvaluateExpr(expr.Method);
+            List<object> args = new List<object>();
+            foreach (Expr arg in expr.Arguments) 
+            {
+                args.Add(EvaluateExpr(arg));
+            }
+            if (function is Func<List<object>,object> multArgFunc) 
+            {
+                return multArgFunc(args); 
+            }
+            else if (function is Func<object> arglessFunc)
+            {
+                return arglessFunc();
+            }
+                return null;
         }
     }
 }
