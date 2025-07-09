@@ -1,11 +1,11 @@
 ﻿namespace CYA_Adventure_Game_Engine
 {
-    public class Tokenizer
+    public class Old_Tokenizer
     {
         private List<string> Tokens;
         public List<string> SplitLines;
 
-        public Tokenizer(string filepath)
+        public Old_Tokenizer(string filepath)
         {
             string BareFile = ReadFile(filepath);
             SplitLines = SeparateToLines(BareFile);

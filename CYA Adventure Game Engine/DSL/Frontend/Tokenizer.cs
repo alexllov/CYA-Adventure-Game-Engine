@@ -46,7 +46,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public Tokenizer(string filepath)
         {
             Source = File.ReadAllText(filepath);
-            Tokenize();
         }
         public void Show()
         {
@@ -62,7 +61,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// Tokenizes the source code, returning a list of tokens.
         /// </summary>
         /// <returns>List<Token> obj containing processed game code.</returns>
-        private List<Token> Tokenize()
+        public List<Token> Tokenize()
         {
             while (!IsAtEnd())
             {

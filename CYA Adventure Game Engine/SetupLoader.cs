@@ -14,7 +14,7 @@ namespace CYA_Adventure_Game_Engine
 
         public SetupLoader(string filepath)
         {
-            Tokenizer tokens = new(filepath);
+            Old_Tokenizer tokens = new(filepath);
             Lines = tokens.SplitLines;
             State = ConstructReferences();
 

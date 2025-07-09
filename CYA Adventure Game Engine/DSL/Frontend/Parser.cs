@@ -69,10 +69,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public Parser(List<Token> tokens) 
         {
             Tokens = tokens;
-            Parse();
         }
 
-        private void Parse()
+        public void Parse()
         {
             while (Peek(0).Type != TokenType.EOF)
             {
@@ -155,9 +154,19 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                     
                 default:
                     Expr expr = ParseExpression(0);
-                    if (expr is AssignExpr){ return new AssignStmt((AssignExpr)expr); }
+                    if (expr is AssignExpr){ return ParseAssignStmt((AssignExpr)expr); }
                     else { return new ExprStmt(expr); }
             }
+        }
+
+        /// <summary>
+        /// Unwraps AssignExpr into AssignStmt.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        private Stmt ParseAssignStmt(AssignExpr expr)
+        {
+            return new AssignStmt(expr.Name, expr.Value);
         }
 
         /// <summary>

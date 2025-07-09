@@ -35,11 +35,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "logical", [TokenType.And, TokenType.Or] },
         };
 
-        public Interpreter(List<Stmt> Tree, string mode="default")
+        private Environment Global;
+
+        public Interpreter(List<Stmt> Tree, Environment env, string mode="default")
         {
             AST = Tree;
+            Global = env;
             DebugMode = mode == "debug" ? true : false;
-            Interpret();
         }
 
         public void Interpret()
@@ -88,6 +90,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
 
                 // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
+                case AssignStmt assStmt:
+                    EvalAssignStmt(assStmt);
+                    break;
 
                 case IfStmt istmt:
                     EvalIfStmt(istmt);
@@ -116,13 +121,25 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     if (DebugMode) { Console.WriteLine(pResult); }
                     return pResult;
                 case AssignExpr:
-                    throw new Exception("Assign Not Yet Implemented");
+                    throw new Exception("Untreated Assign Expression found. Parser Problem.");
                 case NumberLitExpr num:
                     return num.Value;
                 case StringLitExpr str:
                     return str.Value;
+                case VariableExpr variable:
+                    return Global.GetVal(variable.Value);
                 default:
                     throw new Exception($"Unknown Expr type detected. Expr: {expr.GetType()}");
+            }
+        }
+
+        private void EvalAssignStmt(AssignStmt stmt)
+        {
+            if (stmt.Name is VariableExpr)
+            {
+                string name = stmt.Name.ToString();
+                object value = EvaluateExpr(stmt.Value);
+                Global.SetVal(name, value);
             }
         }
 

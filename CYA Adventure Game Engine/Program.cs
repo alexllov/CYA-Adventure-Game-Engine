@@ -1,37 +1,27 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CYA_Adventure_Game_Engine;
+using CYA_Adventure_Game_Engine.DSL.Frontend;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 
-SetupLoader setup = new("./Occult/setup.cya");
-Dictionary<string, IModule> state = setup.State;
+//SetupLoader setup = new("./Occult/setup.cya");
+//Dictionary<string, IModule> state = setup.State;
 
 // "./Occult/Occult basic.cya"
-CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer tokenizer = new ("./DSL/Scene_Tests.txt");
+Tokenizer tokenizer = new("./DSL/Scene_Tests.txt");
+tokenizer.Tokenize();
 
-CYA_Adventure_Game_Engine.DSL.Frontend.Parser parser = new(tokenizer.Tokens);
+Parser parser = new(tokenizer.Tokens);
+parser.Parse();
 parser.Show();
 
 Console.WriteLine("Entering Interpreter.");
-Interpreter interpreter = new(parser.AST, "debug");
-
-//Dictionary<string, Scene> data = parser.Data;
-//parser.Show();
-
-//Engine engine = new(data, state);
-//engine.Run();
+var env = new Environment();
+Interpreter interpreter = new(parser.AST, env, "debug");
+interpreter.Interpret();
 
 
-// TEST STUFF
-//parser.Show();
-//Inventory bag = new ();
-//bag.Process("add", ["left shoe", "right shoe","moon rock", "mr whittaker", "pocket watch", "a small cat"]);
-//bag.Process("remove", ["left shoe"]);
-//Console.Write($"{bag}");
-
-//state["i"].Process("add", ["left shoe", "right shoe", "moon rock", "mr whittaker", "pocket watch", "a small cat"]);
-//Console.WriteLine($"Wowzer, im deffo this one: {state["i"]}");
 

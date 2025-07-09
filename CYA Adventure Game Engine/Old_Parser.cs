@@ -8,10 +8,10 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace CYA_Adventure_Game_Engine
 {
-    public class Parser
+    public class Old_Parser
     {
         public Dictionary<string, Scene> Data;
-        public Parser(Tokenizer tokenizer) 
+        public Old_Parser(Old_Tokenizer tokenizer) 
         {
             List<string> lines = tokenizer.SplitLines;
             Data = ParseLines(lines);

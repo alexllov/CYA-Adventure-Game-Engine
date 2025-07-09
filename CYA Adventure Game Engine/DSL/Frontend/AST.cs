@@ -8,9 +8,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
     // =============== Abstracts ===============
 
-    // Node: the supertype?
-    public abstract class Node { }
-
     // Expression: evaluates to a value.
     public abstract class Expr { }
 
@@ -58,7 +55,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
         public override string ToString() 
         {
-            return $"VariableExpr({Value})";
+            return $"{Value}";
         }
     }
 
@@ -192,15 +189,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
     public class AssignStmt: Stmt
     {
-        public AssignExpr Expr;
-        public AssignStmt(AssignExpr expr)
+        public Expr Name;
+        public Expr Value;
+        public AssignStmt(Expr name, Expr value)
         {
-            Expr = expr;
+            Name = name;
+            Value = value;
         }
 
         public override string ToString()
         {
-            return $"AssignStmt({Expr})";
+            return $"AssignStmt(Name: {Name}, Value: {Value})";
         }
     }
 

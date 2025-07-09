@@ -21,8 +21,6 @@
 
 
 
-[
-if "true" != "true"
-then 1 + 2
-else 2 > 4
-]
+a = 1
+b = 2
+a + b
