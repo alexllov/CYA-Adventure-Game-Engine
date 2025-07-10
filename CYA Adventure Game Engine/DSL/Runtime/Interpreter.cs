@@ -29,6 +29,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private Environment Env;
 
+        private string GoToAddress;
+
         public Interpreter(List<Stmt> Tree, Environment env, string mode="default")
         {
             AST = Tree;
@@ -86,6 +88,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     RunGame(start);
                     break;
 
+                case GoToStmt goTo:
+                    GoToAddress = (string)EvaluateExpr(goTo.Location);
+                    break;
+
                 // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
                 case AssignStmt assStmt:
                     EvalAssignStmt(assStmt);
@@ -121,13 +127,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     return bResult;
                 case FuncExpr fExpr:
                     return ProcessFuncExpr(fExpr);
-                // TODO: Figure out what to do with this.
-                /*
-                 * Return true; is in as a placeholder.
-                 * This might just endlessly nest into itself.
-                 */
-                case GoToExpr gtExpr:
-                    return ProcessGoToExpr(gtExpr);
 
                 case NumberLitExpr num:
                     return num.Value;
@@ -146,7 +145,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private void AssignSceneStmt(SceneStmt stmt)
         {
-            Env.SetScene(stmt.Name, stmt.Body);
+            Env.SetScene(stmt.Name, stmt);
         }
 
         public void AssignInteractableStmt(InteractableStmt stmt)
@@ -326,29 +325,31 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             throw new Exception("Function call of unsupported argument type found.");
         }
 
-        private BlockStmt ProcessGoToExpr(GoToExpr expr)
+        private SceneStmt RunGoTo()
         {
-            string SceneAddr = (string)EvaluateExpr(expr.Location);
-            Console.WriteLine($"SceneAddr: {SceneAddr}");
-            BlockStmt nextScene = Env.GetScene(SceneAddr);
+            Console.WriteLine($"SceneAddr: {GoToAddress}");
+            SceneStmt nextScene = Env.GetScene(GoToAddress);
             return nextScene;
         }
 
         private void RunGame(StartStmt start)
         {
-            BlockStmt scene = ProcessGoToExpr(start.GoTo);
+            GoToAddress = (string)EvaluateExpr(start.Location);
+            SceneStmt scene = RunGoTo();
             while (true)
             {
                 scene = RunScene(scene);
+                //Console.WriteLine("The last scene has been successfully ran");
             }
         }
 
-        private BlockStmt RunScene(BlockStmt scene)
+        private SceneStmt RunScene(SceneStmt scene)
         {
+            string localScene = scene.Name;
             // Reset local scope.
             Env.ClearLocal();
 
-            foreach (Stmt stmt in scene.Statements)
+            foreach (Stmt stmt in scene.Body)
             {
                 EvaluateStmt(stmt);
             }
@@ -368,16 +369,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     InteractableStmt istmt = Env.GetLocal(i-1);
                     RunInteractable(istmt);
-                    Console.WriteLine("I am after the interactable is ran in the while");
+                    if (GoToAddress != localScene) { break; }
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }
+            return Env.GetScene(GoToAddress);
         }
 
         private void RunInteractable(InteractableStmt stmt)
         {
             EvaluateStmt(stmt.Body);
-            Console.WriteLine("I have been evaluated - Interactable");
         }
     }
 }

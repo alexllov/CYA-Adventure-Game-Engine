@@ -100,19 +100,4 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             }
         }
     }
-
-    public class GoToParselet : IPrefixParselet
-    {
-        int _Precedence;
-        public GoToParselet(int precedence = Precedence.PREFIX)
-        {
-            _Precedence = precedence;
-        }
-        public Expr Parse(Parser parser, Token token)
-        {
-            Expr location = parser.ParseExpression(_Precedence);
-            if (location is StringLitExpr stringloc) { return new GoToExpr(stringloc); }
-            throw new Exception($"Error, received GoTo with invalid location param. Should be of type string, but received: {location} of type: {location.GetType()}");
-        }
-    }
 }

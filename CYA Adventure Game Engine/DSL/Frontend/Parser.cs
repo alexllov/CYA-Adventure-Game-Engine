@@ -21,7 +21,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
             {TokenType.LParent, new ParentParselet()},
-            {TokenType.GoTo, new GoToParselet()}
         };
 
         Dictionary<TokenType, IInfixParselet> InfixParts = new()
@@ -151,6 +150,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 case TokenType.Start:
                     return ParseStart();
 
+                case TokenType.GoTo:
+                    return ParseGoTo();
+
                 // Scene & Components.
                 case TokenType.Scene:
                     return ParseSceneStmt();
@@ -167,7 +169,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        private Stmt ParseAssignStmt(AssignExpr expr)
+        private AssignStmt ParseAssignStmt(AssignExpr expr)
         {
             return new AssignStmt(expr.Name, expr.Value);
         }
@@ -176,7 +178,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// Constructs Stmt for imports. Allows for optional aliasing.
         /// </summary>
         /// <returns>ImportStmt</returns>
-        private Stmt ParseImportStmt()
+        private ImportStmt ParseImportStmt()
         {
             // Consume the 'import' token that IDd the stmt.
             Advance();
@@ -235,7 +237,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
-        private Stmt ParseInteractable()
+        private InteractableStmt ParseInteractable()
         { 
             Expr name = ParseExpression(0);
             Stmt body = ParseBlock(TokenType.RBracket);
@@ -261,14 +263,22 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             }
         }
 
-        private Stmt ParseStart()
+        private StartStmt ParseStart()
         {
             // Consume "Start" token.
-            Advance();
+            Consume(TokenType.Start);
             Expr ID = ParseExpression(0);
             if (!(ID is StringLitExpr slID)) { throw new Exception($"Unexpected Expr type following START. Expected String Literal, received {ID} of type {ID.GetType()}."); }
-            GoToExpr goTo = new GoToExpr(slID);
-            return new StartStmt(goTo);
+            return new StartStmt(slID);
+        }
+
+        private Stmt ParseGoTo()
+        {
+            // Consume "GoTo" token.
+            Consume(TokenType.GoTo);
+            Expr loc = ParseExpression(0);
+            if (!(loc is StringLitExpr sLoc)) { throw new Exception($"Unexpected Expr type following START. Expected String Literal, received {loc} of type {loc.GetType()}."); }
+            return new GoToStmt(sLoc);
         }
 
         private Stmt ParseSceneStmt()

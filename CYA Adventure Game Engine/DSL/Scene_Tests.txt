@@ -8,11 +8,8 @@ scene "opening"
 name = (ask "What is your name?: ")
 (say "Hello " name)
 ["wow, howd you do that?" (say "i store what you tell me")]
-["I can take you downstairs!" -> "downstairs"]
-[if name == "alex"
-then ["your name is alex" (say "this is good")]
-else ["your name is not alex" (say "Need to fix this")]
-]
+["I can take you downstairs!" (say "cool, lets go") -> "downstairs"]
+#[if name == "alex" then ["your name is alex" (say "this is good") -> "downstairs"] else ["your name is not alex" (say "Need to fix this")]]
 
 scene "downstairs"
 "Wow, now we're downstairs"

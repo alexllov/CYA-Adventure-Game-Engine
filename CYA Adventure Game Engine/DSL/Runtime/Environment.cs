@@ -19,7 +19,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "ask", NativeFunctions.Ask },
         };
 
-        private Dictionary<string, BlockStmt> Scenes = new();
+        private Dictionary<string, SceneStmt> Scenes = new();
 
         public List<InteractableStmt> Local = new();
 
@@ -47,15 +47,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return Env[name];
         }
 
-        public void SetScene(string name, BlockStmt value)
+        public void SetScene(string name, SceneStmt value)
         {
             if (Scenes.ContainsKey(name)) { throw new Exception($"Error, a Scene with the name {name} has already been declared."); }
             Scenes[name] = value;
         }
 
-        public BlockStmt GetScene(string name) 
+        public SceneStmt GetScene(string name) 
         {
-            if (Scenes.TryGetValue(name, out BlockStmt? block)) { return block; }
+            if (Scenes.TryGetValue(name, out SceneStmt? scene)) { return scene; }
             else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
         }
 

@@ -158,18 +158,19 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
     }
 
-    public class GoToExpr : Expr
-    {
-        public StringLitExpr Location;
-        public GoToExpr(StringLitExpr location)
-        {
-            Location = location;
-        }
-        public override string ToString()
-        {
-            return $"GoToExpr(Location: {Location})";
-        }
-    }
+    // TODO: DELETE THIS
+    //public class GoToExpr : Expr
+    //{
+    //    public StringLitExpr Location;
+    //    public GoToExpr(StringLitExpr location)
+    //    {
+    //        Location = location;
+    //    }
+    //    public override string ToString()
+    //    {
+    //        return $"GoToExpr(Location: {Location})";
+    //    }
+    //}
 
     // =============== Statements ===============
 
@@ -270,10 +271,26 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     // Start: the starting GoTo for the game.
     public class StartStmt : Stmt
     {
-        public GoToExpr GoTo;
-        public StartStmt(GoToExpr goTo)
+        public StringLitExpr Location;
+        public StartStmt(StringLitExpr loc)
         {
-            GoTo = goTo;
+            Location = loc;
+        }
+    }
+
+    // GoTo: Controls Flow between scenes.
+
+    public class GoToStmt : Stmt
+    {
+        public StringLitExpr Location;
+
+        public GoToStmt(StringLitExpr loc)
+        {
+            Location = loc;
+        }
+        public override string ToString()
+        {
+            return $"GoToStmt({Location})";
         }
     }
 
