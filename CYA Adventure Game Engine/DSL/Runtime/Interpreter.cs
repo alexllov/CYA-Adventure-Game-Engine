@@ -41,7 +41,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             HoistScenes();
             foreach (Stmt stmt in AST)
             {
-                EvaluateStmt(stmt);
+                stmt.Interpret(Env);
             }
         }
 
@@ -60,115 +60,23 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             AST = sceneStmts.Concat(generalStmts).Concat(startStmts).ToList();
         }
 
-        /// <summary>
-        /// Evaluates each <seealso cref="Stmt"/> within the AST.
-        /// </summary>
-        /// <param name="stmt">Stmt: the next statement within the AST to be parsed</param>
-        /// <exception cref="Exception"></exception>
-        private void EvaluateStmt(Stmt stmt)
+        // TODO:
+        //Fully Separate Run Logic.
+        // After the foreach loop for stmts from the AST is completed,
+        // -> RunGame & use the Global Env created from intrepreting in there.
+        public void RunGame()
         {
-            switch (stmt)
-            {
-                case SceneStmt sstmt:
-                    AssignSceneStmt(sstmt);
-                    break;
-
-                case InteractableStmt istmt:
-                    AssignInteractableStmt(istmt);
-                    break;
-
-                case StartStmt start:
-                    RunGame(start);
-                    break;
-
-                case GoToStmt goTo:
-                    GoToAddress = (string)EvaluateExpr(goTo.Location);
-                    break;
-
-                // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
-                case AssignStmt assStmt:
-                    EvalAssignStmt(assStmt);
-                    break;
-
-                case BlockStmt bStmt:
-                    EvalBlockStmt(bStmt);
-                    break;
-
-                case IfStmt istmt:
-                    EvalIfStmt(istmt);
-                    break;
-
-                case ExprStmt exprStmt:
-                    Expr expr = exprStmt.Expr;
-                    EvaluateExpr(expr);
-                    break;
-
-                default:
-                    throw new Exception($"Unknown Node type encountered: {stmt}, type: {stmt.GetType()}");
-            }
-        }
-
-        private object EvaluateExpr(Expr expr)
-        {
-            return expr.Interpret(Env);
-        }
-
-        private void AssignSceneStmt(SceneStmt stmt)
-        {
-            Env.SetScene(stmt.Name, stmt);
-        }
-
-        public void AssignInteractableStmt(InteractableStmt stmt)
-        {
-            Env.AddLocal(stmt);
-        }
-
-        private void EvalAssignStmt(AssignStmt stmt)
-        {
-            if (stmt.Name is VariableExpr nameExpr)
-            {
-                string name = nameExpr.ToString();
-                object value = EvaluateExpr(stmt.Value);
-                Env.SetVal(name, value);
-            }
-        }
-
-        private void EvalIfStmt(IfStmt stmt)
-        {
-            var condition = EvaluateExpr(stmt.Condition);
-            if (condition is not bool) { throw new Exception("Error, If statement condition does not evaluate to true or false."); }
-            if ((bool)condition)
-            {
-                EvaluateStmt(stmt.ThenBranch);
-            }
-            else if (stmt.ElseBranch is not null)
-            {
-                EvaluateStmt(stmt.ElseBranch);
-            }
-        }
-
-        public void EvalBlockStmt(BlockStmt block)
-        {
-            foreach (Stmt stmt in block)
-            {
-                EvaluateStmt(stmt);
-            }
-        }
-
-        private SceneStmt RunGoTo()
-        {
-            SceneStmt nextScene = Env.GetScene(GoToAddress);
-            return nextScene;
-        }
-
-        private void RunGame(StartStmt start)
-        {
-            GoToAddress = (string)EvaluateExpr(start.Location);
             SceneStmt scene = RunGoTo();
             while (true)
             {
                 scene = RunScene(scene);
             }
+        }
+
+        private SceneStmt RunGoTo()
+        {
+            SceneStmt nextScene = Env.GetScene(Env.GetGoTo());
+            return nextScene;
         }
 
         private SceneStmt RunScene(SceneStmt scene)
@@ -177,15 +85,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             // Reset local scope.
             Env.ClearLocal();
 
-            foreach (Stmt stmt in scene.Body)
-            {
-                EvaluateStmt(stmt);
-            }
+            scene.Body.Interpret(Env);
+            
             Console.WriteLine("\nOptions:");
             int num = 1;
             foreach (InteractableStmt interactable in Env.Local)
             {
-                Console.WriteLine($"{num}. {EvaluateExpr(interactable.Name)}");
+                Console.WriteLine($"{num}. {interactable.Name.Interpret(Env)}");
                 num++;
             }
 
@@ -197,16 +103,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     InteractableStmt istmt = Env.GetLocal(i-1);
                     RunInteractable(istmt);
-                    if (GoToAddress != localScene) { break; }
+                    if (Env.GetGoTo() != localScene) { break; }
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }
-            return Env.GetScene(GoToAddress);
+            return Env.GetScene(Env.GetGoTo());
         }
 
         private void RunInteractable(InteractableStmt stmt)
         {
-            EvaluateStmt(stmt.Body);
+            stmt.Body.Interpret(Env);
         }
     }
 }

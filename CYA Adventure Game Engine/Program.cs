@@ -23,6 +23,7 @@ var env = new Environment();
 // add "debug" for debug mode.
 Interpreter interpreter = new(parser.AST, env);
 interpreter.Interpret();
+interpreter.RunGame();
 
 
 

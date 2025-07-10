@@ -23,6 +23,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         public List<InteractableStmt> Local = new();
 
+        public string GoTo = new("");
+
         public Environment() { }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             Scenes[name] = value;
         }
 
-        public SceneStmt GetScene(string name) 
+        public SceneStmt GetScene(string name)
         {
             if (Scenes.TryGetValue(name, out SceneStmt? scene)) { return scene; }
             else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
@@ -79,6 +81,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             if (i != 0 && Local.Count() >= i) { return true; }
             else { return false; }
+        }
+
+        public void SetGoTo(string address)
+        {
+            GoTo = address;
+        }
+
+        public string GetGoTo()
+        {
+            return GoTo;
         }
     }
 }

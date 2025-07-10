@@ -4,13 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CYA_Adventure_Game_Engine.DSL.Frontend;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
 {
     // =============== Abstract ===============
 
     // Statement: an action to be performed.
-    public abstract class Stmt { }
+    public interface Stmt 
+    {
+        public abstract void Interpret(Environment state);
+    }
 
     // =============== Statements ===============
 
@@ -27,6 +32,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         {
             return $"ExprStmt({Expr})";
         }
+
+        public void Interpret(Environment state)
+        {
+            Expr.Interpret(state);
+        }
     }
 
     public class AssignStmt : Stmt
@@ -42,6 +52,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         public override string ToString()
         {
             return $"AssignStmt(Name: {Name}, Value: {Value})";
+        }
+
+        public void Interpret(Environment state)
+        {
+            if (Name is VariableExpr vExpr)
+            {
+                var name = vExpr.Value;
+                object value = Value.Interpret(state);
+                state.SetVal(name, value);
+            }
+            else { throw new Exception("Error, invalid argument passed as variable name."); }
         }
     }
 
@@ -63,11 +84,25 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         {
             return $"IfStmt(Condition: {Condition}, ThenBranch: {ThenBranch}, ElseBranch: {ElseBranch})";
         }
+
+        public void Interpret(Environment state)
+        {
+            var condition = Condition.Interpret(state);
+            if (condition is not bool) { throw new Exception("Error, If statement condition does not evaluate to true or false."); }
+            if ((bool)condition)
+            {
+                ThenBranch.Interpret(state);
+            }
+            else if (ElseBranch is not null)
+            {
+                ElseBranch.Interpret(state);
+            }
+        }
     }
 
     // Block statements. Used for const of Scenes & Choices(?).
     //TODO ^^ clean up this comment.
-    public class BlockStmt : Stmt, IEnumerable<Stmt>
+    public class BlockStmt : Stmt
     {
         public List<Stmt> Statements;
         public BlockStmt(List<Stmt> statements)
@@ -79,14 +114,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
             return $"BlockStmt(Statements: [\n    {string.Join("\n    ", Statements)}])";
         }
 
-        public IEnumerator<Stmt> GetEnumerator()
+        public void Interpret(Environment state)
         {
-            return Statements.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            foreach (Stmt stmt in Statements)
+            {
+                stmt.Interpret(state);
+            }
         }
     }
 
@@ -104,6 +137,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         {
             return Alias == null ? $"ImportStmt(Module: {Module})" : $"ImportStmt(Module: {Module}, Alias: {Alias})";
         }
+
+        public void Interpret(Environment state)
+        {
+            throw new Exception("Error, not yet implemented.");
+        }
     }
 
     // Personal Stmt Types for repr game objects.
@@ -115,6 +153,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         public StartStmt(StringLitExpr loc)
         {
             Location = loc;
+        }
+
+        public void Interpret(Environment state)
+        {
+            string loc = (string)Location.Interpret(state);
+            state.SetGoTo(loc);
         }
     }
 
@@ -132,6 +176,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         {
             return $"GoToStmt({Location})";
         }
+
+        public void Interpret(Environment state)
+        {
+            string loc = (string)Location.Interpret(state);
+            state.SetGoTo(loc);
+        }
     }
 
     // Scene.
@@ -148,6 +198,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         {
             return $"SceneStmt(\n  Name: {Name}, \n  Body: {Body})";
         }
+
+        public void Interpret(Environment state)
+        {
+            state.SetScene(Name, this);
+        }
     }
 
     // Interactable.
@@ -163,6 +218,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
         public override string ToString()
         {
             return $"InteractableStmt(Name: {Name}, Body: {Body})";
+        }
+
+        public void Interpret(Environment state)
+        {
+            state.AddLocal(this);
         }
     }
 
