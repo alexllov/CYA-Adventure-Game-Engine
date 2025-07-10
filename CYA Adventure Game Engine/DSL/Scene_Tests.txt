@@ -20,6 +20,24 @@
 
 
 
+-> "opening"
 
+scene "opening"
+"This is a test default string"
 name = (ask "What is your name?: ")
 (say "Hello " name)
+["wow, howd you do that?" (say "i store what you tell me")]
+["I can take you downstairs!" -> "downstairs"]
+
+scene "downstairs"
+"Wow, now we're downstairs"
+
+scene "variable"
+var = 5
+end
+
+scene "inter"
+["test" (say "test")]
+
+scene "empty"
+

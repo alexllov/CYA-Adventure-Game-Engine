@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -134,11 +135,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     public class FuncExpr : Expr
     {
         public Expr Method;
-        public List<Expr>? Arguments;
+        public List<Expr> Arguments;
         public FuncExpr(Expr method, List<Expr> arguments = null)
         {
             Method = method;
-            Arguments = arguments;
+            Arguments = arguments ?? [];
         }
         public override string ToString()
         {
@@ -159,8 +160,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
     public class GoToExpr : Expr
     {
-        public Expr Location;
-        public GoToExpr(Expr location)
+        public StringLitExpr Location;
+        public GoToExpr(StringLitExpr location)
         {
             Location = location;
         }
@@ -225,7 +226,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
     // Block statements. Used for const of Scenes & Choices(?).
     //TODO ^^ clean up this comment.
-    public class BlockStmt : Stmt
+    public class BlockStmt : Stmt, IEnumerable<Stmt>
     {
         public List<Stmt> Statements;
         public BlockStmt(List<Stmt> statements)
@@ -235,6 +236,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public override string ToString() 
         {
             return $"BlockStmt(Statements: [\n    {string.Join("\n    ", Statements)}])";
+        }
+
+        public IEnumerator<Stmt> GetEnumerator()
+        {
+            return Statements.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

@@ -14,22 +14,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
     {
-        // TODO: Fix type declr
-        public string Code;
-        // TODO: Properly set up AST && Appending stuff for parser s.t. this can take an AST proper.
         public List<Stmt> AST;
 
+        // Debug = print Expr results.
         private bool DebugMode;
 
-        // Base default functions.
-        public List<string> DefaultFuncs = new List<string>
-        {
-            "say",
-            "ask",
-            "save",
-            "back",
-        };
-
+        // Binary Operator SubTypes.
         public Dictionary<string, List<TokenType>> BinaryOperators = new()
         {
             { "arithmetic", [TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide] },
@@ -37,21 +27,38 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "logical", [TokenType.And, TokenType.Or] },
         };
 
-        private Environment Global;
+        private Environment Env;
 
         public Interpreter(List<Stmt> Tree, Environment env, string mode="default")
         {
             AST = Tree;
-            Global = env;
+            Env = env;
             DebugMode = mode == "debug" ? true : false;
         }
 
         public void Interpret()
         {
+            /*
+             * Prior Set-up to simulate hoisting of Scenes.
+             * This allows scenes to be written in any order & ensure the GoTos function.
+             */
+            HoistScenes();
             foreach (Stmt stmt in AST)
             {
                 EvaluateStmt(stmt);
             }
+        }
+
+        private void HoistScenes()
+        {
+            List<SceneStmt> sceneStmts = new();
+            List<Stmt> generalStmts = new();
+            foreach (Stmt stmt in AST)
+            {
+                if (stmt is SceneStmt sstmt) { sceneStmts.Add(sstmt); }
+                else { generalStmts.Add(stmt); }
+            }
+            AST = sceneStmts.Concat(generalStmts).ToList();
         }
 
         /// <summary>
@@ -64,36 +71,21 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             switch (stmt)
             {
-                //case FuncExpr func:
-                //    if (func._Expr.Method is VariableExpr &&
-                //        DefaultFuncs.Contains(func._Expr.Method.ToString()))
-                //    {
-                //        switch (func._Expr.Method.ToString())
-                //        {
-                //            case "say":
-                //                if (func._Expr.Arguments == null)
-                //                {
-                //                    throw new Exception("Error, received a 'say' func missing required argument.");
-                //                }
-                //                else
-                //                {
-                //                    Console.WriteLine($"{string.Join("", func._Expr.Arguments)}");
-                //                }
-                //                break;
-                //            default:
-                //                throw new Exception("Error, received an unknown default func?? (This should not be possible.)");
-                //        }
-                //    }
-                //    break;
+                case SceneStmt sstmt:
+                    AssignSceneStmt(sstmt);
+                    break;
 
-                //case BinaryStmt binaryStmt:
-                //    Console.WriteLine($"Binary Expression: {binaryExpr.Left} {binaryExpr.Operator} {binaryExpr.Right}");
-                //    break;
-
+                case InteractableStmt istmt:
+                    AssignInteractableStmt(istmt);
+                    break;
 
                 // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
                 case AssignStmt assStmt:
                     EvalAssignStmt(assStmt);
+                    break;
+
+                case BlockStmt bStmt:
+                    EvalBlockStmt(bStmt);
                     break;
 
                 case IfStmt istmt:
@@ -122,6 +114,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     return bResult;
                 case FuncExpr fExpr:
                     return ProcessFuncExpr(fExpr);
+                // TODO: Figure out what to do with this.
+                /*
+                 * Return true; is in as a placeholder.
+                 * This might just endlessly nest into itself.
+                 */
+                case GoToExpr gtExpr:
+                    BlockStmt nextScene = ProcessGoToExpr(gtExpr);
+                    RunScene(nextScene);
+                    return true;
                 case NumberLitExpr num:
                     return num.Value;
                 case PrefixExpr pExpr:
@@ -131,19 +132,29 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 case StringLitExpr str:
                     return str.Value;
                 case VariableExpr variable:
-                    return Global.GetVal(variable.Value);
+                    return Env.GetVal(variable.Value);
                 default:
                     throw new Exception($"Unknown Expr type detected. Expr: {expr.GetType()}");
             }
         }
 
+        private void AssignSceneStmt(SceneStmt stmt)
+        {
+            Env.SetScene(stmt.Name, stmt.Body);
+        }
+
+        public void AssignInteractableStmt(InteractableStmt stmt)
+        {
+            Env.AddLocal(stmt);
+        }
+
         private void EvalAssignStmt(AssignStmt stmt)
         {
-            if (stmt.Name is VariableExpr)
+            if (stmt.Name is VariableExpr nameExpr)
             {
-                string name = stmt.Name.ToString();
+                string name = nameExpr.ToString();
                 object value = EvaluateExpr(stmt.Value);
-                Global.SetVal(name, value);
+                Env.SetVal(name, value);
             }
         }
 
@@ -159,6 +170,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             else if (stmt.ElseBranch is not null)
             {
                 EvaluateStmt(stmt.ElseBranch);
+            }
+        }
+
+        public void EvalBlockStmt(BlockStmt block)
+        {
+            foreach (Stmt stmt in block)
+            {
+                EvaluateStmt(stmt);
             }
         }
 
@@ -287,7 +306,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private object ProcessFuncExpr(FuncExpr expr)
         {
-            object result = null;
             // TODO: this needs reworign s.t. proper funcs & dot funcs will work & other things can throw appropriate errors.
             var function = EvaluateExpr(expr.Method);
             List<object> args = new List<object>();
@@ -303,7 +321,36 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             {
                 return arglessFunc();
             }
-                return null;
+            throw new Exception("Function call of unsupported argument type found.");
+        }
+
+        private BlockStmt ProcessGoToExpr(GoToExpr expr)
+        {
+            string SceneAddr = (string)EvaluateExpr(expr.Location);
+            Console.WriteLine($"SceneAddr: {SceneAddr}");
+            BlockStmt nextScene = Env.GetScene(SceneAddr);
+            return nextScene;
+        }
+
+        private void RunScene(BlockStmt scene)
+        {
+            // Reset local scope.
+            Env.ClearLocal();
+
+            foreach (Stmt stmt in scene.Statements)
+            {
+                EvaluateStmt(stmt);
+            }
+            Console.WriteLine("Options:");
+            int num = 1;
+            foreach (InteractableStmt interactable in Env.Local)
+            {
+                Console.WriteLine($"{num}. {EvaluateExpr(interactable.Name)}");
+                num++;
+            }
+            Console.Write("Enter your Selection: ");
+            var choice = Console.ReadLine();
+            Console.WriteLine($"You chose: {choice}");
         }
     }
 }

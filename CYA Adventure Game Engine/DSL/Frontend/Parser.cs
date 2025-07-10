@@ -279,7 +279,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                      * ^^ THIS is probably the correct solution.
                      */
                     case TokenType.String:
-                        FuncExpr say = new(new FuncExpr(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]));
+                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
                         ExprStmt sayStmt = new(say);
                         parts.Add(sayStmt);
                         // Advance needed as Stmt hand made, so string part isn't being consumed.

@@ -111,7 +111,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public Expr Parse(Parser parser, Token token)
         {
             Expr location = parser.ParseExpression(_Precedence);
-            return new GoToExpr(location);
+            if (location is StringLitExpr stringloc) { return new GoToExpr(stringloc); }
+            throw new Exception($"Error, received GoTo with invalid location param. Should be of type string, but received: {location} of type: {location.GetType()}");
         }
     }
 }

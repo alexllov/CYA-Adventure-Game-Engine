@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,9 +15,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         /// </summary>
         private Dictionary<string, object> Env = new()
         {
-            { "say", new Func<List<object>,object>(NativeFunctions.Say) },
-            { "ask", new Func<List<object>,object>(NativeFunctions.Ask) },
+            { "say", NativeFunctions.Say },
+            { "ask", NativeFunctions.Ask },
         };
+
+        private Dictionary<string, BlockStmt> Scenes = new();
+
+        public List<InteractableStmt> Local = new();
 
         public Environment() { }
 
@@ -40,6 +45,34 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             if (!(Env.ContainsKey(name))) { throw new Exception($"Error, tried to use non-assigned variable, {name}"); }
             return Env[name];
+        }
+
+        public void SetScene(string name, BlockStmt value)
+        {
+            if (Scenes.ContainsKey(name)) { throw new Exception($"Error, a Scene with the name {name} has already been declared."); }
+            Scenes[name] = value;
+        }
+
+        public BlockStmt GetScene(string name) 
+        {
+            if (Scenes.TryGetValue(name, out BlockStmt? block)) { return block; }
+            else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
+        }
+
+        public void ClearLocal()
+        {
+            Local = [];
+        }
+
+        public void AddLocal(InteractableStmt interactable)
+        {
+            Local.Add(interactable);
+        }
+
+        public InteractableStmt GetLocal(int i)
+        {
+            if (Local.Count() < i) { throw new Exception("List index out of range."); }
+            else { return Local[i]; }
         }
     }
 }
