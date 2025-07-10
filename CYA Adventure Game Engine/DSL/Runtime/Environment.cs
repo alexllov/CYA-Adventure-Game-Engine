@@ -74,5 +74,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             if (Local.Count() < i) { throw new Exception("List index out of range."); }
             else { return Local[i]; }
         }
+
+        public bool HasLocal(int i)
+        {
+            if (i != 0 && Local.Count() >= i) { return true; }
+            else { return false; }
+        }
     }
 }

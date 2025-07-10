@@ -341,16 +341,30 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             {
                 EvaluateStmt(stmt);
             }
-            Console.WriteLine("Options:");
+            Console.WriteLine("\nOptions:");
             int num = 1;
             foreach (InteractableStmt interactable in Env.Local)
             {
                 Console.WriteLine($"{num}. {EvaluateExpr(interactable.Name)}");
                 num++;
             }
-            Console.Write("Enter your Selection: ");
-            var choice = Console.ReadLine();
-            Console.WriteLine($"You chose: {choice}");
+
+            while (true)
+            {
+                Console.Write("Enter your Selection: ");
+                var choice = Console.ReadLine();
+                if (int.TryParse(choice, out int i) && Env.HasLocal(i)) 
+                {
+                    InteractableStmt istmt = Env.GetLocal(i-1);
+                    RunInteractable(istmt);
+                }
+                else { Console.WriteLine("Error, invalid selection."); }
+            }
+        }
+
+        private void RunInteractable(InteractableStmt stmt)
+        {
+            EvaluateStmt(stmt.Body);
         }
     }
 }

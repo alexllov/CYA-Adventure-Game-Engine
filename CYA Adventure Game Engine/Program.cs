@@ -16,7 +16,7 @@ tokenizer.Tokenize();
 
 Parser parser = new(tokenizer.Tokens);
 parser.Parse();
-parser.Show();
+//parser.Show();
 
 Console.WriteLine("Entering Interpreter.");
 var env = new Environment();
