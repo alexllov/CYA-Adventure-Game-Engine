@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 case TokenType.Identifier:
                     return new VariableExpr(token.Lexeme);
                 case TokenType.Number:
-                    return new NumberLitExpr(double.Parse(token.Lexeme));
+                    return new NumberLitExpr(float.Parse(token.Lexeme));
                 case TokenType.String:
                     return new StringLitExpr(token.Lexeme);
                 default:

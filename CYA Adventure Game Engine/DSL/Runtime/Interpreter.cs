@@ -1,10 +1,12 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
+using CYA_Adventure_Game_Engine.DSL.Frontend.AST;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
@@ -18,14 +20,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         // Debug = print Expr results.
         private bool DebugMode;
-
-        // Binary Operator SubTypes.
-        public Dictionary<string, List<TokenType>> BinaryOperators = new()
-        {
-            { "arithmetic", [TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide] },
-            { "relational", [TokenType.Equal,TokenType.NotEqual, TokenType.GreaterEqual, TokenType.GreaterThan, TokenType.LessEqual, TokenType.LessThan] },
-            { "logical", [TokenType.And, TokenType.Or] },
-        };
 
         private Environment Env;
 
@@ -41,7 +35,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void Interpret()
         {
             /*
-             * Prior Set-up to simulate hoisting of Scenes.
+             * Prior Set-up to hoist Scenes.
              * This allows scenes to be written in any order & ensure the GoTos function.
              */
             HoistScenes();
@@ -67,10 +61,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         }
 
         /// <summary>
-        /// Evaluates each Stmt & Expr within the AST.
-        /// Uses generalized type 'Node' s.t. recursive calls can extrace Expr values from within stmts.
+        /// Evaluates each <seealso cref="Stmt"/> within the AST.
         /// </summary>
-        /// <param name="node">Node: the next node within the AST to be parsed</param>
+        /// <param name="stmt">Stmt: the next statement within the AST to be parsed</param>
         /// <exception cref="Exception"></exception>
         private void EvaluateStmt(Stmt stmt)
         {
@@ -105,8 +98,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     EvalIfStmt(istmt);
                     break;
 
-                case ExprStmt:
-                    Expr expr = ((ExprStmt)stmt).Expr;
+                case ExprStmt exprStmt:
+                    Expr expr = exprStmt.Expr;
                     EvaluateExpr(expr);
                     break;
 
@@ -117,30 +110,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private object EvaluateExpr(Expr expr)
         {
-            switch (expr)
-            {
-                case AssignExpr:
-                    throw new Exception("Untreated Assign Expression found. Parser Problem.");
-                case BinaryExpr bExpr:
-                    object bResult = ProcessBinaryExpr(bExpr);
-                    if (DebugMode) { Console.WriteLine(bResult); }
-                    return bResult;
-                case FuncExpr fExpr:
-                    return ProcessFuncExpr(fExpr);
-
-                case NumberLitExpr num:
-                    return num.Value;
-                case PrefixExpr pExpr:
-                    object pResult = ProcessPrefixExpr(pExpr);
-                    if (DebugMode) { Console.WriteLine(pResult); }
-                    return pResult;
-                case StringLitExpr str:
-                    return str.Value;
-                case VariableExpr variable:
-                    return Env.GetVal(variable.Value);
-                default:
-                    throw new Exception($"Unknown Expr type detected. Expr: {expr.GetType()}");
-            }
+            return expr.Interpret(Env);
         }
 
         private void AssignSceneStmt(SceneStmt stmt)
@@ -185,149 +155,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             }
         }
 
-        /// <summary>
-        /// Helper func. Pass a type & list of args. If any are not of the expected type, Error thrown.
-        /// </summary>
-        /// <param name="type">object type</param>
-        /// <param name="items">list of args</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        private bool CheckType(Type type, params object[] items)
-        {
-            foreach (object item in items) 
-            { 
-                if (!type.IsInstanceOfType(item))
-                {
-                    throw new Exception($"Invalid argument type detected. Expeected {type}, but got {item.GetType()} instead.");
-                }
-            }
-            return true;
-        }
-
-
-        private object ProcessBinaryExpr(BinaryExpr expr)
-        {
-            var left = EvaluateExpr(expr.Left);
-            var right = EvaluateExpr(expr.Right);
-
-            if (BinaryOperators["arithmetic"].Contains(expr.Operator))
-            {
-                // Check type validity for numeric operators
-                CheckType(typeof(double), [left, right]);
-
-                switch (expr.Operator)
-                {
-                    case TokenType.Plus:
-                        return (double)left + (double)right;
-                    case TokenType.Minus:
-                        return (double)left - (double)right;
-                    case TokenType.Multiply:
-                        return (double)left * (double)right;
-                    case TokenType.Divide:
-                        if ((double)right == 0) { throw new Exception("Division by 0 error."); }
-                        return (double)left / (double)right;
-                    default:
-                        throw new Exception("How did we end up here? Valid arithmetic operator detected but not present");
-                }
-            }
-            else if (BinaryOperators["relational"].Contains(expr.Operator))
-            {
-                switch (expr.Operator)
-                { 
-                    case TokenType.Equal:
-                        return left.Equals(right);
-                    case TokenType.NotEqual:
-                        return !(left.Equals(right));
-                    case TokenType.GreaterEqual:
-                        CheckType(typeof(double), [left, right]);
-                        return (double)left >= (double)right;
-                    case TokenType.GreaterThan:
-                        CheckType(typeof(double), [left, right]);
-                        return (double)left > (double)right;
-                    case TokenType.LessEqual:
-                        CheckType(typeof(double), [left, right]);
-                        return (double)left <= (double)right;
-                    case TokenType.LessThan:
-                        CheckType(typeof(double), [left, right]);
-                        return (double)left < (double)right;
-                    default:
-                        throw new Exception("How did we end up here? Valid relational operator detected but not present");
-                }
-            }
-            else if (BinaryOperators["logical"].Contains(expr.Operator))
-            {
-                switch (expr.Operator) 
-                {
-                    case TokenType.And:
-                        CheckType(typeof(bool), [left, right]);
-                        return (bool)left && (bool)right;
-                    case TokenType.Or:
-                        CheckType(typeof(bool), [left, right]);
-                        return (bool)left || (bool)right;
-                    default:
-                        throw new Exception("How did we end up here? Valid logical detected but not present");
-                }
-            }
-            else
-            {
-                throw new Exception("Invalid binary expression operator found.");
-            }
-        }
-
-
-        private object ProcessPrefixExpr(PrefixExpr expr)
-        {
-            var operand = EvaluateExpr(expr.Operand);
-            switch (expr.Operator)
-            {
-                case TokenType.Plus:
-                    return operand;
-                case TokenType.Minus:
-                    if (operand is not double)
-                    {
-                        throw new Exception($"Invalid value taking '-' prefix of type: {operand.GetType()}");
-                    }
-                    else
-                    {
-                        return -(double)operand;
-                    }
-                case TokenType.Not:
-                    if (operand is not bool)
-                    {
-                        throw new Exception($"Invalid value taking '!' prefix of type: {operand.GetType()}");
-                    }
-                    else
-                    {
-                        return !(bool)operand;
-                    }
-                default:
-                    throw new Exception($"Error, prefix of type {expr.Operator.GetType()} not yet supported.");
-            }
-        }
-
-        private object ProcessFuncExpr(FuncExpr expr)
-        {
-            // TODO: this needs reworign s.t. proper funcs & dot funcs will work & other things can throw appropriate errors.
-            var function = EvaluateExpr(expr.Method);
-            List<object> args = new List<object>();
-            foreach (Expr arg in expr.Arguments) 
-            {
-                args.Add(EvaluateExpr(arg));
-            }
-            if (function is Func<List<object>,object> multArgFunc) 
-            {
-                return multArgFunc(args); 
-            }
-            else if (function is Func<object> arglessFunc)
-            {
-                return arglessFunc();
-            }
-            throw new Exception("Function call of unsupported argument type found.");
-        }
-
         private SceneStmt RunGoTo()
         {
-            Console.WriteLine($"SceneAddr: {GoToAddress}");
             SceneStmt nextScene = Env.GetScene(GoToAddress);
             return nextScene;
         }
@@ -339,7 +168,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             while (true)
             {
                 scene = RunScene(scene);
-                //Console.WriteLine("The last scene has been successfully ran");
             }
         }
 
