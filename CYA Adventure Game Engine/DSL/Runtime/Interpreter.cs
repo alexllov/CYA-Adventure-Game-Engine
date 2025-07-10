@@ -53,12 +53,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             List<SceneStmt> sceneStmts = new();
             List<Stmt> generalStmts = new();
+            List<Stmt> startStmts = new();
             foreach (Stmt stmt in AST)
             {
-                if (stmt is SceneStmt sstmt) { sceneStmts.Add(sstmt); }
+                if (stmt is SceneStmt scene) { sceneStmts.Add(scene); }
+                else if (stmt is StartStmt start) { startStmts.Add(start); }
                 else { generalStmts.Add(stmt); }
             }
-            AST = sceneStmts.Concat(generalStmts).ToList();
+            if (startStmts.Count > 1) { throw new Exception("Error, multiple Start points declared. There can only be one"); }
+            AST = sceneStmts.Concat(generalStmts).Concat(startStmts).ToList();
         }
 
         /// <summary>
@@ -77,6 +80,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
                 case InteractableStmt istmt:
                     AssignInteractableStmt(istmt);
+                    break;
+
+                case StartStmt start:
+                    RunGame(start);
                     break;
 
                 // Should Consist of BinaryExpr, PrefixExpr, AssignExpr.
@@ -120,9 +127,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                  * This might just endlessly nest into itself.
                  */
                 case GoToExpr gtExpr:
-                    BlockStmt nextScene = ProcessGoToExpr(gtExpr);
-                    RunScene(nextScene);
-                    return true;
+                    return ProcessGoToExpr(gtExpr);
+
                 case NumberLitExpr num:
                     return num.Value;
                 case PrefixExpr pExpr:
@@ -161,7 +167,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         private void EvalIfStmt(IfStmt stmt)
         {
             var condition = EvaluateExpr(stmt.Condition);
-            Console.WriteLine($"Condition = {condition}");
             if (condition is not bool) { throw new Exception("Error, If statement condition does not evaluate to true or false."); }
             if ((bool)condition)
             {
@@ -231,9 +236,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 switch (expr.Operator)
                 { 
                     case TokenType.Equal:
-                        Console.WriteLine($"Left: {left.GetType()}");
-                        Console.WriteLine($"Right: {right.GetType()}");
-                        if (left == right) { Console.WriteLine("They are equal"); }
                         return left.Equals(right);
                     case TokenType.NotEqual:
                         return !(left.Equals(right));
@@ -332,7 +334,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return nextScene;
         }
 
-        private void RunScene(BlockStmt scene)
+        private void RunGame(StartStmt start)
+        {
+            BlockStmt scene = ProcessGoToExpr(start.GoTo);
+            while (true)
+            {
+                scene = RunScene(scene);
+            }
+        }
+
+        private BlockStmt RunScene(BlockStmt scene)
         {
             // Reset local scope.
             Env.ClearLocal();
@@ -357,6 +368,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     InteractableStmt istmt = Env.GetLocal(i-1);
                     RunInteractable(istmt);
+                    Console.WriteLine("I am after the interactable is ran in the while");
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }
@@ -365,6 +377,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         private void RunInteractable(InteractableStmt stmt)
         {
             EvaluateStmt(stmt.Body);
+            Console.WriteLine("I have been evaluated - Interactable");
         }
     }
 }

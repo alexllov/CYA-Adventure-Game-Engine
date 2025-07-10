@@ -22,6 +22,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             {"import", TokenType.Import },
             {"as", TokenType.As },
+            {"START", TokenType.Start },
             {"->", TokenType.GoTo },
             {"scene", TokenType.Scene },
             {"table", TokenType.Table },

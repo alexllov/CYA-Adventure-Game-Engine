@@ -18,9 +18,10 @@ Parser parser = new(tokenizer.Tokens);
 parser.Parse();
 //parser.Show();
 
-Console.WriteLine("Entering Interpreter.");
+//Console.WriteLine("Entering Interpreter.");
 var env = new Environment();
-Interpreter interpreter = new(parser.AST, env, "debug");
+// add "debug" for debug mode.
+Interpreter interpreter = new(parser.AST, env);
 interpreter.Interpret();
 
 

@@ -148,13 +148,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 case TokenType.LBracket:
                     return ParseBracket();
 
+                case TokenType.Start:
+                    return ParseStart();
+
                 // Scene & Components.
                 case TokenType.Scene:
                     return ParseSceneStmt();
                     
                 default:
                     Expr expr = ParseExpression(0);
-                    if (expr is AssignExpr){ return ParseAssignStmt((AssignExpr)expr); }
+                    if (expr is AssignExpr aExpr){ return ParseAssignStmt(aExpr); }
                     else { return new ExprStmt(expr); }
             }
         }
@@ -256,6 +259,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 default:
                     throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}");
             }
+        }
+
+        private Stmt ParseStart()
+        {
+            // Consume "Start" token.
+            Advance();
+            Expr ID = ParseExpression(0);
+            if (!(ID is StringLitExpr slID)) { throw new Exception($"Unexpected Expr type following START. Expected String Literal, received {ID} of type {ID.GetType()}."); }
+            GoToExpr goTo = new GoToExpr(slID);
+            return new StartStmt(goTo);
         }
 
         private Stmt ParseSceneStmt()

@@ -21,7 +21,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         Comment,
         If, Then, Else, While,
         Scene, Table, Code, End,
-        GoTo,
+        GoTo, Start,
         LBracket, RBracket, LParent, RParent,
         EOF,
     }

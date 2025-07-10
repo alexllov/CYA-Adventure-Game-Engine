@@ -1,26 +1,7 @@
 
 
 
-#scene "Home"
-#"Hello player, you are at home."
-#name = (ask "what is your name?")
-#[if 1 == 1 then name = "reassigned"]
-#["How do you know my name?" (say "I am able to store your responses to reuse information you give me.")]
-#["Go downstairs" -> "Downstairs"]
-#
-#scene "Downstairs"
-#"Well, this is the downstairs. Theres nothing here yet."
-#["Go back home" -> "Home"]
-#
-#test = 1
-#1 * (2 + 3)
-#(2 * 3) + 1
-#
-#!(2+3)
-
-
-
--> "opening"
+START "opening"
 
 scene "opening"
 "This is a test default string"
@@ -28,9 +9,16 @@ name = (ask "What is your name?: ")
 (say "Hello " name)
 ["wow, howd you do that?" (say "i store what you tell me")]
 ["I can take you downstairs!" -> "downstairs"]
+[if name == "alex"
+then ["your name is alex" (say "this is good")]
+else ["your name is not alex" (say "Need to fix this")]
+]
 
 scene "downstairs"
 "Wow, now we're downstairs"
+["test" (say "test")]
+["choice" -> "inter"]
+["other" -> "variable"]
 
 scene "variable"
 var = 5

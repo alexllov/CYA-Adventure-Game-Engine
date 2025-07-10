@@ -266,6 +266,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     }
 
     // Personal Stmt Types for repr game objects.
+
+    // Start: the starting GoTo for the game.
+    public class StartStmt : Stmt
+    {
+        public GoToExpr GoTo;
+        public StartStmt(GoToExpr goTo)
+        {
+            GoTo = goTo;
+        }
+    }
+
     // Scene.
     public class SceneStmt : Stmt
     {
