@@ -1,4 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
+    /// <summary>
+    /// Infix: an operator between a left & right hand expression.
+    /// </summary>
     internal interface IInfixParselet
     {
-        Expr Parse(Parser parser, Expr left, Token token);
+        IExpr Parse(Parser parser, IExpr left, Token token);
         int GetPrecedence();
     }
 
+    /// <summary>
+    /// Processes variable assignments.
+    /// </summary>
     public class AssignParselet : IInfixParselet
     {
         int _Precedence;
@@ -22,9 +28,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             _Precedence = precedence;
         }
 
-        public Expr Parse(Parser parser, Expr left, Token token)
+        public IExpr Parse(Parser parser, IExpr left, Token token)
         {
-            Expr right = parser.ParseExpression(Precedence.ASSIGNMENT - 1);
+            IExpr right = parser.ParseExpression(Precedence.ASSIGNMENT - 1);
 
             if (!(left is VariableExpr or DotExpr))
             {
@@ -43,6 +49,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     
     }
 
+    /// <summary>
+    /// Processes a binary operator between two expressions.
+    /// </summary>
     public class BinaryOperatorParselet : IInfixParselet
     {
         int _Precedence;
@@ -51,10 +60,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             _Precedence = precedence;
         }
-        public Expr Parse(Parser parser, Expr left, Token token)
+        public IExpr Parse(Parser parser, IExpr left, Token token)
         {
             // Parse the right side of the expression.
-            Expr right = parser.ParseExpression(_Precedence);
+            IExpr right = parser.ParseExpression(_Precedence);
             // Return a new binary expression with the left side, operator, and right side.
             return new BinaryExpr(left, token.Type, right);
         }
@@ -65,6 +74,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
     }
 
+    /// <summary>
+    /// Creates a DotExpr.
+    /// </summary>
     public class DotParselet : IInfixParselet
     {
         int _Precedence;
@@ -72,10 +84,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             _Precedence = precedence;
         }
-        public Expr Parse(Parser parser, Expr left, Token token)
+        public IExpr Parse(Parser parser, IExpr left, Token token)
         {
             // Parse the right side of the expression.
-            Expr right = parser.ParseExpression(_Precedence);
+            IExpr right = parser.ParseExpression(_Precedence);
             return new DotExpr(left, right);
         }
         public int GetPrecedence()

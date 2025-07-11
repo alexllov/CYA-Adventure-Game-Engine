@@ -6,23 +6,26 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
+    /// <summary>
+    /// Token Types.
+    /// </summary>
     public enum TokenType
     {
         None,
         Import, As,
         Identifier, Number, String,
-        Dot,
-        Comma,
-        Pipe,
         Plus, Minus, Multiply, Divide,
         Assign, Equal, NotEqual, GreaterThan, GreaterEqual, LessThan, LessEqual,
         Not,
         And, Or,
-        Comment,
         If, Then, Else, While,
         Scene, Table, Code, End,
         GoTo, Start,
         LBracket, RBracket, LParent, RParent,
+        Dot,
+        Comma,
+        Pipe,
+        Comment,
         EOF,
     }
     public class Token

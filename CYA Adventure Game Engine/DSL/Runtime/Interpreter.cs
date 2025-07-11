@@ -1,5 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
-using CYA_Adventure_Game_Engine.DSL.Frontend.AST;
+using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -16,7 +16,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
     {
-        public List<Stmt> AST;
+        public List<IStmt> AST;
 
         // Debug = print Expr results.
         private bool DebugMode;
@@ -25,7 +25,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private string GoToAddress;
 
-        public Interpreter(List<Stmt> Tree, Environment env, string mode="default")
+        public Interpreter(List<IStmt> Tree, Environment env, string mode="default")
         {
             AST = Tree;
             Env = env;
@@ -39,7 +39,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
              * This allows scenes to be written in any order & ensure the GoTos function.
              */
             HoistScenes();
-            foreach (Stmt stmt in AST)
+            foreach (IStmt stmt in AST)
             {
                 stmt.Interpret(Env);
             }
@@ -48,9 +48,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         private void HoistScenes()
         {
             List<SceneStmt> sceneStmts = new();
-            List<Stmt> generalStmts = new();
-            List<Stmt> startStmts = new();
-            foreach (Stmt stmt in AST)
+            List<IStmt> generalStmts = new();
+            List<IStmt> startStmts = new();
+            foreach (IStmt stmt in AST)
             {
                 if (stmt is SceneStmt scene) { sceneStmts.Add(scene); }
                 else if (stmt is StartStmt start) { startStmts.Add(start); }

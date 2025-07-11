@@ -1,4 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -15,7 +15,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     internal interface IPrefixParselet
     {
-        Expr Parse(Parser parser, Token token);
+        IExpr Parse(Parser parser, Token token);
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     public class NameParselet : IPrefixParselet
     {
-        public Expr Parse(Parser parser, Token token)
+        public IExpr Parse(Parser parser, Token token)
         {
             switch (token.Type)
             {
@@ -52,10 +52,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             _Precedence = precedence;
         }
-        public Expr Parse(Parser parser, Token token)
+        public IExpr Parse(Parser parser, Token token)
         {
             // Parse the next part of the expression.
-            Expr operand = parser.ParseExpression(_Precedence);
+            IExpr operand = parser.ParseExpression(_Precedence);
             // Return a new prefix expression with the operator and right side.
             return new PrefixExpr(token.Type, operand);
         }
@@ -72,13 +72,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             _Precedence = precedence;
         }
 
-        public Expr Parse(Parser parser, Token token)
+        public IExpr Parse(Parser parser, Token token)
         {
-            List<Expr> parts = new List<Expr>();
+            List<IExpr> parts = new List<IExpr>();
             while (!(parser.Peek(0).Type is TokenType.RParent))
             {
                 // TODO: May need to fiddle with Precedence value here. Could be _Precedence.
-                Expr part = parser.ParseExpression(0);
+                IExpr part = parser.ParseExpression(0);
                 parts.Add(part);
             }
             parser.Consume(TokenType.RParent);
@@ -88,10 +88,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 case BinaryExpr:
                     return parts[0];
                 default:
-                    Expr function = parts[0];
+                    IExpr function = parts[0];
                     if (parts.Count > 1)
                     {
-                        List<Expr> args = parts[1..];
+                        List<IExpr> args = parts[1..];
                         return new FuncExpr(function, args);
                     }
                     else

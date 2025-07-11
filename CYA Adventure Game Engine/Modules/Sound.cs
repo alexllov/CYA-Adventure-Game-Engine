@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Media;
 
-namespace CYA_Adventure_Game_Engine
+namespace CYA_Adventure_Game_Engine.Modules
 {
     // TODO: Set up as static class to handle sound effects.
     // Does not need instances to be made, hence can be static.

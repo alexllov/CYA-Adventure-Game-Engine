@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
-    public class Precedence
+    /// <summary>
+    /// Contains the binding hierarchy for Pratt Parsing.
+    /// </summary>
+    public static class Precedence
     {
         public const int ASSIGNMENT = 1;
         public const int OR = 2;

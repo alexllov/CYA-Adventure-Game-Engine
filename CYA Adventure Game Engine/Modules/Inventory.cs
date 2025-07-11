@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine
+namespace CYA_Adventure_Game_Engine.Modules
 {
     public class Inventory : IModule
     // Use to create inventories for players / other entities.

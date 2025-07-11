@@ -7,9 +7,6 @@ using System.Collections.Generic;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 
-//SetupLoader setup = new("./Occult/setup.cya");
-//Dictionary<string, IModule> state = setup.State;
-
 // "./Occult/Occult basic.cya"
 Tokenizer tokenizer = new("./DSL/Scene_Tests.txt");
 tokenizer.Tokenize();
