@@ -6,40 +6,40 @@ A text and audio based interface to laod and play 'interactive fiction' games in
 
 ## **Implementation**
 
-The tokenizer and parser process game files to construct an object then interpreted by the game engine.
+Game writing and loading depends on a Domain Specific Language (DSL) created for this project.
+
+A tokenizer, parser, and interpreter are implemented to prepare the gamefile to run.
 
 **Key Components**
 
-**Scene** - a 'scene' is a location within the story, equivalent to a page or index within a game book. Any given scene should contain a unique ID, text, and choices for the user to pick betwen. A scene can also take 'actions'.
+**Scene** - a 'scene' is a location within the story, equivalent to a page or index within a game book. Any given scene should contain a unique ID, text, and 'Interactables' (choices) for the user to pick betwen.
 
-**Choice** - on any given scene, a user will be presented with multiple choices for the path/ action for them to take. Any 'choice' should contain text and a 'target' location (the scene to which the user should be sent after the choice is successfully processed). A scene can also take 'actions'. Choices should only exist within scenes.
+**Interactable** - on any given scene, a user will be presented with multiple ways to interact with the game. These are broadly categorised into "annotations" which allow the user to access additional content while remaining on the same scene, and "choices" which will move the user to the next scene.
 
-**Action** - an action represents a modification to state, or IO effect - for example a sound effect, or modification to the player's inventory. When a player selects a choice, the actions attached to it should first be evaluated (to assure all can be completed given the current state), then processed such that the appropriate changes are made. Actions should only exist within scenes or choices.
+**Event** - an event represents a function call that will either modify the gamestate or produce an IO effect. For example, a "say" function will display additional text to the player.
 
-## **Sample** (from Occult)
+## **Sample**
 
-1
+scene "bedroom"
+
+name = (ask "What is your name?: ")
+
+(say "Hello " name)
 
 "You awake in your bedroom."
 
-"This is a second string as a feature test."
+"This is a second string and will be shown as a separate paragraph."
 
-\> Go Downstairs -> 2 \[i.need slippers, socks]\[s.play ./sounds/world/door.wav]
+\["Scream" (say "You scream. AAAAAAA")]
 
-\> Scream -> 3
-
-\> Try to eat your laptop -> 4
-
-\> Roll a dice HIGH -> 1 \[if d.2d6 >6 then \[i.add sword] otherwise -> 17]
-
-\> Put on slippers -> 5 \[i.add slippers]
+\["Go Downstairs" -> "downstairs"]
 
 ### **Key**
 
-Plaintext identifies scene id (here, 1). Everything between here and the next scene id will be added to this scene.
+Strings within a scene are treated as sugar for say calls, with the loose string as the argument. Separate strings are treated as sequential calls here and become distinct paragraphs.
 
-"" -string text is registered as scene text, and is the first thing displayed to the user. 
+name = (ask "What is your name?: ") : This is a variable assignment that uses an 'ask' function to present the user with a prompt text, and store their response. This allows for personalisation techniques to be implemented.
 
-\> - lines beginning with a > are registered as choices. The text following is the choice text presented to the user, ending at the arrow, '->'. The arrow is used to identify the target, which proceeds it.
+\["Scream" (say "You scream. AAAAAAA")] : This is an annotation presented to the user. The initial string, "Scream" is presented as the option description. Upon selection, the body - in this case a single function call - is interpreted.
 
-[] - actions are shown in braces.
+\["Go Downstairs" -> "downstairs"] : This is a choice. Just like the prior annotation, the initial string is presented to the user as the option description. Upon selection, the body is interpreted. In this case, that is a GoTo, moving the player to their next scene, "downstairs" (provided as the argument following the GoTo '->').
