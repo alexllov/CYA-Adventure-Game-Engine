@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections;
+﻿using CYA_Adventure_Game_Engine.DSL.Runtime;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement
+namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
     // =============== Abstract ===============
+
+    // Expression: evaluates to a value.
     /// <summary>
-    /// Statements: contain an action to be performed that modifies the environment & game flow.
-    /// Does not return a value.
+    /// Expression: Contains a code-piece that can be evaluated to a value.
+    /// Returns this value back out to a statement.
     /// 
     /// Methods:
-    /// Interpret(Environment) - details how a statement should be interpreted given the information held in the environment.
+    /// Interpret(Environment) - details how an expression should be evaluated given the information held in the environment.
     /// </summary>
-    public interface IStmt 
+    public interface IExpr 
     {
         /// <summary>
         /// Interpreter method.
         /// </summary>
         /// <param name="state">Environment state object</param>
         /// <exception cref="Exception">Invalid Parameter as Variable Name Exception</exception>
-        public abstract void Interpret(Environment state);
+        public abstract object Interpret(Environment state);
     }
-
 }

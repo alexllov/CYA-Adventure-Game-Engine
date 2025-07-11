@@ -1,4 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST
+namespace CYA_Adventure_Game_Engine.DSL.AST
 {
     /// <summary>
     /// Abstract Syntax Tree: Contains a list of top-level statements, which can contain other statements, and expressions.

@@ -1,26 +1,21 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement
+namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
 {
     /// <summary>
-    /// GoTo: Controls Flow between scenes.
+    /// The starting GoTo for the game.
     /// </summary>
-    public class GoToStmt : IStmt
+    public class StartStmt : IStmt
     {
         public StringLitExpr Location;
-
-        public GoToStmt(StringLitExpr loc)
+        public StartStmt(StringLitExpr loc)
         {
             Location = loc;
-        }
-        public override string ToString()
-        {
-            return $"GoToStmt({Location})";
         }
 
         public void Interpret(Environment state)

@@ -1,4 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +88,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             // Parse the right side of the expression.
             IExpr right = parser.ParseExpression(_Precedence);
-            return new DotExpr(left, right);
+            if (right is VariableExpr rVar) { return new DotExpr(left, rVar); }
+            else { throw new Exception("Error, tried to construct Dot expression with an invalid right argument. Must be a Variable Expression."); }
+
         }
         public int GetPrecedence()
         {

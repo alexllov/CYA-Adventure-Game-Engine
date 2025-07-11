@@ -4,22 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression
+namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
     /// <summary>
-    /// StringLitExpr: Holds a string literal.
+    /// Contains a Number Literal, held as a float.
     /// </summary>
-    public class StringLitExpr : IExpr
+    public class NumberLitExpr : IExpr
     {
-        public string Value;
-        public StringLitExpr(string val)
+        public float Value;
+        public NumberLitExpr(float val)
         {
             Value = val;
         }
+
         public override string ToString()
         {
-            // TODO: Set up a DebugToString for parser purposes that contians this return.
-            return $"StringLitExpr({Value})";
+            return $"NumberLitExpr({Value})";
         }
 
         public object Interpret(Environment state) { return Value; }

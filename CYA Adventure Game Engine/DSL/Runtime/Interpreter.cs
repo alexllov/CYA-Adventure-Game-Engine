@@ -1,5 +1,5 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
-using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using CYA_Adventure_Game_Engine.DSL.Frontend;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;

@@ -1,4 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.AST.Statement;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using System;
 using System.Collections.Generic;
 using System.Linq;

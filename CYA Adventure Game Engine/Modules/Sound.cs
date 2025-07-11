@@ -11,6 +11,7 @@ namespace CYA_Adventure_Game_Engine.Modules
     // Does not need instances to be made, hence can be static.
     public class Sound : IModule
     {
+        public static string Data = "I am the data :)";
 
         (bool, string) IModule.Query(string method, List<string> body)
         {
@@ -21,5 +22,12 @@ namespace CYA_Adventure_Game_Engine.Modules
             new SoundPlayer (body.First()).Play();
             return (true, "");
         }
+
+        public static void PlayFunc()
+        {
+            Console.WriteLine("Wowee, i played a sound (no sound will actually play)");
+        }
+
+        public static Action Play = PlayFunc;
     }
 }

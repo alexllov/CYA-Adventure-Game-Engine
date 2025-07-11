@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression
+namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
     /// <summary>
     /// Contains a function call:
@@ -52,6 +53,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.AST.Expression
             else if (function is Func<object> arglessFunc)
             {
                 return arglessFunc();
+            }
+            else if (function is Action action)
+            {
+                action();
+                return null;
             }
             throw new Exception("Function call of unsupported argument type found.");
         }

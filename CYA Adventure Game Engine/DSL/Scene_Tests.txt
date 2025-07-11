@@ -1,5 +1,7 @@
 
-
+import Sound as s
+(say s.Data)
+(s.Play)
 
 START "opening"
 
