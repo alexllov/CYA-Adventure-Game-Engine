@@ -1,4 +1,5 @@
-﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+﻿using CYA_Adventure_Game_Engine.DSL.AST;
+using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using CYA_Adventure_Game_Engine.DSL.Frontend;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
     {
-        public List<IStmt> AST;
+        public AbstSyntTree AST;
 
         // Debug = print Expr results.
         private bool DebugMode;
@@ -25,7 +26,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private string GoToAddress;
 
-        public Interpreter(List<IStmt> Tree, Environment env, string mode="default")
+        public Interpreter(AbstSyntTree Tree, Environment env, string mode="default")
         {
             AST = Tree;
             Env = env;
@@ -57,7 +58,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 else { generalStmts.Add(stmt); }
             }
             if (startStmts.Count > 1) { throw new Exception("Error, multiple Start points declared. There can only be one"); }
-            AST = sceneStmts.Concat(generalStmts).Concat(startStmts).ToList();
+            AST = new AbstSyntTree(sceneStmts.Concat(generalStmts).Concat(startStmts).ToList());
         }
 
         // TODO:

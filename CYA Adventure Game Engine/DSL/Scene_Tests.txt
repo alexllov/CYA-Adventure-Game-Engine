@@ -1,20 +1,23 @@
 
 import Sound as s
+#import dice as d
 
 START "opening"
 
-(say s.Data)
+
+#(say (d.roll "2d6"))
 
 scene "opening"
-name = (ask "what is your name?: ")
-door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Occult\sounds\world\door.wav"
-(s.play door_open)
-(say "Hello " name)
-["wow, howd you do that?" (say "i store what you tell me")]
-["I can take you downstairs!" (say "cool, lets go") -> "downstairs"]
-[if name == "alex"
-then ["your name is alex" (say "this is good")]
-else ["your name is not alex" (say "Need to fix this")]]
+	name = (ask "what is your name?: ")
+	door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Occult\sounds\world\door.wav"
+	(s.play door_open)
+	(say "Hello " name)
+	["wow, howd you do that?" (say "i store what you tell me")]
+	["I can take you downstairs!" (say "cool, lets go") -> "downstairs"]
+	[if name == "alex"
+	then ["your name is alex" (say "this is good")]
+	else ["your name is not alex" (say "Need to fix this")]
+	]
 
 scene "downstairs"
 "Wow, now we're downstairs"

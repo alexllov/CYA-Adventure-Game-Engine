@@ -2,6 +2,7 @@
 using CYA_Adventure_Game_Engine;
 using CYA_Adventure_Game_Engine.DSL.Frontend;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
+using CYA_Adventure_Game_Engine.DSL.AST;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
@@ -9,16 +10,16 @@ using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 // "./Occult/Occult basic.cya"
 Tokenizer tokenizer = new("./DSL/Scene_Tests.txt");
-tokenizer.Tokenize();
+List<Token> tokens = tokenizer.Tokenize();
 
-Parser parser = new(tokenizer.Tokens);
-parser.Parse();
-//parser.Show();
+Parser parser = new(tokens);
+AbstSyntTree AST = parser.Parse();
+//AST.Show();
 
 //Console.WriteLine("Entering Interpreter.");
 var env = new Environment();
 // add "debug" for debug mode.
-Interpreter interpreter = new(parser.AST, env);
+Interpreter interpreter = new(AST, env);
 interpreter.Interpret();
 interpreter.RunGame();
 

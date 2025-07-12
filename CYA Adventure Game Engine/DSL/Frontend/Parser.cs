@@ -1,4 +1,5 @@
-﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
+﻿using CYA_Adventure_Game_Engine.DSL.AST;
+using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using System;
 using System.Collections.Generic;
@@ -58,18 +59,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public List<IStmt> AST = new List<IStmt>();
 
-        /// <summary>
-        /// Debug method.
-        /// </summary>
-        public void Show()
-        {
-            Console.WriteLine("AST Statements:");
-            foreach (var stmt in AST)
-            {
-                Console.WriteLine(stmt);
-            }
-        }
-
         public Parser(List<Token> tokens) 
         {
             Tokens = tokens;
@@ -78,12 +67,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <summary>
         /// Takes the Token list initially passed into the parser and constructs an AST from it.
         /// </summary>
-        public void Parse()
+        public AbstSyntTree Parse()
         {
             while (Peek(0).Type != TokenType.EOF)
             {
                 AST.Add(ParseStmt());
             }
+            return new AbstSyntTree(AST);
         }
 
         /// <summary>
