@@ -35,7 +35,7 @@ namespace CYA_Adventure_Game_Engine.Modules
 
         // Verify if the requested action can be completed.
         // -> tuple (true/false, "error msg")
-        (bool, string) IModule.Query(string method, List<string> body)
+        (bool, string) Query(string method, List<string> body)
         {
             switch (method)
             {
@@ -69,7 +69,7 @@ namespace CYA_Adventure_Game_Engine.Modules
             }
         }
 
-        (bool, string) IModule.Process(string method, List<string> body)
+        (bool, string) Process(string method, List<string> body)
         {
             //var queryCheck = Query(method, body);
             //if (queryCheck.Item1) {}

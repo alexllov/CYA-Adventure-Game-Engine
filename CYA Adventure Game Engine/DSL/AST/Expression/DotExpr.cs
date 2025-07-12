@@ -27,35 +27,28 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 
         public object Interpret(Environment state)
         {
-            //throw new Exception("Not yet implemented Dot Exprs.");
+            // Left must be interpreted first to find outermost object.
             var left = Left.Interpret(state);
             var type = left.GetType();
 
-            // TODO: build if stmt here to go through field, property & method(?)
-            var field = type.GetField(Right.Value);
-            if (field != null) 
-            {
-                Console.WriteLine($"Field found: {Right.Value}");
-                var fieldItem = field.GetValue(left);
-                return fieldItem;
-            }
+            var member = type.GetMember(Right.Value,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance
+                | BindingFlags.IgnoreCase);
 
-            var property = type.GetProperty(Right.Value);
-            if (property != null)
+            switch (member)
             {
-                Console.WriteLine($"Property found: {Right.Value}");
-                var propertyItem = property.GetValue(left);
-                return propertyItem;
+                case []:
+                    throw new Exception($"Failed to find a member of {left} with the name {Right.Value}");
+                case [MethodInfo method, ..]:
+                    Func<object[], object?> func = (object[] args) => method.Invoke(left, args);
+                    return func;
+                case [FieldInfo field, ..]:
+                    return field.GetValue(left);
+                case [PropertyInfo property, ..]:
+                    return property.GetValue(left);
+                default:
+                    throw new Exception($"Unimplemented Member type found for attribute {Right.Value} within {left}.");
             }
-
-            var method = type.GetMethod(Right.Value);
-            if (method != null)
-            {
-                Console.WriteLine($"Method found: {Right.Value}");
-                return method;//.Invoke;
-            }
-
-            throw new Exception($"Error, requested right hand of dot expression {Right.Value}, not found as a field, property, or method within the class: {left}");
         }
     }
 }

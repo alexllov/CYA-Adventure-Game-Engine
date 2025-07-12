@@ -6,12 +6,5 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine
 {
-    public interface IModule
-    {
-        //string Name { get; }
-        // TODO: change Process return stuff;
-        public (bool, string) Process (string method, List<string> body);
-
-        public (bool, string) Query(string method, List<string> body);
-    }
+    public interface IModule { }
 }

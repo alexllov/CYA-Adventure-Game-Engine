@@ -15,9 +15,9 @@ namespace CYA_Adventure_Game_Engine.Injection
     {
         public static IServiceCollection AddBaseModules(this IServiceCollection services)
         {
-            services.AddSingleton<IModule, Dice>();
-            services.AddSingleton<IModule, Inventory>();
-            services.AddSingleton<IModule, Sound>();
+            //services.AddSingleton<IModule, Dice>();
+            //services.AddSingleton<IModule, Inventory>();
+            //services.AddSingleton<IModule, Sound>();
             return services;
         }
 

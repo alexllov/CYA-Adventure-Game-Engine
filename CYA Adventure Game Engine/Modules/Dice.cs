@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.Modules
 {
-    internal class Dice : IModule
+    internal class Dice
     {
-        (bool, string) IModule.Query(string method, List<string> body)
+        (bool, string) Query(string method, List<string> body)
         {
             return (true, "");
         }
 
-        (bool, string) IModule.Process(string method, List<string> body)
+        (bool, string) Process(string method, List<string> body)
         {
             var rand = new Random();
 
@@ -29,5 +29,7 @@ namespace CYA_Adventure_Game_Engine.Modules
             }
             return (true, $"{tot}");
         }
+
+
     }
 }

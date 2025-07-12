@@ -50,16 +50,25 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             {
                 return multArgFunc(args);
             }
-            else if (function is Func<object> arglessFunc)
+            else if (function is Func<List<object>, object> arglessFunc)
             {
-                return arglessFunc();
+                return arglessFunc(args);
             }
-            else if (function is Action action)
+            else if (function is Action<List<object>> action)
             {
-                action();
+                action(args);
                 return null;
             }
-            throw new Exception("Function call of unsupported argument type found.");
+            else if (function is Action<List<object>> argAction)
+            {
+                argAction(args);
+                return null;
+            }
+            else if (function is Func<object[], object?> DotExprFunc)
+            {
+                return DotExprFunc([.. args]);
+            }
+            else { throw new Exception("Function call of unsupported argument type found."); }
         }
     }
 }
