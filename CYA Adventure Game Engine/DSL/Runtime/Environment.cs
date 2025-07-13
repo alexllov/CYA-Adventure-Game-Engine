@@ -17,6 +17,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             { "say", NativeFunctions.Say },
             { "ask", NativeFunctions.Ask },
+            { "num", NativeFunctions.Num },
         };
 
         private Dictionary<string, SceneStmt> Scenes = new();

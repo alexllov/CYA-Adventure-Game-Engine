@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 
 namespace CYA_Adventure_Game_Engine.Modules
 {
-    internal class Dice
+    internal class Dice : IModule
     {
-        (bool, string) Query(string method, List<string> body)
-        {
-            return (true, "");
-        }
-
-        (bool, string) Process(string method, List<string> body)
+        public int Roll(string rollType)
         {
             var rand = new Random();
-
-            //Work out the dice to roll
-            var numbers = method.Split('d').Select(int.Parse).ToList();
+            if (!(rollType.Contains('d'))) 
+            { throw new Exception(
+                "Error, wrongly formatted call to Dice.Roll function. " +
+                "String argument must be formatted as xdy where x is the number of dice to roll and y is the size of the dice. " +
+                "Please ensure these are searated by a 'd'"
+                );
+            }
+            var numbers = rollType.Split('d').Select(int.Parse).ToList();
             int diceCount = numbers[0];
             int diceSides = numbers[1];
-            int tot = 0;
+            int total = 0;
             for (int i = 0; i < diceCount; i++)
             {
-                tot += rand.Next(1, diceSides + 1);
+                total += rand.Next(1, diceSides + 1);
             }
-            return (true, $"{tot}");
+            return total;
         }
-
-
     }
 }

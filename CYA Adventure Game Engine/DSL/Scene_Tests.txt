@@ -1,13 +1,48 @@
 
 import Sound as s
-#import dice as d
+import Dice as d
+import PlayerSheet as p
 
-START "opening"
+START "stats"
 
+scene "stats"
+	remaining_points = p.startingpoints
+	(say "Hello. You have " p.startingpoints 
+		 " points to assign to 6 stats: Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma."
+	)
+	v1 = (num (ask "Assign to Strength: "))
+	remaining_points = remaining_points - v1
+	(say "you have " remaining_points " remaining.")
 
-#(say (d.roll "2d6"))
+	v2 = (num (ask "Assign to Dexterity: "))
+	remaining_points = remaining_points - v2
+	(say "you have " remaining_points " remaining.")
+
+	v3 = (num (ask "Assign to Constitution: "))
+	remaining_points = remaining_points - v3
+	(say "you have " remaining_points " remaining.")
+
+	v4 = (num (ask "Assign to Intelligence: "))
+	remaining_points = remaining_points - v4
+	(say "you have " remaining_points " remaining.")
+
+	v5 = (num (ask "Assign to Wisdom: "))
+	remaining_points = remaining_points - v5
+	(say "you have " remaining_points " remaining.")
+
+	v6 = (num (ask "Assign to Charisma: "))
+	remaining_points = remaining_points - v6
+	(say "you have " remaining_points " remaining.")
+
+	"Are you happy with your choices?"
+	(say "str: " v1 ", dex: " v2 ", Con: " v3 ", Int: " v4 ", Wis: " v5 ", Cha: " v6)
+	["No" (say "Ok, we'll start again.") -> "stats"]
+	["Yes" (p.set "str" v1)(p.set "dex" v2)(p.set "con" v3)(p.set "int" v4)(p.set "wis" v5)(p.set "cha" v6) -> "opening"]
+
 
 scene "opening"
+	roll = (d.roll "4d6")
+	(say "roll rolled: " roll)
 	name = (ask "what is your name?: ")
 	door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Occult\sounds\world\door.wav"
 	(s.play door_open)

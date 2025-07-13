@@ -31,7 +31,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public static object Ask(List<object> args)
         {
             Console.Write($"{string.Join("", args)}");
-            return Console.ReadLine();
+            string result = Console.ReadLine();
+            return result;
+        }
+
+        public static object Num(List<object> arg)
+        {
+            if (float.TryParse(arg[0].ToString(), out float fl)) { return fl; }
+            else { throw new Exception($"Error, could not convert arg: {arg} of type: {arg.GetType()} to num."); }
         }
     }
 }

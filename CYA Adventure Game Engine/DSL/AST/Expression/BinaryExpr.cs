@@ -2,7 +2,10 @@
 using CYA_Adventure_Game_Engine.DSL.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Numerics;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
@@ -48,6 +51,17 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             return true;
         }
 
+        private List<float> CoerceToFloat(object[] items)
+        {
+            List<float> results = new();
+            foreach (object item in items)
+            {
+                if (float.TryParse(item.ToString(), out var flt)) { results.Add(flt); }
+                else { throw new Exception($"Cannot coerce {item} to float."); }
+            }
+            return results;
+        }
+
         public object Interpret(Environment state)
         {
             var left = Left.Interpret(state);
@@ -56,7 +70,11 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             if (BinaryOperatorType.BinaryOperators["arithmetic"].Contains(Operator))
             {
                 // Check type validity for numeric operators
-                CheckType(typeof(float), [left, right]);
+                //CheckType(typeof(float), [left, right]);
+
+                List<float> result = CoerceToFloat([left, right]);
+                left = result[0];
+                right = result[1];
 
                 switch (Operator)
                 {
