@@ -9,7 +9,9 @@ using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 
 // "./Occult/Occult basic.cya"
-Tokenizer tokenizer = new("./DSL/Scene_Tests.txt");
+// "./DSL/Scene_Tests.txt"
+Dictionary<string, TokenType> keywords = BaseKeywords.Keywords;
+Tokenizer tokenizer = new("C:\\Users\\alexp\\source\\repos\\CYA Adventure Game Engine\\CYA Adventure Game Engine\\Journey Into Space\\Journey.cya", keywords);
 List<Token> tokens = tokenizer.Tokenize();
 
 Parser parser = new(tokens);

@@ -31,6 +31,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             var left = Left.Interpret(state);
             var type = left.GetType();
 
+            // TODO: Need to add a check in here to find if left is an IModule or not.
+
             var member = type.GetMember(Right.Value,
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance
                 | BindingFlags.IgnoreCase);

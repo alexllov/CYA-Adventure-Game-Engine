@@ -1,12 +1,15 @@
 ﻿
 # Journey into Space, Operation Luna, produced for the BBC by Charles Chilton
+import Sound as s
+
+#(s.Play "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Occult\sounds\world\door.wav")
 
 table crew
-| Name            | Role           |
-| Jett Morgan     | Captain        |
-| Steven Mitchell | Engineer       |
-| Lemmy Barnett   | Radio Operator |
-| Doc Matthews    | unknown        |
+| "Name"            | "Role"           |
+| "Jett Morgan"     | "Captain"        |
+| "Steven Mitchell" | "Engineer"       |
+| "Lemmy Barnett"   | "Radio Operator" |
+| "Doc Matthews"    | "unknown"        |
 end
 
 scene "1"
@@ -16,17 +19,11 @@ scene "1"
 "Already the scaffolding has been removed and the ground crew have taken cover from the shattering rocket blast that is soon to send the moon ship on its way."
 "Within the ship, outwardly calm and strapped to our couches, the four of us who are to make this journey are anxiously waiting for our captain to launch us out into space."
 # all above is actual script from the radio show
-(s.play ship_engine.wav)
 ["moon?" (say "Operation Luna and her crew will be the first ship to make orbit of the moon.")]
-["option 1" [event] [event] [event] -> "2"]
-(if 5 < 6
-	then
-		["This will always be added" (say "...")] # this is an annotation
-	else
-		["this is an experimental choice" (say "...") -> "2"]
-)
-end
 
 scene "2"
+"there's nothing here"
+end
 
 
+START "1"

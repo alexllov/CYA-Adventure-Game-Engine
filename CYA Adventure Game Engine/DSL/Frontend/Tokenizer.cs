@@ -18,35 +18,23 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         private int Start = 0, Pos = 0;
         // Pointer pos, used for debugging.
         private int Line = 1, Col = 1;
-        private static Dictionary<string, TokenType> Keywords = new()
-        {
-            {"import", TokenType.Import },
-            {"as", TokenType.As },
-            {"START", TokenType.Start },
-            {"->", TokenType.GoTo },
-            {"scene", TokenType.Scene },
-            {"table", TokenType.Table },
-            {"code", TokenType.Code },
-            {"end", TokenType.End },
-            {"if", TokenType.If },
-            {"then", TokenType.Then },
-            {"else", TokenType.Else },
-            {"while", TokenType.While },
-            {"and", TokenType.And },
-            {"or", TokenType.Or },
-        };
         
         // The Actual Tokens List.
         public List<Token> Tokens = new();
+
+        // Dict of known Keywords.
+        Dictionary<string, TokenType> Keywords;
 
         /// <summary>
         /// Tokenier constructor. Takes filepath to use as source code.
         /// Tokenizes the source code and stores it in the Tokens list.
         /// </summary>
         /// <param name="filepath">file path of game code</param>
-        public Tokenizer(string filepath)
+        public Tokenizer(string filepath, Dictionary<string, TokenType> keywords)
         {
             Source = File.ReadAllText(filepath);
+            Keywords = keywords; 
+
         }
         public void Show()
         {

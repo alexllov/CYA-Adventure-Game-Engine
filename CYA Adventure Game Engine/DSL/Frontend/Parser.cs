@@ -155,6 +155,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 // Scene & Components.
                 case TokenType.Scene:
                     return ParseSceneStmt();
+
+                // Table.
+                case TokenType.Table:
+                    return ParseTable();
                     
                 default:
                     IExpr expr = ParseExpression(0);
@@ -342,6 +346,50 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             // Convert List parts to BlockStmt.
             BlockStmt body = new(parts);
             return new SceneStmt(ID.Lexeme, body);
+        }
+
+        private IStmt ParseTable()
+        {
+            // Consule table token.
+            Advance();
+            // Next token should be variable table name.
+            IExpr ID = ParseExpression(0);
+            if (ID is not VariableExpr) { throw new Exception("table declaration should begin with a variable name."); }
+
+            List<List<IExpr>> records = new();
+            List<IExpr> row = new();
+            while (!HeaderEnds.Contains(Peek(0).Type))
+            {
+                if (Peek(0).Type is TokenType.Pipe && Peek(1).Type is TokenType.Pipe)
+                {
+                    records.Add(row);
+                    Advance();
+                    row = new();
+                }
+                else if (Peek(0).Type is TokenType.Pipe)
+                {
+                    Advance();
+                }
+                else
+                {
+                    IExpr attribute = ParseExpression(0);
+                    row.Add(attribute);
+                }
+
+                /*
+                 * Catch last record before EOF to add.
+                 * This is separate s.t. it doesn't consume that following token which could be the start of a scene.
+                 */
+                if (HeaderEnds.Contains(Peek(1).Type))
+                {
+                    records.Add(row);
+                    Consume(TokenType.Pipe);
+                    break;
+                }
+            }
+            // If table ends with an End token, consume it.
+            if (Peek(0).Type is TokenType.End) { Advance(); }
+            return new TableStmt((VariableExpr)ID, records);
         }
 
         /// <summary>
