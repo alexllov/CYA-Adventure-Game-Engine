@@ -19,11 +19,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public TableRow Get(string name)
         {
-            if (Data.ContainsKey(name))
+            if (Data.TryGetValue(name, out TableRow? value))
             {
-                return Data[name];
+                return value;
             }
-            else { throw new Exception($"Error, table {this} does not contain a record: {name}"); }
+            else { throw new Exception($"Error, table does not contain a record: {name}"); }
         }
 
         public override string ToString()

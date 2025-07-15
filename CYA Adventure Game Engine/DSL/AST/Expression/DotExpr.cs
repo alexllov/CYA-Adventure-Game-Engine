@@ -40,7 +40,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             switch (member)
             {
                 case []:
-                    throw new Exception($"Failed to find a member of {left} with the name {Right.Value}");
+                    throw new Exception($"Failed to find a member of {type} with the name {Right.Value}");
                 case [MethodInfo method, ..]:
                     Func<object[], object?> func = (object[] args) => method.Invoke(left, args);
                     return func;

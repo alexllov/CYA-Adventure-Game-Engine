@@ -4,13 +4,20 @@ import Sound as s
 
 #(s.Play "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Occult\sounds\world\door.wav")
 
+import Dice as d
+
 table crew
-| "Name"            | "Role"           |
-| "Jett Morgan"     | "Captain"        |
-| "Steven Mitchell" | "Engineer"       |
-| "Lemmy Barnett"   | "Radio Operator" |
-| "Doc Matthews"    | "unknown"        |
+| "Name"            | "Role"           | "Dice"			|
+| "Jett Morgan"     | "Captain"        | (d.roll "1d6") |
+| "Steven Mitchell" | "Engineer"       | (d.roll "1d6") |
+| "Lemmy Barnett"   | "Radio Operator" | (d.roll "1d6") |
+| "Doc Matthews"    | "unknown"        | (d.roll "1d6") |
 end
+
+(say "dice roll = " ((crew.get "Jett Morgan").get "Dice"))
+(say "dice roll = " ((crew.get "Steven Mitchell").get "Dice"))
+(say "dice roll = " ((crew.get "Lemmy Barnett").get "Dice"))
+(say "dice roll = " ((crew.get "Doc Matthews").get "Dice"))
 
 scene "1"
 "October the 19th, 1965"

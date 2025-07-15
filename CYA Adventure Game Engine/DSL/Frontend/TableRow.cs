@@ -17,11 +17,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public object Get(string name)
         {
-            if (Data.ContainsKey(name))
+            if (Data.TryGetValue(name, out object? value))
             {
-                return Data[name];
+                return value;
             }
-            else { throw new Exception($"Error, table {this} does not contain a record: {name}"); }
+            else { throw new Exception($"Error, tableRow does not contain a record: {name}"); }
         }
 
         public override string ToString()

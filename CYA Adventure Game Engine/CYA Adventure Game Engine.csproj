@@ -9,24 +9,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Occult\sounds\.DS_Store" />
-    <None Include="Occult\sounds\battle\.DS_Store" />
-    <None Include="Occult\sounds\interface\.DS_Store" />
-    <None Include="Occult\sounds\inventory\.DS_Store" />
-    <None Include="Occult\sounds\misc\.DS_Store" />
-    <None Include="Occult\sounds\NPC\.DS_Store" />
-    <None Include="Occult\sounds\NPC\beetle\.DS_Store" />
-    <None Include="Occult\sounds\NPC\giant\.DS_Store" />
-    <None Include="Occult\sounds\NPC\gutteral beast\.DS_Store" />
-    <None Include="Occult\sounds\NPC\misc\.DS_Store" />
-    <None Include="Occult\sounds\NPC\ogre\.DS_Store" />
-    <None Include="Occult\sounds\NPC\shade\.DS_Store" />
-    <None Include="Occult\sounds\NPC\slime\.DS_Store" />
-    <None Include="Occult\sounds\world\.DS_Store" />
+    <None Include="Samples\Occult\sounds\.DS_Store" />
+    <None Include="Samples\Occult\sounds\battle\.DS_Store" />
+    <None Include="Samples\Occult\sounds\interface\.DS_Store" />
+    <None Include="Samples\Occult\sounds\inventory\.DS_Store" />
+    <None Include="Samples\Occult\sounds\misc\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\beetle\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\giant\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\gutteral beast\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\misc\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\ogre\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\shade\.DS_Store" />
+    <None Include="Samples\Occult\sounds\NPC\slime\.DS_Store" />
+    <None Include="Samples\Occult\sounds\world\.DS_Store" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Occult\modules\" />
+    <Folder Include="Samples\Occult\modules\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,20 +38,23 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="DSL\Scene_Tests.txt">
+    <None Update="Samples\PlayerSheet_Tests.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Occult\Occult basic.cya">
+    <None Update="Samples\Occult\Occult basic.cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Occult\Occult v6.cya">
+    <None Update="Samples\Occult\Occult v6.cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Occult\setup.cya">
+    <None Update="Samples\Occult\setup.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Occult\sounds\world\door.wav">
+    <None Update="Samples\Occult\sounds\world\door.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Samples\Scene_Tests.cya">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
