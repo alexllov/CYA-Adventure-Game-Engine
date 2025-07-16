@@ -96,7 +96,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 // Table.
                 TokenType.Table => ParseTable(),
                 // Overlay.
-                //TokenType.Overlay => ParseOverlay(),
+                TokenType.Overlay => ParseOverlay(),
                 _ => HandleExpression(),
             };
         }
@@ -387,46 +387,55 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
 
 
-        //private OverlayStmt ParseOverlay()
-        //{
-        //    //Consume overlay
-        //    Advance();
-        //    // Very next Token should be string with ID for scene.
-        //    Token ID = Consume(TokenType.String);
-        //    if (Peek(0) is )
-        //    List<IStmt> parts = new();
-        //    while (!HeaderEnds.Contains(Peek(0).Type))
-        //    {
-        //        // Scenes have special sugar for strings,
-        //        // & can contain special components: interactables.
-        //        // So we will filter for those.
-        //        switch (Peek(0).Type)
-        //        {
-        //            case TokenType.String:
-        //                FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
-        //                ExprStmt sayStmt = new(say);
-        //                parts.Add(sayStmt);
-        //                // Advance needed as Stmt hand made, so string part isn't being consumed.
-        //                Advance();
-        //                break;
-        //
-        //            // Default -> ParseStmt using recursive calls to process.
-        //            default:
-        //                IStmt stmt = ParseStmt();
-        //                parts.Add(stmt);
-        //                break;
-        //        }
-        //    }
-        //    // Consume the End Token if found.
-        //    if (Peek(0).Type is TokenType.End)
-        //    {
-        //        Consume(TokenType.End);
-        //    }
-        //
-        //    // Convert List parts to BlockStmt.
-        //    BlockStmt body = new(parts);
-        //    return new SceneStmt(ID.Lexeme, body);
-        //}
+        private OverlayStmt ParseOverlay()
+        {
+            //Consume overlay
+            Advance();
+            // Very next Token should be string with ID for scene.
+            Token ID = Consume(TokenType.String);
+            bool Accessible = false;
+            string AccessString = "";
+            if (Peek(0).Type is TokenType.Access)
+            {
+                Accessible = true;
+                Advance();
+                if (Peek(0).Type is TokenType.String) { AccessString = Peek(0).Lexeme; }
+                Advance();
+            }
+            List<IStmt> parts = new();
+            while (!HeaderEnds.Contains(Peek(0).Type))
+            {
+                // Scenes have special sugar for strings,
+                // & can contain special components: interactables.
+                // So we will filter for those.
+                switch (Peek(0).Type)
+                {
+                    case TokenType.String:
+                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
+                        ExprStmt sayStmt = new(say);
+                        parts.Add(sayStmt);
+                        // Advance needed as Stmt hand made, so string part isn't being consumed.
+                        Advance();
+                        break;
+        
+                    // Default -> ParseStmt using recursive calls to process.
+                    default:
+                        IStmt stmt = ParseStmt();
+                        parts.Add(stmt);
+                        break;
+                }
+            }
+            // Consume the End Token if found.
+            if (Peek(0).Type is TokenType.End)
+            {
+                Consume(TokenType.End);
+            }
+        
+            // Convert List parts to BlockStmt.
+            BlockStmt body = new(parts);
+            if (Accessible) { return new OverlayStmt(ID.Lexeme, body, AccessString); }
+            else { return new OverlayStmt(ID.Lexeme, body); }
+        }
         
         /// <summary>
         /// Checks for EOF based on position & Tokens length.

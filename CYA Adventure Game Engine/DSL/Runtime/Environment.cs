@@ -22,9 +22,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private Dictionary<string, SceneStmt> Scenes = new();
 
+        private Dictionary<string, OverlayStmt> Overlays = new();
+
+        private Dictionary<string, OverlayStmt> AccessibleOverlays = new();
+
         public List<InteractableStmt> Local = new();
 
-        public string GoTo = new("");
+        private string GoTo = new("");
+
+        private bool GoToFlag = false;
 
         public Environment() { }
 
@@ -62,6 +68,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
         }
 
+        public void SetOverlay(string name, OverlayStmt value)
+        {
+            Overlays[name] = value;
+            if (value.KeyBind is not null) { AccessibleOverlays[value.KeyBind] = value; }
+        }
+
+        public bool CheckAccessibleOverlay(string input, out OverlayStmt? overlay) 
+        {
+            return AccessibleOverlays.TryGetValue(input, out overlay);
+        }
+
         public void ClearLocal()
         {
             Local = [];
@@ -70,6 +87,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void AddLocal(InteractableStmt interactable)
         {
             Local.Add(interactable);
+        }
+
+        public void AddLocal(params InteractableStmt[] interactables)
+        {
+            foreach (InteractableStmt interactable in interactables)
+            {
+                Local.Add(interactable);
+            }
         }
 
         public InteractableStmt GetLocal(int i)
@@ -87,11 +112,18 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void SetGoTo(string address)
         {
             GoTo = address;
+            GoToFlag = true;
         }
 
         public string GetGoTo()
         {
+            GoToFlag = false;
             return GoTo;
+        }
+
+        public bool CheckGoToFlag()
+        {
+            return GoToFlag;
         }
     }
 }

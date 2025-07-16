@@ -1,4 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
+using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using CYA_Adventure_Game_Engine.DSL.Frontend;
 using System;
@@ -12,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
@@ -80,14 +82,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return nextScene;
         }
 
-        private SceneStmt RunScene(SceneStmt scene)
+        private void ShowOptions()
         {
-            string localScene = scene.Name;
-            // Reset local scope.
-            Env.ClearLocal();
-
-            scene.Body.Interpret(Env);
-            
             Console.WriteLine("\nOptions:");
             int num = 1;
             foreach (InteractableStmt interactable in Env.Local)
@@ -95,7 +91,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 Console.WriteLine($"{num}. {interactable.Name.Interpret(Env)}");
                 num++;
             }
+        }
 
+        private SceneStmt RunScene(SceneStmt scene)
+        {
+            string localScene = scene.Name;
+            // Reset local scope.
+            Env.ClearLocal();
+            Console.WriteLine("\n========================================\n");
+            scene.Body.Interpret(Env);
+
+            ShowOptions();
             while (true)
             {
                 Console.Write("Enter your Selection: ");
@@ -104,7 +110,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     InteractableStmt istmt = Env.GetLocal(i-1);
                     RunInteractable(istmt);
-                    if (Env.GetGoTo() != localScene) { break; }
+                    if (Env.CheckGoToFlag()) { break; }
+                }
+                else if (choice is not null && Env.CheckAccessibleOverlay(choice, out OverlayStmt? overlay))
+                {
+                    // Copy interactables to re-load after overlay closes.
+                    InteractableStmt[] interactables = [.. Env.Local];
+                    RunOverlay(overlay);
+                    // Clear locals from overlay & re-fill with this scene's.
+                    Env.ClearLocal();
+                    Env.AddLocal(interactables);
+                    ShowOptions();
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }
@@ -114,6 +130,36 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         private void RunInteractable(InteractableStmt stmt)
         {
             stmt.Body.Interpret(Env);
+        }
+
+        /// <summary>
+        /// Overlays can be opened on top of scenes. They function similarly, but can be exited to return to the base scene.
+        /// </summary>
+        /// <param name="overlay"></param>
+        private void RunOverlay(OverlayStmt overlay)
+        {
+            Env.ClearLocal();
+            Console.WriteLine("\n");
+            overlay.Body.Interpret(Env);
+            ShowOptions();
+            while (true)
+            {
+                Console.Write("Enter your Selection: ");
+                var choice = Console.ReadLine();
+                if (int.TryParse(choice, out int i) && Env.HasLocal(i))
+                {
+                    InteractableStmt istmt = Env.GetLocal(i - 1);
+                    RunInteractable(istmt);
+                    if (Env.CheckGoToFlag()) { break; }
+                }
+                // Scenes that are accessible by the user are by default exitable too, using the same keybind.
+                else if (overlay.KeyBind is not null && choice == overlay.KeyBind)
+                {
+                    Console.WriteLine("\n");
+                    break; 
+                }
+                else { Console.WriteLine("Error, invalid selection."); }
+            }
         }
     }
 }

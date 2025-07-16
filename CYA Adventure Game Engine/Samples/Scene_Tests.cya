@@ -6,37 +6,24 @@ import Inventory as i
 
 
 table data
-#| "name" | "value" | "number" |
-#| "1"    | "val"   | 1278     |
-| "Name"            | "Role"           |#| "Dice"			|
-| "Jett Morgan"     | "Captain"        |#| (d.roll "1d6") |
-| "Steven Mitchell" | "Engineer"       |#| (d.roll "1d6") |
-| "Lemmy Barnett"   | "Radio Operator" |#| (d.roll "1d6") |
-| "Doc Matthews"    | "unknown"        |#| (d.roll "1d6") |
+| "Name"            | "Role"           | "Dice"			|
+| "Jett Morgan"     | "Captain"        | (d.roll "1d6") |
+| "Steven Mitchell" | "Engineer"       | (d.roll "1d6") |
+| "Lemmy Barnett"   | "Radio Operator" | (d.roll "1d6") |
+| "Doc Matthews"    | "unknown"        | (d.roll "1d6") |
 end
 
-inv = (i.make)
-number = 120
-sword = "family_sword"
-(inv.add "sword")# "second thing")
-(inv.add "shield")
-(inv.add (data.get "Jett Morgan"))
-one = (data.get "Jett Morgan")
-(say "does inv contain? " (inv.check one))
-(say data)
-(say "that was the data")
-(say one)
 
-[if (inv.check "sword") and (inv.check "shield")
-then (say "wowee, you've got a sword AND a shield!")
-]
-
-
-#(s.play "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav")
-
-#overlay "menu" access "m"
-#"Welcome to the Menu Screen"
-#["Inventory" (say inv)]
+overlay "menu" access "m"
+	"Enter m again to close the menu"
+	(i.add "slipper")
+	(i.add "sword")
+	(i.add 347)
+	(i.add data)
+	"Welcome to the Menu Screen"
+	["Inventory Contents" (say i)]
+	["Save Game" (save)]
+end
 
 START "opening"
 
@@ -51,6 +38,7 @@ scene "opening"
 	then ["your name is alex" (say "this is good")]
 	else ["your name is not alex" (say "Need to fix this")]
 	]
+	["repeat opening" -> "opening"]
 
 scene "downstairs"
 	"Wow, now we're downstairs"
