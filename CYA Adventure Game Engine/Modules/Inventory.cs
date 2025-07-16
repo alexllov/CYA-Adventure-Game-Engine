@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.Modules
 {
-    public class Inventory : IModule, IInstantiable
+    public class Inventory : IModule, IInstantiable<Inventory>
     {
         private List<object> Items;
 
@@ -16,7 +16,7 @@ namespace CYA_Adventure_Game_Engine.Modules
             Items = new List<object>();
         }
 
-        public IInstantiable Make() { return new Inventory(); }
+        public Inventory Make() { return new Inventory(); }
 
         public override string ToString()
         {

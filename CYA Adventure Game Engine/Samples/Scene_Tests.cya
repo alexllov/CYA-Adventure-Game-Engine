@@ -6,17 +6,26 @@ import Inventory as i
 
 
 table data
-| "name" | "value" | "number" |
-| "1"    | "val"   | 1278     |
+#| "name" | "value" | "number" |
+#| "1"    | "val"   | 1278     |
+| "Name"            | "Role"           |#| "Dice"			|
+| "Jett Morgan"     | "Captain"        |#| (d.roll "1d6") |
+| "Steven Mitchell" | "Engineer"       |#| (d.roll "1d6") |
+| "Lemmy Barnett"   | "Radio Operator" |#| (d.roll "1d6") |
+| "Doc Matthews"    | "unknown"        |#| (d.roll "1d6") |
 end
 
 inv = (i.make)
 number = 120
 sword = "family_sword"
-(inv.add "sword")
+(inv.add "sword")# "second thing")
 (inv.add "shield")
-one = (data.get "1")
+(inv.add (data.get "Jett Morgan"))
+one = (data.get "Jett Morgan")
 (say "does inv contain? " (inv.check one))
+(say data)
+(say "that was the data")
+(say one)
 
 [if (inv.check "sword") and (inv.check "shield")
 then (say "wowee, you've got a sword AND a shield!")
@@ -25,8 +34,7 @@ then (say "wowee, you've got a sword AND a shield!")
 
 #(s.play "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav")
 
-#overlay "menu"
-#key = "m"
+#overlay "menu" access "m"
 #"Welcome to the Menu Screen"
 #["Inventory" (say inv)]
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -10,10 +11,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     public class Table
     {
 
-        public Dictionary<string, TableRow> Data = new();
+        public Dictionary<string, TableRow> Data;
+        public List<string> Attributes;
 
-        public Table(Dictionary<string, TableRow> data)
+        public Table(List<string> cols, Dictionary<string, TableRow> data)
         {
+            Attributes = cols;
             Data = data;
         }
 
@@ -28,12 +31,49 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public override string ToString()
         {
-            List<string> text = new();
-            foreach (var row in Data) 
+            // Grab the row data & separate separately, DONT rely on ToString() here.
+
+            // Go through each record & calc the longest entry in each column for spacing.
+            List<int> maxLenPerCol = [.. Attributes.Select(i => i.Length)];
+            foreach (var row in Data)
             {
-                text.Add($"Name: {row.Key}, Value: {row.Value}");
+                var rowVal = row.Value;
+                int index = 0;
+                foreach (string key in Attributes)
+                {
+                    int newLen = rowVal.Data[key].ToString().Length;
+                    if (newLen > maxLenPerCol[index]) { maxLenPerCol[index] = newLen; }
+                    index++;
+                }
             }
-            return string.Join("\n", text);
+
+            List<string> rows = [];
+            int i = 0;
+            List<string> attrRow = [];
+            foreach (string key in Attributes)
+            {
+                int paddingRequired = maxLenPerCol[i] - key.Length;
+                i++;
+                string spacing = string.Concat(Enumerable.Repeat(" ", paddingRequired));
+                attrRow.Add(key + spacing);
+            }
+            rows.Add(string.Join(" | ", attrRow));
+            foreach (var row in Data)
+            {
+                List<string> currentRow = [];
+                var rowVal = row.Value;
+                int index = 0;
+                foreach (string key in Attributes)
+                {
+                    string entry = rowVal.Data[key].ToString();
+                    int paddingRequired = maxLenPerCol[index] - entry.Length;
+                    index++;
+                    string spacing = string.Concat(Enumerable.Repeat(" ", paddingRequired));
+                    currentRow.Add(entry+spacing);
+                }
+                rows.Add(string.Join(" | ", currentRow));
+            }
+            return string.Join("\n", rows);
         }
 
     }

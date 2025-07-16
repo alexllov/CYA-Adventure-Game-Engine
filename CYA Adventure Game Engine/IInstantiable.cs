@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine
 {
-    public interface IInstantiable
+    public interface IInstantiable<T>
+        where T : IInstantiable<T>
     {
-        IInstantiable Make();
+        T Make();
     }
 }

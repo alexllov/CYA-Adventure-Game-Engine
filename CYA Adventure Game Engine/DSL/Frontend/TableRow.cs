@@ -26,12 +26,21 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public override string ToString()
         {
-            List<string> textList = new();
-            foreach (var kvp in Data)
+            List<string> header = [.. Data.Keys];
+            List<string> body = [.. Data.Values.Select(i => i.ToString())];
+            // Zip both, keeping the int length of the longest at each index.
+            List<int> maxLen = [.. header.Zip(body, (h, b) => h.Length > b.Length ? h.Length : b.Length)];
+
+            List<string> spacedHeads = [];
+            List<string> spacedBody = [];
+            for (int i = 0; i < header.Count; i++)
             {
-                textList.Add($"Key: {kvp.Key}, Val: {kvp.Value}");
+                int headPadding = maxLen[i] - header[i].Length;
+                int bodyPadding = maxLen[i] - body[i].Length;
+                spacedHeads.Add(header[i] + string.Concat(Enumerable.Repeat(" ", headPadding)));
+                spacedBody.Add(body[i] + string.Concat(Enumerable.Repeat(" ", bodyPadding)));
             }
-            return string.Join("\n", textList);
+            return string.Join("\n", [string.Join(" | ", spacedHeads), string.Join(" | ", spacedBody)]);
         }
     }
 }

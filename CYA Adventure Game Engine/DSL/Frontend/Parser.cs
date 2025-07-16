@@ -51,7 +51,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// Header ends: the list of Token Types that will end the collection of stmts into any Header.
         /// These Include: 'Scene', 'Table', 'Code', 'End', 'EOF'.
         /// </summary>
-        List<TokenType> HeaderEnds = [TokenType.Scene, TokenType.Table, TokenType.Code, TokenType.End, TokenType.EOF];
+        List<TokenType> HeaderEnds = [TokenType.Scene, TokenType.Table, TokenType.Overlay, TokenType.End, TokenType.EOF];
 
         // Parser Components.
         private readonly List<Token> Tokens;
@@ -74,6 +74,38 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 AST.Add(ParseStmt());
             }
             return new AbstSyntTree(AST);
+        }
+
+        /// <summary>
+        /// Parses the next statement. Returns an IStmt.
+        /// </summary>
+        /// <returns></returns>
+        private IStmt ParseStmt()
+        {
+            Token token = Tokens[Pos];
+
+            return token.Type switch
+            {
+                TokenType.Import => ParseImportStmt(),
+                // Holds If stmts & Interactables.
+                TokenType.LBracket => ParseBracket(),
+                TokenType.Start => ParseStart(),
+                TokenType.GoTo => ParseGoTo(),
+                // Scene & Components.
+                TokenType.Scene => ParseSceneStmt(),
+                // Table.
+                TokenType.Table => ParseTable(),
+                // Overlay.
+                //TokenType.Overlay => ParseOverlay(),
+                _ => HandleExpression(),
+            };
+        }
+
+        public IStmt HandleExpression()
+        {
+            IExpr expr = ParseExpression(0);
+            if (expr is AssignExpr aExpr) { return ParseAssignStmt(aExpr); }
+            else { return new ExprStmt(expr); }
         }
 
         /// <summary>
@@ -127,44 +159,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 return infix.GetPrecedence();
             }
             else { return 0; }
-        }
-
-        /// <summary>
-        /// Parses the next statement. Returns an IStmt.
-        /// </summary>
-        /// <returns></returns>
-        private IStmt ParseStmt()
-        {
-            Token token = Tokens[Pos];
-
-            switch (token.Type)
-            {
-                case TokenType.Import:
-                    return ParseImportStmt();
-
-                // Holds If stmts & Interactables.
-                case TokenType.LBracket:
-                    return ParseBracket();
-
-                case TokenType.Start:
-                    return ParseStart();
-
-                case TokenType.GoTo:
-                    return ParseGoTo();
-
-                // Scene & Components.
-                case TokenType.Scene:
-                    return ParseSceneStmt();
-
-                // Table.
-                case TokenType.Table:
-                    return ParseTable();
-                    
-                default:
-                    IExpr expr = ParseExpression(0);
-                    if (expr is AssignExpr aExpr){ return ParseAssignStmt(aExpr); }
-                    else { return new ExprStmt(expr); }
-            }
         }
 
         /// <summary>
@@ -392,6 +386,48 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new TableStmt((VariableExpr)ID, records);
         }
 
+
+        //private OverlayStmt ParseOverlay()
+        //{
+        //    //Consume overlay
+        //    Advance();
+        //    // Very next Token should be string with ID for scene.
+        //    Token ID = Consume(TokenType.String);
+        //    if (Peek(0) is )
+        //    List<IStmt> parts = new();
+        //    while (!HeaderEnds.Contains(Peek(0).Type))
+        //    {
+        //        // Scenes have special sugar for strings,
+        //        // & can contain special components: interactables.
+        //        // So we will filter for those.
+        //        switch (Peek(0).Type)
+        //        {
+        //            case TokenType.String:
+        //                FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
+        //                ExprStmt sayStmt = new(say);
+        //                parts.Add(sayStmt);
+        //                // Advance needed as Stmt hand made, so string part isn't being consumed.
+        //                Advance();
+        //                break;
+        //
+        //            // Default -> ParseStmt using recursive calls to process.
+        //            default:
+        //                IStmt stmt = ParseStmt();
+        //                parts.Add(stmt);
+        //                break;
+        //        }
+        //    }
+        //    // Consume the End Token if found.
+        //    if (Peek(0).Type is TokenType.End)
+        //    {
+        //        Consume(TokenType.End);
+        //    }
+        //
+        //    // Convert List parts to BlockStmt.
+        //    BlockStmt body = new(parts);
+        //    return new SceneStmt(ID.Lexeme, body);
+        //}
+        
         /// <summary>
         /// Checks for EOF based on position & Tokens length.
         /// </summary>

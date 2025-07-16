@@ -19,7 +19,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         Not,
         And, Or,
         If, Then, Else, While,
-        Scene, Table, Code, End,
+        Scene, Table, Overlay, End,
         GoTo, Start,
         LBracket, RBracket, LParent, RParent,
         Dot,

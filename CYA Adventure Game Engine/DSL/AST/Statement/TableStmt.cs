@@ -33,10 +33,12 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             return $"AssignStmt(Name: {Name}, Records: {Records})";
         }
 
+        // TODO: Add clear error msg for a row w/ wrong number of attributes.
         public Table BuildTable(Environment state)
         {
             // Get Attribute Names.
-            List<IExpr> cols = Records[0];
+            //List<IExpr> cols = Records[0];
+            List<string> cols = Records[0].Select(i => (string)i.Interpret(state)).ToList();
             Dictionary<string, TableRow> table = new();
 
             List<List<IExpr>> dataRows = Records[1..];
@@ -46,12 +48,12 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
                 Dictionary<string, object> rowDict = new();
                 foreach (var record in row)
                 {
-                    rowDict[(string)cols[i].Interpret(state)] = record.Interpret(state);
+                    rowDict[(string)cols[i]] = record.Interpret(state);
                     i++;
                 }
                 table[(string)row[0].Interpret(state)] = new TableRow(rowDict);
             }
-            return new Table(table);
+            return new Table(cols, table);
         }
 
 

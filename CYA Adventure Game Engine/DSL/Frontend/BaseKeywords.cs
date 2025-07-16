@@ -16,7 +16,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             {"->", TokenType.GoTo },
             {"scene", TokenType.Scene },
             {"table", TokenType.Table },
-            {"code", TokenType.Code },
+            {"overlay", TokenType.Overlay },
             {"end", TokenType.End },
             {"if", TokenType.If },
             {"then", TokenType.Then },
