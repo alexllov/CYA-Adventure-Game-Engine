@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
@@ -42,7 +37,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
                 case []:
                     throw new Exception($"Failed to find a member of {type} with the name {Right.Value}");
                 case [MethodInfo method, ..]:
-                    Func<object[], object?> func = (object[] args) => 
+                    Func<object[], object?> func = (object[] args) =>
                     method.Invoke(left, args);
                     return func;
                 case [FieldInfo field, ..]:

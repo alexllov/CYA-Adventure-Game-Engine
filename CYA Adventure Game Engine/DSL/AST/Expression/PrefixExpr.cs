@@ -1,9 +1,4 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
@@ -34,13 +29,13 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
                 case TokenType.Plus:
                     return operand;
                 case TokenType.Minus:
-                    if (operand is not double)
+                    if (operand is not float)
                     {
                         throw new Exception($"Invalid value taking '-' prefix of type: {operand.GetType()}");
                     }
                     else
                     {
-                        return -(double)operand;
+                        return -(float)operand;
                     }
                 case TokenType.Not:
                     if (operand is not bool)

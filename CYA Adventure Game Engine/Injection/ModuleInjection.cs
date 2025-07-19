@@ -1,27 +1,19 @@
 ﻿using CYA_Adventure_Game_Engine.Modules;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.Injection
 {
     public static class ModuleInjection
     {
-        public static IServiceCollection AddBaseModules(this IServiceCollection services)
+        private static Dictionary<string, IModule> AddBaseModules(this Dictionary<string, IModule> modules)
         {
-            //services.AddSingleton<IModule, Dice>();
-            //services.AddSingleton<IModule, Inventory>();
-            //services.AddSingleton<IModule, Sound>();
-            return services;
+            modules["dice"] = new Dice();
+            modules["inventory"] = new Inventory();
+            modules["sound"] = new Sound();
+            return modules;
         }
 
-        public static IServiceCollection AddExternalModules(this IServiceCollection services)
+        private static Dictionary<string, IModule> AddExternalModules(this Dictionary<string, IModule> modules)
         {
             // Gets location that the exe is currently within.
             var location = AppDomain.CurrentDomain.BaseDirectory;
@@ -31,28 +23,46 @@ namespace CYA_Adventure_Game_Engine.Injection
              * modules = match on modules folder
              * .dll = matches on the dll files.
              */
-            var moduleFiles = Directory.GetFiles(location, "**/modules/**/*.dll");
+#if DEBUG
+            var moduleFiles = Directory.GetFiles(location, "*.dll");
+#else
+            var moduleFiles = Directory.GetFiles(location, "modules\\*.dll");
+#endif
             foreach (var file in moduleFiles)
             {
                 // Load the assembly to get access to the types.
                 var ass = Assembly.LoadFrom(file);
-                if (ass is not null) 
-                { 
+                if (ass is not null)
+                {
                     // Filter ass to leave just the IModules.
                     var types = ass.ExportedTypes.Where(a => a.GetInterface(nameof(IModule)) is not null);
-                    foreach (var type in types) 
-                    { 
-                        // Generic adder as unknown details prior to runtime.
-                        services.AddSingleton(typeof(IModule), type);
+                    if (types.Any())
+                    {
+                        foreach (var type in types)
+                        {
+                            var instanciatedModule = (IModule)Activator.CreateInstance(type);
+                            modules[type.Name.ToLower()] = instanciatedModule;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No suitable modules found in {file}.");
                     }
                 }
                 else
                 {
-                    // put warning about unfound ass here
+                    Console.WriteLine("Found file in modules folder that could not be loaded.");
                 }
             }
+            return modules;
+        }
 
-            return services;
+        public static Dictionary<string, IModule> LoadModules()
+        {
+            Dictionary<string, IModule> modules = new();
+            modules = modules.AddBaseModules()
+                             .AddExternalModules();
+            return modules;
         }
     }
 }

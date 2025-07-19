@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36121.58
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CYA Adventure Game Engine", "CYA Adventure Game Engine\CYA Adventure Game Engine.csproj", "{679CAFDB-B559-4D27-A33C-49F9695BBD93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "External Modules", "External Modules\External Modules.csproj", "{150B40F0-516B-4236-BF96-0C536191DEC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{679CAFDB-B559-4D27-A33C-49F9695BBD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{679CAFDB-B559-4D27-A33C-49F9695BBD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{679CAFDB-B559-4D27-A33C-49F9695BBD93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{150B40F0-516B-4236-BF96-0C536191DEC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{150B40F0-516B-4236-BF96-0C536191DEC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{150B40F0-516B-4236-BF96-0C536191DEC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{150B40F0-516B-4236-BF96-0C536191DEC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

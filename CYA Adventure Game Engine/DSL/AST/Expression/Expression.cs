@@ -1,9 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Runtime;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+﻿using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
@@ -17,7 +12,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
     /// Methods:
     /// Interpret(Environment) - details how an expression should be evaluated given the information held in the environment.
     /// </summary>
-    public interface IExpr 
+    public interface IExpr
     {
         /// <summary>
         /// Interpreter method.

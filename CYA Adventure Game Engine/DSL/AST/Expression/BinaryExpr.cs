@@ -1,13 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
@@ -100,17 +92,17 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
                     case TokenType.NotEqual:
                         return !left.Equals(right);
                     case TokenType.GreaterEqual:
-                        CheckType(typeof(float), [left, right]);
-                        return (float)left >= (float)right;
+                        List<float> result = CoerceToFloat([left, right]);
+                        return (float)result[0] >= (float)result[1];
                     case TokenType.GreaterThan:
-                        CheckType(typeof(float), [left, right]);
-                        return (float)left > (float)right;
+                        result = CoerceToFloat([left, right]);
+                        return (float)result[0] > (float)result[1];
                     case TokenType.LessEqual:
-                        CheckType(typeof(float), [left, right]);
-                        return (float)left <= (float)right;
+                        result = CoerceToFloat([left, right]);
+                        return (float)result[0] <= (float)result[1];
                     case TokenType.LessThan:
-                        CheckType(typeof(float), [left, right]);
-                        return (float)left < (float)right;
+                        result = CoerceToFloat([left, right]);
+                        return (float)result[0] < (float)result[1];
                     default:
                         throw new Exception("How did we end up here? Valid relational operator detected but not present");
                 }

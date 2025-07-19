@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CYA_Adventure_Game_Engine;
 
-namespace CYA_Adventure_Game_Engine.Modules
+namespace External_Modules.modules
 {
-    internal class PlayerSheet : IModule
+    public class PlayerSheet : IModule
     {
         public static int StartingPoints = 10;
-        public int Str;
+        public int Str { get; set; }
         public int Dex;
         public int Con;
         public int Int;

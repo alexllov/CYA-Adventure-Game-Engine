@@ -1,0 +1,16 @@
+﻿
+
+import Inventory as inv
+import PlayerSheet as p
+
+player_inv = (inv.make)
+
+START "1"
+
+scene "1"
+"scene 1 from first test"
+(player_inv.add "sword")
+(say player_inv)
+(say inv)
+(p.set "str" 10)
+(say p.str)

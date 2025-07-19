@@ -1,14 +1,12 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     public class Environment
     {
+
+        private Dictionary<string, IModule> Modules;
+
         /// <summary>
         /// Dict stores all assignments crated in interpretation.
         /// Pre-assigned values represent language defaults, e.g. Native Functions.
@@ -20,19 +18,29 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "num", NativeFunctions.Num },
         };
 
-        private Dictionary<string, SceneStmt> Scenes = new();
+        private Dictionary<string, SceneStmt> Scenes = [];
 
-        private Dictionary<string, OverlayStmt> Overlays = new();
+        private Dictionary<string, OverlayStmt> Overlays = [];
 
-        private Dictionary<string, OverlayStmt> AccessibleOverlays = new();
+        private Dictionary<string, OverlayStmt> AccessibleOverlays = [];
 
-        public List<InteractableStmt> Local = new();
+        public List<InteractableStmt> Local = [];
 
         private string GoTo = new("");
 
         private bool GoToFlag = false;
 
-        public Environment() { }
+        public Environment(Dictionary<string, IModule> modules)
+        {
+            Modules = modules;
+        }
+
+
+        public IModule GetModule(string name)
+        {
+            if (!Modules.TryGetValue(name.ToLower(), out IModule? value)) { throw new Exception($"Error, couldn't load module, {name}. Name not found."); }
+            return value;
+        }
 
         /// <summary>
         /// Set a value to a given alias.
@@ -74,7 +82,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             if (value.KeyBind is not null) { AccessibleOverlays[value.KeyBind] = value; }
         }
 
-        public bool CheckAccessibleOverlay(string input, out OverlayStmt? overlay) 
+        public bool CheckAccessibleOverlay(string input, out OverlayStmt? overlay)
         {
             return AccessibleOverlays.TryGetValue(input, out overlay);
         }

@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace CYA_Adventure_Game_Engine.Modules
+﻿namespace CYA_Adventure_Game_Engine.Modules
 {
     internal class Dice : IModule
     {
         public int Roll(string rollType)
         {
             var rand = new Random();
-            if (!(rollType.Contains('d'))) 
-            { throw new Exception(
+            if (!(rollType.Contains('d')))
+            {
+                throw new Exception(
                 "Error, wrongly formatted call to Dice.Roll function. " +
                 "String argument must be formatted as xdy where x is the number of dice to roll and y is the size of the dice. " +
                 "Please ensure these are searated by a 'd'"

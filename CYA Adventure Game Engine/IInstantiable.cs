@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CYA_Adventure_Game_Engine
+﻿namespace CYA_Adventure_Game_Engine
 {
     public interface IInstantiable<T>
-        where T : IInstantiable<T>
+        where T : IInstantiable<T>, new()
     {
         T Make();
     }

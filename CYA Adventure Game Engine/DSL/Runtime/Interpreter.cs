@@ -1,19 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
-using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using CYA_Adventure_Game_Engine.DSL.Frontend;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
@@ -28,7 +14,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private string GoToAddress;
 
-        public Interpreter(AbstSyntTree Tree, Environment env, string mode="default")
+        public Interpreter(AbstSyntTree Tree, Environment env, string mode = "default")
         {
             AST = Tree;
             Env = env;
@@ -42,6 +28,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
              * This allows scenes to be written in any order & ensure the GoTos function.
              */
             HoistScenes();
+            int startCount = AST.Tree.Count(s => s is StartStmt);
+            if (startCount != 1) { throw new Exception($"Warning, a Game file needs exactly 1 'START' command. {startCount} were found."); }
             foreach (IStmt stmt in AST)
             {
                 stmt.Interpret(Env);
@@ -106,9 +94,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             {
                 Console.Write("Enter your Selection: ");
                 var choice = Console.ReadLine();
-                if (int.TryParse(choice, out int i) && Env.HasLocal(i)) 
+                if (int.TryParse(choice, out int i) && Env.HasLocal(i))
                 {
-                    InteractableStmt istmt = Env.GetLocal(i-1);
+                    InteractableStmt istmt = Env.GetLocal(i - 1);
                     RunInteractable(istmt);
                     if (Env.CheckGoToFlag()) { break; }
                 }
@@ -156,7 +144,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 else if (overlay.KeyBind is not null && choice == overlay.KeyBind)
                 {
                     Console.WriteLine("\n");
-                    break; 
+                    break;
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }

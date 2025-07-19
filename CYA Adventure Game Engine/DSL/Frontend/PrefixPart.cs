@@ -1,11 +1,4 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace CYA_Adventure_Game_Engine.DSL.Frontend
+﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
     public class Table
     {
@@ -69,7 +61,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                     int paddingRequired = maxLenPerCol[index] - entry.Length;
                     index++;
                     string spacing = string.Concat(Enumerable.Repeat(" ", paddingRequired));
-                    currentRow.Add(entry+spacing);
+                    currentRow.Add(entry + spacing);
                 }
                 rows.Add(string.Join(" | ", currentRow));
             }

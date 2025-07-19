@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Formats.Tar;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
@@ -18,7 +11,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         private int Start = 0, Pos = 0;
         // Pointer pos, used for debugging.
         private int Line = 1, Col = 1;
-        
+
         // The Actual Tokens List.
         public List<Token> Tokens = new();
 
@@ -33,7 +26,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public Tokenizer(string filepath, Dictionary<string, TokenType> keywords)
         {
             Source = File.ReadAllText(filepath);
-            Keywords = keywords; 
+            Keywords = keywords;
 
         }
         public void Show()

@@ -1,13 +1,6 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
@@ -59,7 +52,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public List<IStmt> AST = new List<IStmt>();
 
-        public Parser(List<Token> tokens) 
+        public Parser(List<Token> tokens)
         {
             Tokens = tokens;
         }
@@ -239,7 +232,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// </summary>
         /// <returns>InteractableStmt</returns>
         private InteractableStmt ParseInteractable()
-        { 
+        {
             IExpr name = ParseExpression(0);
             IStmt body = ParseBlock(TokenType.RBracket);
             Consume(TokenType.RBracket);
@@ -417,7 +410,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                         // Advance needed as Stmt hand made, so string part isn't being consumed.
                         Advance();
                         break;
-        
+
                     // Default -> ParseStmt using recursive calls to process.
                     default:
                         IStmt stmt = ParseStmt();
@@ -430,13 +423,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             {
                 Consume(TokenType.End);
             }
-        
+
             // Convert List parts to BlockStmt.
             BlockStmt body = new(parts);
             if (Accessible) { return new OverlayStmt(ID.Lexeme, body, AccessString); }
             else { return new OverlayStmt(ID.Lexeme, body); }
         }
-        
+
         /// <summary>
         /// Checks for EOF based on position & Tokens length.
         /// </summary>
@@ -485,7 +478,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             if (Pos + dist < Tokens.Count)
             {
-                return Tokens[Pos+dist];
+                return Tokens[Pos + dist];
             }
             return new Token(TokenType.EOF, "", -1, -1);
         }

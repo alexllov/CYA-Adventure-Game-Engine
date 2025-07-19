@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CYA_Adventure_Game_Engine.DSL.AST.Expression;
-using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+﻿using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
 {
@@ -17,7 +10,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
     /// Methods:
     /// Interpret(Environment) - details how a statement should be interpreted given the information held in the environment.
     /// </summary>
-    public interface IStmt 
+    public interface IStmt
     {
         /// <summary>
         /// Interpreter method.

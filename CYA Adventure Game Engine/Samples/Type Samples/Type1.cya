@@ -1,0 +1,28 @@
+﻿
+
+
+# Type 1 games include non-linearity purely through player choice.
+# They can include personalisation & multiple types of interaction.
+# FEATURES:
+# - Personalisation is demonstrated below via setting a player name.
+# - A choice & annotation interactable are both shown.
+# - An implementation of 'stretchtext' is shown using a branching conditional.
+
+START "1"
+
+scene "1"
+	name = (ask "What is your name?: ")
+	"You are in a medieval castle. You have a sword by your side."
+	(say "A knight approaches. He calls, " name "!")
+	["sword?" (say "Its an old family relic. Your uncle bought it from a pawn shop in the 70s!")]
+	["Draw your sword" -> "2"]
+	["Wave and greet him back" -> "3"]
+
+scene "2"
+	"'Woah, what's your problem?' asks the knight, 'I just said hi'"
+
+scene "3"
+	"'Its good to see you again! I'm really glad I got the time off to come this year now. How come you didn't mention you would be here in the group chat?' he asks."
+
+
+
