@@ -128,6 +128,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                         if (cStmt is not null && cStmt.Verbs.TryGetValue(command[0], out IStmt? vStmt))
                         {
                             vStmt.Interpret(Env);
+                            if (Env.CheckGoToFlag()) { break; }
                         }
                         else { Console.WriteLine($"Unrecognised Verb: {command[0]} for Noun: {command[1]}."); }
                     }
