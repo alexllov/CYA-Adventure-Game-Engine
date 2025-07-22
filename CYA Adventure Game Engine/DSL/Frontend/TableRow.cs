@@ -2,7 +2,7 @@
 {
     public class TableRow
     {
-        public Dictionary<string, object> Data = new();
+        public Dictionary<string, object> Data = [];
 
         public TableRow(Dictionary<string, object> data)
         {

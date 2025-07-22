@@ -9,9 +9,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
     {
         public IExpr Condition;
         public IStmt ThenBranch;
-        public IStmt ElseBranch;
+        public IStmt? ElseBranch;
 
-        public IfStmt(IExpr condition, IStmt thenBranch, IStmt elseBranch = null)
+        public IfStmt(IExpr condition, IStmt thenBranch, IStmt? elseBranch = null)
         {
             Condition = condition;
             ThenBranch = thenBranch;

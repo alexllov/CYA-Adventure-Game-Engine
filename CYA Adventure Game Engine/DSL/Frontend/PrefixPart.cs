@@ -19,17 +19,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     {
         public IExpr Parse(Parser parser, Token token)
         {
-            switch (token.Type)
+            return token.Type switch
             {
-                case TokenType.Identifier:
-                    return new VariableExpr(token.Lexeme);
-                case TokenType.Number:
-                    return new NumberLitExpr(float.Parse(token.Lexeme));
-                case TokenType.String:
-                    return new StringLitExpr(token.Lexeme);
-                default:
-                    throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}");
-            }
+                TokenType.Identifier => new VariableExpr(token.Lexeme),
+                TokenType.Number => new NumberLitExpr(float.Parse(token.Lexeme)),
+                TokenType.String => new StringLitExpr(token.Lexeme),
+                TokenType.Boolean => new BooleanExpr(token.Lexeme),
+                _ => throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}"),
+            };
         }
     }
 
@@ -39,7 +36,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     public class PrefixOperatorParselet : IPrefixParselet
     {
-        int _Precedence;
+        readonly int _Precedence;
 
         public PrefixOperatorParselet(int precedence = Precedence.PREFIX)
         {
@@ -58,7 +55,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     public class ParentParselet : IPrefixParselet
     {
 
-        int _Precedence;
+        readonly int _Precedence;
 
         public ParentParselet(int precedence = Precedence.PREFIX)
         {
@@ -67,10 +64,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         public IExpr Parse(Parser parser, Token token)
         {
-            List<IExpr> parts = new List<IExpr>();
-            while (!(parser.Peek(0).Type is TokenType.RParent))
+            List<IExpr> parts = [];
+            while (parser.Peek(0).Type is not TokenType.RParent)
             {
-                // TODO: May need to fiddle with Precedence value here. Could be _Precedence.
                 IExpr part = parser.ParseExpression(0);
                 parts.Add(part);
             }

@@ -16,7 +16,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     public class AssignParselet : IInfixParselet
     {
-        int _Precedence;
+        readonly int _Precedence;
 
         public AssignParselet(int precedence)
         {
@@ -49,7 +49,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     public class BinaryOperatorParselet : IInfixParselet
     {
-        int _Precedence;
+        readonly int _Precedence;
 
         public BinaryOperatorParselet(int precedence)
         {
@@ -74,7 +74,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     /// </summary>
     public class DotParselet : IInfixParselet
     {
-        int _Precedence;
+        readonly int _Precedence;
         public DotParselet(int precedence)
         {
             _Precedence = precedence;

@@ -13,7 +13,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         private int Line = 1, Col = 1;
 
         // The Actual Tokens List.
-        public List<Token> Tokens = new();
+        public List<Token> Tokens = [];
 
         // Dict of known Keywords.
         Dictionary<string, TokenType> Keywords;
@@ -32,7 +32,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public void Show()
         {
             Console.WriteLine("Tokens:");
-            Console.WriteLine($"Len Tokens: {Tokens.Count()}");
+            Console.WriteLine($"Len Tokens: {Tokens.Count}");
             foreach (var token in Tokens)
             {
                 Console.WriteLine(token);
@@ -320,7 +320,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 Advance();
             }
             string text = Source[Start..Pos];
-            TokenType type = Keywords.ContainsKey(text) ? Keywords[text] : TokenType.Identifier;
+            TokenType type = Keywords.TryGetValue(text, out TokenType value) ? value : TokenType.Identifier;
             AddToken(type);
         }
 

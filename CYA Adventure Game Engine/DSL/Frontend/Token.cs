@@ -7,7 +7,7 @@
     {
         None,
         Import, As,
-        Identifier, Number, String,
+        Identifier, Number, String, Boolean,
         Plus, Minus, Multiply, Divide,
         Assign, Equal, NotEqual, GreaterThan, GreaterEqual, LessThan, LessEqual,
         Not,

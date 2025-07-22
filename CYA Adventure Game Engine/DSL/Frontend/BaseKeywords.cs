@@ -19,6 +19,8 @@
             {"while", TokenType.While },
             {"and", TokenType.And },
             {"or", TokenType.Or },
+            {"true", TokenType.Boolean },
+            {"false", TokenType.Boolean },
         };
     }
 }

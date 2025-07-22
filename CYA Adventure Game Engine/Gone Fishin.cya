@@ -1,0 +1,22 @@
+﻿import Inventory as i
+
+START "intro"
+
+scene "intro"
+    "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."
+    "Legend says he could eat a man whole. He got away from you once, in the summer of 82'. That's when it all started goin' downhill..."
+    "One day you'll catch 'im."
+    ["continue" -> "home"]
+
+scene "home"
+    "Good ol' shack."
+    [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
+    "The door's ahead of ya, and the whole world's just beyond that."
+    {"door":
+        "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")],
+        "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
+    }
+    {"rod":
+        "take" (say "got rod")(i.add "rod")
+    }
+
