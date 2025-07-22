@@ -278,7 +278,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             while (Peek(0).Type != TokenType.RCurly)
             {
                 string verb = Consume(TokenType.String).Lexeme;
-                commands.Add(verb, ParseBlock(TokenType.Comma));
+                commands.Add(verb, ParseBlock(TokenType.Comma, TokenType.RCurly));
                 if (Peek(0).Type is TokenType.Comma) { Advance(); }
             }
             if (commands.Count == 0) { throw new Exception($"Error, noun {noun} has 0 associated verbs"); }

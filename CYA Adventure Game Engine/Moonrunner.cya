@@ -23,9 +23,12 @@ scene "attributes"
 	(player.set "stamina" stamina)
 	(player.set "luck" luck)
 
-	["test" (say "success")]
+	["Key" (say "you pick up a key from the ground")(inv.add "key")]
 
-{ "door":
-	"open" (say "xyz"),
-	"look" (say "abc"),
+
+{"chest":
+	"open" [if (inv.check "key") 
+			then (say "wow, you unlockedthe chest and found a puppy!")
+			else (say "the chest is locked hard. You'll need a key for this.")
+			]
 }
