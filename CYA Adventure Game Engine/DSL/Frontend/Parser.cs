@@ -22,8 +22,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         readonly Dictionary<TokenType, IInfixParselet> InfixParts = new()
         {
-            // Assignment.
-            {TokenType.Assign, new AssignParselet(Precedence.ASSIGNMENT)},
             // Arithmetic Operators.
             {TokenType.Plus, new BinaryOperatorParselet(Precedence.SUM)},
             {TokenType.Minus, new BinaryOperatorParselet(Precedence.SUM)},
@@ -78,21 +76,26 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             Token token = Tokens[Pos];
 
-            return token.Type switch
+            return (token.Type, Peek(1).Type) switch
             {
-                TokenType.Import => ParseImportStmt(),
-                // Holds If stmts & Interactables.
-                TokenType.LBracket => ParseBracket(),
-                TokenType.LCurly => ParseCurly(),
-                TokenType.Start => ParseStart(),
-                TokenType.GoTo => ParseGoTo(),
+                (TokenType.Import, _) => ParseImportStmt(),
+                // []'s Hold If stmts & Choices.
+                (TokenType.LBracket, TokenType.If) => ParseIfStmt(),
+                (TokenType.LBracket, TokenType.String) => ParseChoice(),
+                (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}"),
+
+                (TokenType.LCurly, _) => ParseCurly(),
+                (TokenType.Start, _) => ParseStart(),
+                (TokenType.GoTo, _) => ParseGoTo(),
                 // Scene & Components.
-                TokenType.Scene => ParseSceneStmt(),
+                (TokenType.Scene, _) => ParseSceneStmt(),
                 // Table.
-                TokenType.Table => ParseTable(),
+                (TokenType.Table, _) => ParseTable(),
                 // Overlay.
-                TokenType.Overlay => ParseOverlay(),
-                _ => HandleExpression(),
+                (TokenType.Overlay, _) => ParseOverlay(),
+                // TODO: SET up assignStmt handlign here.
+                (TokenType.Identifier, TokenType.Assign) => ParseAssign(),
+                _ => HandleExpression()
             };
         }
 
@@ -103,8 +106,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public IStmt HandleExpression()
         {
             IExpr expr = ParseExpression(0);
-            if (expr is AssignExpr aExpr) { return ParseAssignStmt(aExpr); }
-            else { return new ExprStmt(expr); }
+            //if (expr is AssignExpr aExpr) { return ParseAssignStmt(aExpr); }
+            return new ExprStmt(expr);
         }
 
         /// <summary>
@@ -157,9 +160,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        private static AssignStmt ParseAssignStmt(AssignExpr expr)
+        private AssignStmt ParseAssign()
         {
-            return new AssignStmt(expr.Name, expr.Value);
+            string name = Peek(0).Lexeme;
+            Consume(TokenType.Identifier);
+            Consume(TokenType.Assign);
+            IExpr value = ParseExpression(0);
+            return new AssignStmt(name, value);
         }
 
         /// <summary>
@@ -209,7 +216,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>IfStmt</returns>
         private IfStmt ParseIfStmt()
         {
-            // Consume the 'if' token.
+            // Consume the '[' & then 'if' token.
+            Advance();
             Advance();
             IExpr condition = ParseExpression(0);
             Consume(TokenType.Then);
@@ -231,28 +239,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>InteractableStmt</returns>
         private ChoiceStmt ParseChoice()
         {
+            // Consume the '['
+            Advance();
             IExpr name = ParseExpression(0);
             IStmt body = ParseBlock(TokenType.RBracket);
             Consume(TokenType.RBracket);
             return new ChoiceStmt(name, body);
-        }
-
-        /// <summary>
-        /// Parses the statement types identified by brackets.
-        /// Currently: If statement, Choice statement.
-        /// </summary>
-        /// <returns>IStmt</returns>
-        /// <exception cref="Exception"></exception>
-        private IStmt ParseBracket()
-        {
-            Token token = Consume(TokenType.LBracket);
-            return Peek(0).Type switch
-            {
-                TokenType.If => ParseIfStmt(),
-                //TODO: THIS NEEDS EXPADING TO COPE WITH $Strings && OTHER IN FUTURE.
-                TokenType.String => ParseChoice(),
-                _ => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}"),
-            };
         }
 
         /// <summary>

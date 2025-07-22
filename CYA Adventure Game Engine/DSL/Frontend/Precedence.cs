@@ -5,7 +5,6 @@
     /// </summary>
     public static class Precedence
     {
-        public const int ASSIGNMENT = 1;
         public const int OR = 2;
         public const int AND = 3;
         public const int CONDITIONAL = 4;

@@ -12,39 +12,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
     }
 
     /// <summary>
-    /// Processes variable assignments.
-    /// </summary>
-    public class AssignParselet : IInfixParselet
-    {
-        readonly int _Precedence;
-
-        public AssignParselet(int precedence)
-        {
-            _Precedence = precedence;
-        }
-
-        public IExpr Parse(Parser parser, IExpr left, Token token)
-        {
-            IExpr right = parser.ParseExpression(Precedence.ASSIGNMENT - 1);
-
-            if (!(left is VariableExpr or DotExpr))
-            {
-                throw new Exception($"Left hand side must be a var. Got {left.GetType()} instead.");
-            }
-            else
-            {
-                return new AssignExpr(left, right);
-            }
-        }
-
-        public int GetPrecedence()
-        {
-            return _Precedence;
-        }
-
-    }
-
-    /// <summary>
     /// Processes a binary operator between two expressions.
     /// </summary>
     public class BinaryOperatorParselet : IInfixParselet

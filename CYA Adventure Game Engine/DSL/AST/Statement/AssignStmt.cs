@@ -7,9 +7,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
     /// </summary>
     public class AssignStmt : IStmt
     {
-        public IExpr Name;
+        public string Name;
         public IExpr Value;
-        public AssignStmt(IExpr name, IExpr value)
+        public AssignStmt(string name, IExpr value)
         {
             Name = name;
             Value = value;
@@ -26,13 +26,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
 
         public void Interpret(Environment state)
         {
-            if (Name is VariableExpr vExpr)
-            {
-                var name = vExpr.Value;
-                object value = Value.Interpret(state);
-                state.SetVal(name, value);
-            }
-            else { throw new Exception("Error, invalid argument passed as variable name."); }
+            object value = Value.Interpret(state);
+            state.SetVal(Name, value);
         }
     }
 }
