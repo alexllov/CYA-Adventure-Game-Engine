@@ -96,6 +96,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             };
         }
 
+        /// <summary>
+        /// Helper func, allows for AssignExprs to be wrapped separately from other Exprs.
+        /// </summary>
+        /// <returns>IStmt</returns>
         public IStmt HandleExpression()
         {
             IExpr expr = ParseExpression(0);
@@ -118,11 +122,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             }
             IExpr left = prefix.Parse(this, token);
 
-            // Identify Infix.
+            /*
+             * Identify Infix (if there is one)
+             * Take the precedence of the next token & compare to this expr's precedence.
+             * If next token isn't an infix, will return 0, which should signal the end of his expression.
+             */
             while (precedence < GetPrecedence())
             {
                 token = Advance();
-                //IInfixParselet infix;
                 if (!InfixParts.TryGetValue(token.Type, out IInfixParselet? infix))
                 {
                     throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}.");
@@ -344,6 +351,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new SceneStmt(ID.Lexeme, body);
         }
 
+        /// <summary>
+        /// Creates a Table statement.
+        /// Used to store entries with common attributes, e.g. a table of interchangable weapons.
+        /// </summary>
+        /// <returns>TableStmt</returns>
+        /// <exception cref="Exception"></exception>
         private TableStmt ParseTable()
         {
             // Consule table token.
@@ -356,12 +369,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             List<IExpr> row = [];
             while (!HeaderEnds.Contains(Peek(0).Type))
             {
+                // || = end of current row & start of next => store completed row.
                 if (Peek(0).Type is TokenType.Pipe && Peek(1).Type is TokenType.Pipe)
                 {
                     records.Add(row);
                     Advance();
                     row = [];
                 }
+                // Step over '|'s between columns.
                 else if (Peek(0).Type is TokenType.Pipe)
                 {
                     Advance();
@@ -388,7 +403,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new TableStmt((VariableExpr)ID, records);
         }
 
-
+        /// <summary>
+        /// Creates an OverlayStmt.
+        /// Overlay's act like scenes but are entered on-top, without leaving the current scene.
+        /// Example: a game menu that you want to be accessible from any scene.
+        /// </summary>
+        /// <returns></returns>
         private OverlayStmt ParseOverlay()
         {
             //Consume overlay

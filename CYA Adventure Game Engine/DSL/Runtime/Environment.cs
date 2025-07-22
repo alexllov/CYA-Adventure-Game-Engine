@@ -127,6 +127,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             LocalCommands[stmt.Noun] = stmt;
         }
 
+        public void AddLocalCommand(Dictionary<string, CommandStmt> commands)
+        {
+            LocalCommands = commands;
+        }
+
         public bool HasLocalCommand(string noun, out CommandStmt? command)
         {
             if (LocalCommands.TryGetValue(noun, out command)) { return true; }
