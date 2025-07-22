@@ -72,12 +72,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private void ShowOptions()
         {
-            Console.WriteLine("\nOptions:");
-            int num = 1;
-            foreach (InteractableStmt interactable in Env.Local)
+            if (Env.LocalChoices.Count > 0)
             {
-                Console.WriteLine($"{num}. {interactable.Name.Interpret(Env)}");
-                num++;
+                Console.WriteLine("\nOptions:");
+                int num = 1;
+                foreach (ChoiceStmt interactable in Env.LocalChoices)
+                {
+                    Console.WriteLine($"{num}. {interactable.Name.Interpret(Env)}");
+                    num++;
+                }
             }
         }
 
@@ -92,30 +95,53 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             ShowOptions();
             while (true)
             {
-                Console.Write("Enter your Selection: ");
+                string text = "Enter your ";
+                if (Env.LocalChoices.Count > 0 && Env.LocalCommands.Count == 0) { text += "choice: "; }
+                else if (Env.LocalChoices.Count == 0 && Env.LocalCommands.Count > 0) { text += "command: "; }
+                else { text += "choice or command: "; }
+                Console.Write(text);
                 var choice = Console.ReadLine();
-                if (int.TryParse(choice, out int i) && Env.HasLocal(i))
+                if (int.TryParse(choice, out int i) && Env.HasLocalChoice(i))
                 {
-                    InteractableStmt istmt = Env.GetLocal(i - 1);
+                    ChoiceStmt istmt = Env.GetLocalChoice(i - 1);
                     RunInteractable(istmt);
                     if (Env.CheckGoToFlag()) { break; }
                 }
                 else if (choice is not null && Env.CheckAccessibleOverlay(choice, out OverlayStmt? overlay))
                 {
                     // Copy interactables to re-load after overlay closes.
-                    InteractableStmt[] interactables = [.. Env.Local];
+                    ChoiceStmt[] interactables = [.. Env.LocalChoices];
                     RunOverlay(overlay);
                     // Clear locals from overlay & re-fill with this scene's.
                     Env.ClearLocal();
-                    Env.AddLocal(interactables);
+                    Env.AddLocalChoice(interactables);
                     ShowOptions();
+                }
+                // Command Logic.
+                else if (choice is not null && choice.Split(' ').Length == 2)
+                {
+                    List<string> command = [.. choice.Split(' ')];
+                    // Check for the noun in dict.
+                    if (Env.HasLocalCommand(command[1], out CommandStmt? cStmt))
+                    {
+                        // Chech for verb on noun.
+                        if (cStmt is not null && cStmt.Verbs.TryGetValue(command[0], out IStmt? vStmt))
+                        {
+                            vStmt.Interpret(Env);
+                        }
+                        else { Console.WriteLine($"Unrecognised Verb: {command[0]} for Noun: {command[1]}."); }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Unrecognised Noun: {command[1]}.");
+                    }
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
             }
             return Env.GetScene(Env.GetGoTo());
         }
 
-        private void RunInteractable(InteractableStmt stmt)
+        private void RunInteractable(ChoiceStmt stmt)
         {
             stmt.Body.Interpret(Env);
         }
@@ -134,9 +160,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             {
                 Console.Write("Enter your Selection: ");
                 var choice = Console.ReadLine();
-                if (int.TryParse(choice, out int i) && Env.HasLocal(i))
+                if (int.TryParse(choice, out int i) && Env.HasLocalChoice(i))
                 {
-                    InteractableStmt istmt = Env.GetLocal(i - 1);
+                    ChoiceStmt istmt = Env.GetLocalChoice(i - 1);
                     RunInteractable(istmt);
                     if (Env.CheckGoToFlag()) { break; }
                 }

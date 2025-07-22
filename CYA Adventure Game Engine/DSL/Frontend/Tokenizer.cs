@@ -95,6 +95,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 case ')':
                     AddToken(TokenType.RParent);
                     break;
+                case '{':
+                    AddToken(TokenType.LCurly);
+                    break;
+                case '}':
+                    AddToken(TokenType.RCurly);
+                    break;
 
                 // Dot, Comma.
                 case '.':
@@ -107,6 +113,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 // Pipes.
                 case '|':
                     AddToken(TokenType.Pipe);
+                    break;
+
+                // Colon.
+                case ':':
+                    AddToken(TokenType.Colon);
                     break;
 
                 // Operators & GoTo.

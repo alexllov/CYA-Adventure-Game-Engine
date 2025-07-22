@@ -65,7 +65,7 @@
     <None Update="Samples\Type Samples\Type2.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TextFile1.cya">
+    <None Update="Moonrunner.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -82,6 +82,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 TokenType.Import => ParseImportStmt(),
                 // Holds If stmts & Interactables.
                 TokenType.LBracket => ParseBracket(),
+                TokenType.LCurly => ParseCurly(),
                 TokenType.Start => ParseStart(),
                 TokenType.GoTo => ParseGoTo(),
                 // Scene & Components.
@@ -228,27 +229,26 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
 
         /// <summary>
-        /// Creates Interactable statement.
+        /// Creates Choice statement.
         /// </summary>
         /// <returns>InteractableStmt</returns>
-        private InteractableStmt ParseInteractable()
+        private ChoiceStmt ParseChoice()
         {
             IExpr name = ParseExpression(0);
             IStmt body = ParseBlock(TokenType.RBracket);
             Consume(TokenType.RBracket);
-            return new InteractableStmt(name, body);
+            return new ChoiceStmt(name, body);
         }
 
         /// <summary>
         /// Parses the statement types identified by brackets.
-        /// Currently: If statement, Interactable statement.
+        /// Currently: If statement, Choice statement.
         /// </summary>
         /// <returns>IStmt</returns>
         /// <exception cref="Exception"></exception>
         private IStmt ParseBracket()
         {
             Token token = Consume(TokenType.LBracket);
-
             switch (Peek(0).Type)
             {
                 case TokenType.If:
@@ -256,11 +256,34 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
                 //TODO: THIS NEEDS EXPADING TO COPE WITH $Strings && OTHER IN FUTURE.
                 case TokenType.String:
-                    return ParseInteractable();
+                    return ParseChoice();
 
                 default:
                     throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}");
             }
+        }
+
+        /// <summary>
+        /// Creates Command statements by assigning statements to verbs attached to nouns.
+        /// Allows for Verb-Noun inputs to be processed.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private CommandStmt ParseCurly()
+        {
+            Token token = Consume(TokenType.LCurly);
+            string noun = Consume(TokenType.String).Lexeme;
+            token = Consume(TokenType.Colon);
+            Dictionary<string, IStmt> commands = [];
+            while (Peek(0).Type != TokenType.RCurly)
+            {
+                string verb = Consume(TokenType.String).Lexeme;
+                commands.Add(verb, ParseBlock(TokenType.Comma));
+                if (Peek(0).Type is TokenType.Comma) { Advance(); }
+            }
+            if (commands.Count == 0) { throw new Exception($"Error, noun {noun} has 0 associated verbs"); }
+            token = Consume(TokenType.RCurly);
+            return new CommandStmt(noun, commands);
         }
 
         /// <summary>

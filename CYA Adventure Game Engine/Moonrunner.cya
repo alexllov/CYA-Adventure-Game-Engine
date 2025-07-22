@@ -1,0 +1,31 @@
+﻿
+
+# This is a sketch reconstruction of the 1992 'fighting fantasy' book Moonrunner.
+# It is included to demonstrate the engine's capabilities in terms of player attributes & Player vs Enemy combat systems.
+
+import Inventory as inv
+import MoonrunnerPlayer as player
+import Dice as d
+
+START "attributes"
+
+
+# In this, the starting scene, the player is assigned an array of points to their 3 attributes: skill, stamina, & luck, based off of dice rolls.
+scene "attributes"
+	"Your character has 3 attributes; Skill, Stamina, and Luck."
+	skill = (d.roll "1d6")+6
+	(say "Skill: 1d6 + 6. You rolled: " skill)
+	stamina = (d.roll "2d6")+12
+	(say "Stamina: 2d6 + 12. You rolled: " stamina)
+	luck = (d.roll "1d6")+6
+	(say "Luck: 1d6 + 6. You rolled: " luck)
+	(player.set "skill" skill)
+	(player.set "stamina" stamina)
+	(player.set "luck" luck)
+
+	["test" (say "success")]
+
+{ "door":
+	"open" (say "xyz"),
+	"look" (say "abc"),
+}

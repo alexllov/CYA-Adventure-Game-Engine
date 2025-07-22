@@ -24,7 +24,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private Dictionary<string, OverlayStmt> AccessibleOverlays = [];
 
-        public List<InteractableStmt> Local = [];
+        public List<ChoiceStmt> LocalChoices = [];
+
+        public Dictionary<string, CommandStmt> LocalCommands = [];
 
         private string GoTo = new("");
 
@@ -87,33 +89,47 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return AccessibleOverlays.TryGetValue(input, out overlay);
         }
 
+        // TODO: This should be expanded to clear local commands now too.
+        // DONE: Need to check if working properly.
         public void ClearLocal()
         {
-            Local = [];
+            LocalChoices = [];
+            LocalCommands = [];
         }
 
-        public void AddLocal(InteractableStmt interactable)
+        public void AddLocalChoice(ChoiceStmt interactable)
         {
-            Local.Add(interactable);
+            LocalChoices.Add(interactable);
         }
 
-        public void AddLocal(params InteractableStmt[] interactables)
+        public void AddLocalChoice(params ChoiceStmt[] interactables)
         {
-            foreach (InteractableStmt interactable in interactables)
+            foreach (ChoiceStmt interactable in interactables)
             {
-                Local.Add(interactable);
+                LocalChoices.Add(interactable);
             }
         }
 
-        public InteractableStmt GetLocal(int i)
+        public ChoiceStmt GetLocalChoice(int i)
         {
-            if (Local.Count() < i) { throw new Exception("List index out of range."); }
-            else { return Local[i]; }
+            if (LocalChoices.Count() < i) { throw new Exception("List index out of range."); }
+            else { return LocalChoices[i]; }
         }
 
-        public bool HasLocal(int i)
+        public bool HasLocalChoice(int i)
         {
-            if (i != 0 && Local.Count() >= i) { return true; }
+            if (i != 0 && LocalChoices.Count() >= i) { return true; }
+            else { return false; }
+        }
+
+        public void AddLocalCommand(CommandStmt stmt)
+        {
+            LocalCommands[stmt.Noun] = stmt;
+        }
+
+        public bool HasLocalCommand(string noun, out CommandStmt? command)
+        {
+            if (LocalCommands.TryGetValue(noun, out command)) { return true; }
             else { return false; }
         }
 
