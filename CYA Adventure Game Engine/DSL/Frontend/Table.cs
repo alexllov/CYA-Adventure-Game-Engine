@@ -21,6 +21,13 @@
             else { throw new Exception($"Error, table does not contain a record: {name}"); }
         }
 
+        public TableRow GetRandom()
+        {
+            Random rand = new();
+            int index = rand.Next(0, Data.Count);
+            return Data.ElementAt(index).Value;
+        }
+
         public override string ToString()
         {
             // Grab the row data & separate separately, DONT rely on ToString() here.

@@ -28,7 +28,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         /// <exception cref="Exception"></exception>
         public void Interpret()
         {
-            int startCount = AST.Tree.Count(s => s is StartStmt);
+            int startCount = AST.Tree.Count(s => s is GoToStmt);
             if (startCount != 1) { throw new Exception($"Warning, a Game file needs exactly 1 'START' command. {startCount} were found."); }
             foreach (IStmt stmt in AST)
             {
@@ -106,7 +106,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     HandleChoice(i);
                 }
-                // Overlay.
+                // Accessible Overlay.
                 else if (choice is not null && Env.CheckAccessibleOverlay(choice, out OverlayStmt? overlay))
                 {
                     HandleOverlay(overlay!);
@@ -117,6 +117,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     HandleCommand(choice);
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
+
+                // Check if overlay triggered by a Choice or Command with a 'run' stmt attached.
+                if (Env.CheckRunOverlayFlag(out OverlayStmt? oStmt))
+                {
+                    HandleOverlay(oStmt!);
+                }
 
                 // Break from loop if GoTo updated.
                 if (Env.CheckGoToFlag()) { break; }
@@ -196,7 +202,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
 
-                if (Env.CheckGoToFlag()) { break; }
+                // If a GoTo or Exit statement was executed, break from the loop to leave the overlay.
+                if (Env.CheckGoToFlag() || Env.CheckOverlayExitFlag()) { break; }
             }
         }
     }

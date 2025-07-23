@@ -1,0 +1,148 @@
+﻿
+
+import baseplayer as p
+import dice as d
+
+# TABLE OF ENCOUNTERS
+
+table monsters
+| "name"      | "type"        | "modifier"   |
+| "goblin"    | "strength"    | 2            |
+| "wolf"      | "strength"    | 3            |
+| "wizard"    | "arcane"      | 3            |
+end
+
+table monsters2
+| "name"            | "type"        | "modifier"   |
+| "barking toad"    | "arcane"      | 1            |
+end
+
+
+overlay "menu" access "m"
+	"Menu: enter 'm' to exit."
+	["See stats" (say "Strength: "p.strength", Arcane: "p.arcane", Health: "p.health", Experience: "p.experience)]
+	["Level up"
+		(say "You may spend 3 experience points to increase one of your attributes by 1.")
+		[if p.experience < 3
+			then (say "You don't have enough experience right now.")
+			else
+			choice = (ask "Which attribute do you want to increase? (strength/arcane/health): ")
+				[
+					if choice == "strength"
+					then (p.set "str" p.strength + 1)(p.set "exp" p.experience - 3)
+						(say "You have increased your strength to "p.strength".")
+				]
+				[
+					if choice == "arcane"
+					then (p.set "arc" p.arcane + 1)(p.set "exp" p.experience - 3)
+						(say "You have increased your arcane power to "p.arcane".")
+				]
+				[	
+					if choice == "health"
+					then (p.set "hea" p.health + 1)(p.set "exp" p.experience - 3)
+						(say "You have increased your health to "p.health".")
+				]
+				[
+					if choice != "strength" and choice != "arcane" and choice != "health"
+					then (say "Invalid choice. No experience spent.")
+				]
+		]
+	]
+end
+
+
+START "opening"
+
+scene "opening"
+	name = (ask "What is your name?: ")
+	(say name", you are a computer science student and have angered Somnus, the god of sleep, by staying up too late!")
+	"You must fight your way through his hoardes using a combination of your strength and arcane powers to finally get a good night's rest."
+	
+	points = 6
+	(say "You have "points" points to spend on your two attributes: strength and arcane power.")
+	
+	# NEED TO ADD TYPE CHECKING TO SYSTEM TO ALLOW FOR if input is num.
+	str_choice = (num (ask "How many points do you want to spend on strength? The rest will be assigned to arcane (0-"points"): "))
+	[
+		if str_choice >= 0 and str_choice <= 6
+		then (p.set "str" str_choice)(p.set "arc" points-str_choice)(p.set "hea" 5)
+			["Continue" 
+				-> "1" 
+				trigger_battle = true
+				(say "Successfully assigned the following values: Strength="p.strength" & Arcane="p.arcane"")
+			]
+		else (say "invalid entry.")
+			["Try Again" -> "opening"]
+	]
+
+scene "1"
+	back = "1"
+	[
+	if trigger_battle
+	then
+		(say "The moon is high in the sky. The stars are out. You should be asleep but instead you've been hunched over your laptop for the past several hours. Its time to reclaim your sleep.")
+		(say "You storm out the door, flashlight in hand, gum in pocket, and big O notation in mind.")
+		(say "You hear a rustling to your right.")
+		["Investigate rustling" 
+			monster = (monsters.getrandom)
+			run "battle"
+		]
+		["Ignore it" 
+			(say "You ignore the rustling and continue on your way. You hear a growl behind you.")
+			monster = (monsters2.getrandom)
+			run "battle"
+		]
+	else
+		(say "Your first fight is already over. Well done for surviving.")
+		["Head north towards the scary twisty woods" -> "twisty woods"]
+		["Head south towards the riverbank" -> "riverbank"]
+			
+	]
+	
+
+overlay "battle"
+	trigger_battle = false
+	enemy_name = (monster.get "name")
+	type = (monster.get "type")
+	enemy_mod = (monster.get "modifier")
+	(say "Oh no! A " enemy_name"! It looks like it wants to fight!")
+	(say enemy_name" has "type": "enemy_mod)
+	(say "your "type": "(p.get type))
+
+	["Fight!"
+		m_score = (d.roll "1d6")+enemy_mod
+		p_score = (d.roll "1d6")+(p.get type)
+		(say enemy_name" got: "m_score". You got: "p_score)
+		[if p_score > m_score
+			then (say "You defeated the "enemy_name"!")
+				(say "You gain "enemy_mod" experience.")
+				(p.set "exp" p.experience + enemy_mod)
+				-> back
+			else (say "You were defeated by the "enemy_name"!")
+				(say "You lose 1 health.")(p.set "hea" p.health - 1)
+				[if p.health <= 0
+					then (say "You have no health left. You are defeated.")
+						-> "gameover"
+					else (say "The monster loses interest in you and leaves.")
+						-> back
+				]
+
+		]
+	]
+	["Run!!!"
+		[if (p.get type) > type
+			then (say "You run away safely.")
+				["Continue" -> back]
+			else (say "You can't run away from a monster stronger than you.")
+		]
+	]
+
+scene "gameover"
+	"You have been defeated by Somnus' minions. You'll never get a good night's sleep."
+	["Restart" -> "opening"]
+
+scene "twisty woods"
+	"Well, this is the twisty woods."
+
+scene "riverbank"
+	"This is the riverbank."

@@ -38,7 +38,7 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Gone Fishin.cya">
+    <None Update="Gone Fishin.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Samples\PlayerSheet_Tests.cya">
@@ -70,6 +70,9 @@
     </None>
     <None Update="Moonrunner.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Somna.cya">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

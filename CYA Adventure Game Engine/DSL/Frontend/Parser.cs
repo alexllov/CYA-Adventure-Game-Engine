@@ -31,7 +31,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             {TokenType.Equal, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.NotEqual, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.LessThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.LessEqual, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             {TokenType.GreaterThan, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
+            {TokenType.GreaterEqual, new BinaryOperatorParselet(Precedence.CONDITIONAL)},
             // Boolean.
             {TokenType.And, new BinaryOperatorParselet(Precedence.AND)},
             {TokenType.Or, new BinaryOperatorParselet(Precedence.OR)},
@@ -64,6 +66,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             while (Peek(0).Type != TokenType.EOF)
             {
                 AST.Add(ParseStmt());
+                //Console.WriteLine(AST.Last());
             }
             return new AbstSyntTree(AST);
         }
@@ -85,16 +88,19 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}"),
 
                 (TokenType.LCurly, _) => ParseCurly(),
-                (TokenType.Start, _) => ParseStart(),
+                // GoTo.
                 (TokenType.GoTo, _) => ParseGoTo(),
                 // Scene & Components.
                 (TokenType.Scene, _) => ParseSceneStmt(),
                 // Table.
                 (TokenType.Table, _) => ParseTable(),
-                // Overlay.
+                // Overlay: run & exit allow for overlay control.
                 (TokenType.Overlay, _) => ParseOverlay(),
-                // TODO: SET up assignStmt handlign here.
+                (TokenType.Run, _) => ParseRun(),
+                (TokenType.Exit, _) => ParseExit(),
+                // Assignment.
                 (TokenType.Identifier, TokenType.Assign) => ParseAssign(),
+                // Default: loose expression, to be wrapped as Expression Statement.
                 _ => HandleExpression()
             };
         }
@@ -272,20 +278,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         }
 
         /// <summary>
-        /// Creates Start statement.
-        /// </summary>
-        /// <returns>StartStmt</returns>
-        /// <exception cref="Exception"></exception>
-        private StartStmt ParseStart()
-        {
-            // Consume "Start" token.
-            Consume(TokenType.Start);
-            IExpr ID = ParseExpression(0);
-            if (ID is not StringLitExpr slID) { throw new Exception($"Unexpected Expr type following START. Expected String Literal, received {ID} of type {ID.GetType()}."); }
-            return new StartStmt(slID);
-        }
-
-        /// <summary>
         /// Creates GoTo statement.
         /// </summary>
         /// <returns>GoToStmt</returns>
@@ -295,8 +287,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             // Consume "GoTo" token.
             Consume(TokenType.GoTo);
             IExpr loc = ParseExpression(0);
-            if (loc is not StringLitExpr sLoc) { throw new Exception($"Unexpected Expr type following START. Expected String Literal, received {loc} of type {loc.GetType()}."); }
-            return new GoToStmt(sLoc);
+            // Allowing for VariableExprs allows for -> aliasing for reusable overlays & scenes that -> different locations.
+            if (loc is not StringLitExpr && loc is not VariableExpr)
+            {
+                throw new Exception($"Unexpected Expr type following GoTo ('START' or '->'). Expected String Literal or variable, received {loc} of type {loc.GetType()}.");
+            }
+            return new GoToStmt(loc);
         }
 
         /// <summary>
@@ -449,6 +445,22 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             BlockStmt body = new(parts);
             if (Accessible) { return new OverlayStmt(ID.Lexeme, body, AccessString); }
             else { return new OverlayStmt(ID.Lexeme, body); }
+        }
+
+        private RunStmt ParseRun()
+        {
+            // Consume the 'run' token.
+            Advance();
+            // Next token should be string with ID for code to run.
+            Token ID = Consume(TokenType.String);
+            return new RunStmt(ID.Lexeme);
+        }
+
+        private ExitStmt ParseExit()
+        {
+            // Consume the 'exit' token.
+            Advance();
+            return new ExitStmt();
         }
 
         /// <summary>

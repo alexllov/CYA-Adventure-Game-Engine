@@ -7,9 +7,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
     /// </summary>
     public class GoToStmt : IStmt
     {
-        public StringLitExpr Location;
+        public IExpr Location;
 
-        public GoToStmt(StringLitExpr loc)
+        public GoToStmt(IExpr loc)
         {
             Location = loc;
         }

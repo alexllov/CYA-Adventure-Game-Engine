@@ -32,6 +32,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private bool GoToFlag = false;
 
+        private (bool, string) RunOverlayFlag = (false, "");
+
+        private bool OverlayExitFlag = false;
+
         public Environment(Dictionary<string, IModule> modules)
         {
             Modules = modules;
@@ -153,6 +157,37 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public bool CheckGoToFlag()
         {
             return GoToFlag;
+        }
+
+        public void SetRunOverlayFlag(string name)
+        {
+            RunOverlayFlag = (true, name);
+        }
+
+        public bool CheckRunOverlayFlag(out OverlayStmt? overlay)
+        {
+            if (Overlays.TryGetValue(RunOverlayFlag.Item2, out overlay)
+                && RunOverlayFlag.Item1)
+            {
+                RunOverlayFlag = (false, "");
+                return true;
+            }
+            else { return false; }
+        }
+
+        public void SetOverlayExitFlag(bool value)
+        {
+            OverlayExitFlag = value;
+        }
+
+        public bool CheckOverlayExitFlag()
+        {
+            if (OverlayExitFlag)
+            {
+                OverlayExitFlag = false;
+                return true;
+            }
+            return false;
         }
     }
 }
