@@ -130,7 +130,7 @@ overlay "battle"
 		]
 	]
 	["Run!!!"
-		[if (p.get type) > type
+		[if (p.get type) > enemy_mod
 			then (say "You run away safely.")
 				["Continue" -> back]
 			else (say "You can't run away from a monster stronger than you.")
