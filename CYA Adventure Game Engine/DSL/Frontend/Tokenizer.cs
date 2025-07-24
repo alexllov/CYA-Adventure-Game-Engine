@@ -269,6 +269,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 {
                     Line++;
                     Col = 1;
+                    Advance();
                 }
                 else
                 {

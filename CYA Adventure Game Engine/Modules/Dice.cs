@@ -1,8 +1,8 @@
 ﻿namespace CYA_Adventure_Game_Engine.Modules
 {
-    internal class Dice : IModule
+    public class Dice : IModule
     {
-        public int Roll(string rollType)
+        public static int Roll(string rollType)
         {
             var rand = new Random();
             if (!(rollType.Contains('d')))

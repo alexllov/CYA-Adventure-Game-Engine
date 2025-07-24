@@ -1,6 +1,6 @@
 ﻿namespace CYA_Adventure_Game_Engine.Modules
 {
-    public class Inventory : IModule, IInstantiable<Inventory>
+    public class Inventory : IModule, IInstantiable<Inventory>, IEnumerable<object>
     {
         private List<object> Items;
 
@@ -45,5 +45,16 @@
             //}
             //return true;
         }
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            return Items.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
     }
 }

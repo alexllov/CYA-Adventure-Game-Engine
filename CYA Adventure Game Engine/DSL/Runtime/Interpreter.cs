@@ -88,9 +88,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             Console.WriteLine("\n========================================\n");
             scene.Body.Interpret(Env);
 
-            ShowChoices();
             while (true)
             {
+                ShowChoices();
                 string text = "Enter your " + Env switch
                 {
                     { LocalChoices.Count: > 0, LocalCommands.Count: 0 } => "choice: ",
@@ -173,7 +173,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             Env.ClearLocal();
             Env.AddLocalChoice(interactables);
             Env.AddLocalCommand(localCommands);
-            ShowChoices();
         }
 
         /// <summary>

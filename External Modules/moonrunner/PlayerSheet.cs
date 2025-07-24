@@ -1,6 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine;
-
-namespace External_Modules.modules
+namespace External_Modules.moonrunner
 {
     public class PlayerSheet : IModule
     {

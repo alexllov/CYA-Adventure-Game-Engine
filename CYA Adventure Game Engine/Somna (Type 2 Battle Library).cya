@@ -1,0 +1,45 @@
+﻿
+
+import combatplayer as p
+import weapons as w
+import enemies
+import battle
+
+
+# TABLE OF ENCOUNTERS
+
+START "1"
+
+scene "1"
+	(p.assignpoints 6)
+	(say "str: " p.strength)
+	(say "arc: " p.arcane)
+	(say "hea: " p.health)
+	(say "exp: " p.experience)
+
+	(p.inventory.add (w.getrandom))
+	(p.inventory.add (w.getrandom))
+	(p.inventory.add (w.getrandom))
+	(p.inventory.add (w.getrandom))
+	(p.inventory.add (w.getrandom))
+	(p.inventory.add (w.getrandom))
+
+	enemy = (enemies.getrandom)
+	battle_result = (battle.trigger p enemy)
+	[
+	if battle_result == "won"
+	then
+		(say "You won the battle!")
+		["celebrate win!" (say "yay")]
+	else 
+		[
+		if battle_result == "lost"
+		then
+			(say "You lost the battle!")
+			["mourn loss" (say "cry :(")]
+		else
+			(say "You RAN.")
+			["runnnnn" (say "meme")]
+		]
+	]
+	

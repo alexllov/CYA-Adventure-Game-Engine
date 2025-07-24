@@ -39,6 +39,8 @@ namespace CYA_Adventure_Game_Engine.Injection
                     var types = ass.ExportedTypes.Where(a => a.GetInterface(nameof(IModule)) is not null);
                     if (types.Any())
                     {
+                        // TODO: Consider changing this s.t. IInstantiables are treated separatly from static.
+                        // so to allow things that don't need to be instantiated to avoid it.
                         foreach (var type in types)
                         {
                             var instanciatedModule = (IModule)Activator.CreateInstance(type);

@@ -71,7 +71,10 @@
     <None Update="Moonrunner.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Somna.cya">
+    <None Update="Somna %28Type 2 Battle Library%29.cya">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Somna (Type 2 CYA Combat).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

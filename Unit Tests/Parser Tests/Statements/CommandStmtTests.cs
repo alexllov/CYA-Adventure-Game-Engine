@@ -7,14 +7,67 @@ namespace Unit_Tests
 {
     public class CommandStmtTests
     {
+        [Fact]
+        /*
+         * {"note":
+         *     "read" (say "its a note from your mother"),
+         *     "take" (i.add "note")
+         * }
+         */
+        public void SimpleCommandTest()
+        {
+            // Arrange
+            List<Token> tokens = [new Token(TokenType.LCurly, "{", 1, 1),
+                                  new Token(TokenType.String, "note", 1, 1),
+                                  new Token(TokenType.Colon, ":", 1, 1),
+                                  // Verb 1.
+                                  new Token(TokenType.String, "read", 1, 1),
+                                  new Token(TokenType.LParent, "(", 1, 1),
+                                  new Token(TokenType.Identifier, "say", 1, 1),
+                                  new Token(TokenType.String, "its a note from your mother", 1, 1),
+                                  new Token(TokenType.RParent, ")", 1, 1),
+                                  new Token(TokenType.Comma, ",", 1, 1),
+                                  // Verb 2.
+                                  new Token(TokenType.String, "take", 1, 1),
+                                  new Token(TokenType.LParent, "(", 1, 1),
+                                  new Token(TokenType.Identifier, "i", 1, 1),
+                                  new Token(TokenType.Dot, ".", 1, 1),
+                                  new Token(TokenType.Identifier, "add", 1, 1),
+                                  new Token(TokenType.String, "note", 1, 1),
+                                  new Token(TokenType.RParent, ")", 1, 1),
+                                  new Token(TokenType.RCurly, "}", 1, 1),];
+
+            AbstSyntTree expectedTree = new([
+                new CommandStmt
+                (
+                    "note",
+                    new Dictionary<string, IStmt>
+                    {
+                        { "read", new ExprStmt(new FuncExpr(new VariableExpr("say"), [new StringLitExpr("its a note from your mother")])) },
+                        { "take", new ExprStmt(new FuncExpr(new DotExpr(new VariableExpr("i"), new VariableExpr("add")), [new StringLitExpr("note")])) },
+                    }
+                )
+            ]);
+
+            var sut = new Parser(tokens);
+
+            // Act
+            AbstSyntTree tree = sut.Parse();
+
+            // Assert
+            Assert.Single(tree.Tree);
+            Assert.Equivalent(expectedTree, tree);
+        }
+
+
         /*
          * {"door":
-         *      "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")],
-         *      "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
+         *     "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")],
+         *     "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
          * }
          */
         [Fact]
-        public void AnnotationTest()
+        public void ComplexCommandTest()
         {
             // Arrange
             List<Token> tokens = [new Token(TokenType.LCurly, "{", 1, 1),
