@@ -90,6 +90,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
             while (true)
             {
+                // Check if the choices & commands are empty & the GoTo has been triggered, auto-skip.
+                if (Env.LocalChoices.Count == 0
+                    && Env.LocalCommands.Count == 0
+                    && Env.CheckGoToFlag())
+                { break; }
+
                 ShowChoices();
                 string text = "Enter your " + Env switch
                 {

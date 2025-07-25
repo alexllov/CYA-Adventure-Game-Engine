@@ -109,7 +109,8 @@ namespace External_Modules.Battle_Library
 
             // Run the enemy's attack.
             (string enemyAttackText, int enemyDamage) = enemy.Attack.Run();
-            Console.WriteLine($"The {enemy.Name} {enemyAttackText} It does {enemyDamage} damage.");
+            enemyDamage += enemy.StatValue;
+            Console.WriteLine($"The {enemy.Name} {enemyAttackText} for {enemyDamage} points.");
 
             return playerDamage > enemyDamage;
         }
