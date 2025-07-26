@@ -19,8 +19,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
             {
                 actions.Add($"Verb({kvp.Key}): {kvp.Value.ToString()}");
             }
-            string actString = string.Join(',', actions);
-            return $"NounStmt({Noun}: {actString})";
+            string actString = string.Join("\n  ", actions);
+            return $"NounStmt({Noun}:\n  {actString})";
         }
 
         public void Interpret(Environment state)

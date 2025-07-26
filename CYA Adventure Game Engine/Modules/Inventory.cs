@@ -6,7 +6,7 @@
 
         public Inventory()
         {
-            Items = new List<object>();
+            Items = [];
         }
 
         public Inventory Make() { return new Inventory(); }
@@ -44,6 +44,15 @@
             //    if (!(Items.Contains(item))) { return false; }
             //}
             //return true;
+        }
+
+        public List<string> All()
+        {
+            //var readList = new ReadOnlyCollection<object>(Items);
+
+            List<string> strings = [];
+            foreach (object item in Items) { strings.Add(item.ToString()); }
+            return strings;
         }
 
         public IEnumerator<object> GetEnumerator()

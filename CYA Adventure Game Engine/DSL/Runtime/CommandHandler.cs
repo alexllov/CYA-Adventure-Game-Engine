@@ -21,48 +21,44 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
              *    1. Commands that are not understood - no match found.
              *    2. Ambiguous commands - multiple matches found.
              */
-            (List<string> problems, Dictionary<(Verb, Noun), Command> identifiedCommands) = TryMatchVerbNouns(state, commands);
-            // This is debugging for now.
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            foreach (KeyValuePair<(Verb, Noun), Command> kvp in identifiedCommands)
+            Dictionary<(Verb, Noun), Command> identifiedCommands = TryMatchVerbNouns(state, commands);
+            // Check for errors to early return.
+            if (state.CommandErrors.Count > 0)
             {
-                Console.WriteLine($"Identified Command: {kvp.Value.Lexeme}");
-            }
-            if (problems.Count > 0)
-            {
-                Console.WriteLine("Found problems, early return");
-                // TODO: ADD EARLY RETURN WITH THE ERRORS HERE.
                 return;
             }
 
             // 4. Strip Verb-Noun from command.
             // At this point, properly formated transitive verb commands should have a command of "".
-            Dictionary<(Verb, Noun), Command> cleanedCommands = StripVerbNounsFromCommand(identifiedCommands);
-            foreach (KeyValuePair<(Verb, Noun), Command> kvp in cleanedCommands)
-            {
-                Console.WriteLine($"Cleaned Command: {kvp.Value.Lexeme}");
-            }
+            Dictionary<(Verb, Noun), (Command, string)> cleanedCommands = StripVerbNounsFromCommand(identifiedCommands);
 
-            // 5. Identify the Trans & Ditrans Verbs/ get the actual Verbs from nouns.
-            Dictionary<IVerb, Command> verbDict = GetVerbs(state, cleanedCommands);
-            // TODO: BUILD AN OUT ON THIS TO GET ERR MESSAGES FOR THE BAD COMMANDS.
-            if (!TryMatchVerbTypesAndCommand(verbDict))
+            // 5. Get the actual Verbs from nouns
+            Dictionary<IVerb, (Command, string)> verbDict = GetVerbs(state, cleanedCommands);
+
+            // 6. Match Verbs with argument types
+            MatchVerbsWithArgNumber(state, verbDict);
+            // Check for errors to early return.
+            if (state.CommandErrors.Count > 0)
             {
-                //RETURN EARLY ON MISFORMED COMMAND.
                 return;
             }
 
-            // 6. Interpret the VerbStmts.
-            foreach (KeyValuePair<IVerb, Command> kvp in verbDict)
+            /*
+             * 7. Interpret the VerbStmts.
+             * These may fail in the following ways:
+             * - Ditransitive verb with invalid preposition.
+             * - Ditransitive verb with invalid Indir Object.
+             * All failures added to state properly.
+             */
+            foreach (KeyValuePair<IVerb, (Command, string)> kvp in verbDict)
             {
                 IVerb verb = kvp.Key;
-                Command command = kvp.Value;
+                Command command = kvp.Value.Item1;
                 // Interpret the verb with the command string.
                 state.SetCommand(command.Lexeme);
                 verb.Interpret(state);
             }
-
-
+            return;
         }
 
         public static List<string> StripArticles(List<string> tokens)
@@ -96,9 +92,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return commands;
         }
 
-        public static (List<string>, Dictionary<(Verb, Noun), Command>) TryMatchVerbNouns(Environment state, List<string> commands)
+        public static Dictionary<(Verb, Noun), Command> TryMatchVerbNouns(Environment state, List<string> commands)
         {
-            List<string> problems = [];
             Dictionary<(Verb, Noun), Command> identifiedCommands = [];
             foreach (string command in commands)
             {
@@ -111,7 +106,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     case 0:
                         // TODO: Need cleaner message here somehow.
-                        problems.Add($"Could not understand {command}");
+                        state.AddCommandError($"Could not understand {command}");
                         break;
                     case 1:
                         // If only one match, is fine.
@@ -120,11 +115,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                         break;
                     default:
                         // If multiple matches, prompt user to choose.
-                        problems.Add($"Multiple matches found for {command}. Please disambiguate the noun using 'the, a, or an'.");
+                        state.AddCommandError($"Multiple matches found for {command}. Please disambiguate the noun using 'the, a, or an'.");
                         break;
                 }
             }
-            return (problems, identifiedCommands);
+            return identifiedCommands;
         }
 
         public static Dictionary<(Verb, Noun), string> CreateVerbNouns(Environment state)
@@ -158,9 +153,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         }
 
 
-        public static Dictionary<(Verb, Noun), Command> StripVerbNounsFromCommand(Dictionary<(Verb, Noun), Command> dirtyCommands)
+        public static Dictionary<(Verb, Noun), (Command, string)> StripVerbNounsFromCommand(Dictionary<(Verb, Noun), Command> dirtyCommands)
         {
-            Dictionary<(Verb, Noun), Command> cleanedCommands = [];
+            Dictionary<(Verb, Noun), (Command, string)> cleanedCommands = [];
             foreach (KeyValuePair<(Verb, Noun), Command> kvp in dirtyCommands)
             {
                 Verb verb = kvp.Key.Item1;
@@ -168,15 +163,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 string command = kvp.Value.Lexeme;
                 // Remove the verb and noun from the command.
                 string cleanedCommand = command.Replace($"{verb.Lexeme} {noun.Lexeme}", "").Trim();
-                cleanedCommands[(verb, noun)] = new Command(cleanedCommand);
+                cleanedCommands[(verb, noun)] = (new Command(cleanedCommand), command);
             }
             return cleanedCommands;
         }
 
-        public static Dictionary<IVerb, Command> GetVerbs(Environment state, Dictionary<(Verb, Noun), Command> cleanedCommands)
+        public static Dictionary<IVerb, (Command, string)> GetVerbs(Environment state, Dictionary<(Verb, Noun), (Command, string)> cleanedCommands)
         {
-            Dictionary<IVerb, Command> verbDict = [];
-            foreach (KeyValuePair<(Verb, Noun), Command> kvp in cleanedCommands)
+            Dictionary<IVerb, (Command, string)> verbDict = [];
+            foreach (KeyValuePair<(Verb, Noun), (Command, string)> kvp in cleanedCommands)
             {
                 Verb verb = kvp.Key.Item1;
                 Noun noun = kvp.Key.Item2;
@@ -184,27 +179,29 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     if (nStmt.TryGetVerb(verb.Lexeme, out IVerb? vStmt))
                     {
-                        verbDict[vStmt!] = kvp.Value;
+                        verbDict[vStmt!] = (kvp.Value);
                     }
                 }
             }
             return verbDict;
         }
 
-        public static bool TryMatchVerbTypesAndCommand(Dictionary<IVerb, Command> verbDict)
+        private static void MatchVerbsWithArgNumber(Environment state, Dictionary<IVerb, (Command, string)> verbDict)
         {
-            foreach (KeyValuePair<IVerb, Command> kvp in verbDict)
+            foreach (KeyValuePair<IVerb, (Command, string)> kvp in verbDict)
             {
-                IVerb verb = kvp.Key;
-                Command remainingCommand = kvp.Value;
-                if (verb is TransitiveVerbStmt && remainingCommand.Lexeme == ""
-                    || verb is DitransitiveVerbStmt && remainingCommand.Lexeme != "")
+                // Too many args error.
+                if (kvp.Key is TransitiveVerbStmt && kvp.Value.Item1.Lexeme != "")
                 {
-                    continue;
+                    state.AddCommandError($"{kvp.Value.Item2} has too many arguments.");
                 }
-                else { return false; }
+                // Too few args error.
+                else if (kvp.Key is DitransitiveVerbStmt && kvp.Value.Item1.Lexeme == "")
+                {
+                    state.AddCommandError($"{kvp.Value.Item2} has too few arguments.");
+                }
+                // Just Right :)
             }
-            return true;
         }
     }
 }

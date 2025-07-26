@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace CYA_Adventure_Game_Engine.DSL.Frontend
+namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
     internal class Tokenizer
     {

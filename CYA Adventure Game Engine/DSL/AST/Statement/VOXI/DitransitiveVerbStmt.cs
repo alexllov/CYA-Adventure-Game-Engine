@@ -17,7 +17,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
             List<string> preps = [];
             foreach (var kvp in Prepositions)
             {
-                preps.Add($"Preposition({kvp.Key}): {kvp.Value.ToString()}");
+                preps.Add($"\n    Preposition({kvp.Key}): {kvp.Value.ToString()}");
             }
             string prepString = string.Join(',', preps);
             return $"DitransitiveVerb({Verb}: {prepString})";
@@ -32,26 +32,29 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
             }
             else
             {
-                PrepositionStmt prep = TryMatchPreposition(state, command);
-                prep.Interpret(state);
+                if (TryMatchPreposition(state, command, out PrepositionStmt prep))
+                {
+                    prep.Interpret(state);
+                }
             }
         }
 
-        private PrepositionStmt TryMatchPreposition(Environment state, string command)
+        private bool TryMatchPreposition(Environment state, string command, out PrepositionStmt prep)
         {
             // Split the command & first should be preposition.
             List<string> parts = [.. command.Split(' ')];
             string start = parts[0];
-            if (Prepositions.TryGetValue(start, out PrepositionStmt? prep))
+            if (Prepositions.TryGetValue(start, out prep))
             {
                 string newCommand = string.Join(' ', parts[1..]);
                 state.SetCommand(newCommand);
-                return prep;
+                return true;
             }
             else
             {
-                // TODO: FORMAT THIS TO RETURN A GRACEFUL ERROR MESSAGE RATHER THAN CRASHING.
-                throw new Exception($"DitransitiveVerb: Preposition '{prep}' not found in DitransitiveVerb.");
+                Console.WriteLine($"Couldn't understand {parts[0]} as a preposition.");
+                state.AddCommandError($"Couldn't understand {parts[0]} as a preposition.");
+                return false;
             }
         }
     }

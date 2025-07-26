@@ -1,5 +1,15 @@
 ﻿
+{noun "rod"
+    verb "take" "get" "collect" "pick up"
+        prep "at" "on" "upon" "with"
+            noun "sally" (say "f")
+            other (say "cant do that")
+}
 
+{noun "sally"
+    verb "look" "eat" "watch" "hold"
+    (say "f")
+}
 
 import Inventory as i
 
@@ -12,27 +22,19 @@ import Inventory as i
 }
 
 {noun "rod"
-    verb "take" (say "got rod")(i.add "rod")
+    verb "take" "get"
+        [if !(i.check "rod") 
+        then (say "got rod")(i.add "rod")
+        else (say "already got rod")]
     verb "take good" (say "f")
     verb "cast"
         prep "into"
-            ind "river" (say "casted into river.")
-            ind "pond" (say "casted into pond.")
+            noun "river" (say "casted into river.")
+            noun "pond" (say "casted into pond.")
             default (say "You can't cast your rod there!")
     verb "examine" (say "Your dad gave you this in 1956...")
 }
 
-{noun "good rod"
-    verb "take" (say "got rod")(i.add "rod")
-    verb "cast"
-        prep "into"
-            ind "river" (say "casted into river.")
-            ind "pond" (say "casted into pond.")
-            default (say "You can't cast your rod there!")
-    verb "examine" (say "Your dad gave you this in 1956...")
-}
-
-{noun "door" verb "take" (say "tooken")}
 {noun "doorknob" verb "take" (say "tooken")}
 {noun "music" verb "turn down" (say "f")}
 {noun "down feather" verb "turn" (say "f")}
@@ -42,10 +44,14 @@ import Inventory as i
 noun "note"
 verb "give"
 prep "to"
-ind "sally" (say "sally loves it")
-ind "mary" (say "EEEEEE Mary's ugly")
+noun "sally" (say "sally loves it")
+noun "mary" (say "EEEEEE Mary's ugly")
 default (say "They don't want it.")
+verb "take" (i.add "note")
 }
+
+{noun "sally"}
+{noun "michael"}
 
 
 
@@ -70,3 +76,7 @@ scene "home"
     # nouns: {"door" "rod" inv}
     {"door" "rod" "note"}
     [if (i.check "rod") then (say "YOU HAVE THE ROD BAGONGEAPHGPHAW")]
+
+scene "outside home"
+    "You're outside the shack. Sally's here."
+    {"sally" i "michael"}

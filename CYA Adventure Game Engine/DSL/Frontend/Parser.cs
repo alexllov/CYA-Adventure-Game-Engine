@@ -280,8 +280,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             Dictionary<string, IVerb> verbs = [];
             while (Peek(0).Type is TokenType.Verb)
             {
-                IVerb newVerb = ParseVerb();
-                verbs[newVerb.Verb] = newVerb;
+                List<IVerb> newVerbs = ParseVerbs();
+                foreach (IVerb newSingleVerb in newVerbs)
+                {
+                    verbs[newSingleVerb.Verb] = newSingleVerb;
+                }
                 // Eat the commas at teh end of verbs segments with them.
                 if (Peek(0).Type is TokenType.Comma) { Consume(TokenType.Comma); }
             }
@@ -289,64 +292,118 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new NounStmt(noun, verbs);
         }
 
-        private IVerb ParseVerb()
+        private List<IVerb> ParseVerbs()
         {
             // Consume the 'verb' token.
             Advance();
-            // Get string verb name.
-            string verb = Consume(TokenType.String).Lexeme;
+
+            List<IVerb> verbs = [];
+            List<string> aliases = [];
+            while (Peek(0).Type is TokenType.String)
+            {
+                // Get string verb name.
+                aliases.Add(Consume(TokenType.String).Lexeme);
+            }
             // Parse the commands for this verb.
             switch (Peek(0).Type)
             {
                 case TokenType.RCurly:
-                    throw new Exception($"Error, verb {verb} has no associated commands.");
+                    throw new Exception($"Error, verb {aliases[0]} has no associated commands.");
                 case TokenType.Prep:
-                    return ParseDitransitiveVerb(verb);
+                    List<DitransitiveVerbStmt> ditransVerbs = ParseDitransitiveVerbs(aliases);
+                    foreach (DitransitiveVerbStmt ditransVerb in ditransVerbs)
+                    {
+                        verbs.Add(ditransVerb);
+                    }
+                    break;
+
                 default:
                     IStmt action = ParseBlock(TokenType.Verb, TokenType.RCurly);
-                    return new TransitiveVerbStmt(verb, action);
+                    foreach (string alias in aliases)
+                    {
+                        verbs.Add(new TransitiveVerbStmt(alias, action));
+                    }
+                    break;
             }
+            return verbs;
         }
 
-        private DitransitiveVerbStmt ParseDitransitiveVerb(string verb)
+        /// <summary>
+        /// Parses DitransitiveVerbStmt & constructs a list of them for each alias provided.
+        /// These consist of a verb alias, and a Preposition statement.
+        /// Example "'give' note 'to sally'"
+        /// </summary>
+        /// <param name="verbAliases"></param>
+        /// <returns>List<DitransitiveVerbStmt></returns>
+        private List<DitransitiveVerbStmt> ParseDitransitiveVerbs(List<string> verbAliases)
         {
+            // Get all the prepositions & attached indr objects.
             Dictionary<string, PrepositionStmt> prepositions = [];
             while (Peek(0).Type is TokenType.Prep)
             {
-                PrepositionStmt prep = ParsePreposition();
-                prepositions[prep.Name] = prep;
+                List<PrepositionStmt> preps = ParsePrepositions();
+                foreach (PrepositionStmt prep in preps)
+                {
+                    prepositions[prep.Name] = prep;
+                }
             }
-            return new DitransitiveVerbStmt(verb, prepositions);
+
+            // Construct a ditrans verb for each alias
+            List<DitransitiveVerbStmt> ditransVerbs = [];
+            foreach (string verb in verbAliases)
+            {
+                ditransVerbs.Add(new DitransitiveVerbStmt(verb, prepositions));
+            }
+            return ditransVerbs;
         }
 
-        private PrepositionStmt ParsePreposition()
+        /// <summary>
+        /// Parses all Prepositions inside a DitransitiveVerbStmt,
+        /// These consist of a "preposition" & indirect object, e.g. the recipient of an action
+        /// Example: "give note 'to sally'"
+        /// </summary>
+        /// <returns>List<PrepositionStmt></returns>
+        private List<PrepositionStmt> ParsePrepositions()
         {
             TokenType[] prepositionEnds =
             [
                 TokenType.Prep,
                 TokenType.Default,
                 TokenType.Verb,
-                TokenType.Ind,
+                TokenType.Noun,
                 TokenType.RCurly
             ];
             // Consume the 'prep' token.
             Consume(TokenType.Prep);
-            string prep = Consume(TokenType.String).Lexeme;
+            List<string> aliases = [];
+
+            // id all aliases for this preposition.
+            while (Peek(0).Type is TokenType.String)
+            {
+                aliases.Add(Consume(TokenType.String).Lexeme);
+            }
+
             // Parse the indirect objects for this prep.
             Dictionary<string, IStmt> indirectObjects = [];
-            while (Peek(0).Type is TokenType.Ind)
+            while (Peek(0).Type is TokenType.Noun)
             {
-                Consume(TokenType.Ind);
+                Consume(TokenType.Noun);
                 string name = Consume(TokenType.String).Lexeme;
                 indirectObjects[name] = ParseBlock(prepositionEnds);
             }
-            if (Peek(0).Type is TokenType.Default)
+
+            // Prep block must end in Default.
+            // Consume the "default" token & get the appropriate action block.
+            Consume(TokenType.Default);
+            indirectObjects["default"] = ParseBlock(prepositionEnds);
+
+            // Create an identical PrepStmt for each alias.
+            List<PrepositionStmt> preps = [];
+            foreach (string alias in aliases)
             {
-                // Consumt the "default" token & get the appropriate action block.
-                Consume(TokenType.Default);
-                indirectObjects["default"] = ParseBlock(prepositionEnds);
+                preps.Add(new PrepositionStmt(alias, indirectObjects));
             }
-            return new PrepositionStmt(prep, indirectObjects);
+            return preps;
         }
 
         /// <summary>

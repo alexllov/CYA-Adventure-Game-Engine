@@ -20,11 +20,11 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
         {
             if (!(state.GetCommand() == ""))
             {
-                throw new Exception("TransitiveVerb: Command found! Egine error.");
+                state.AddCommandError($"Error, cannot perform '{Verb} ... {state.GetCommand()}', too many arguments.");
             }
             else
             {
-                Action.Interpret(state);
+                state.AddSuccessfulCommand(Action);
             }
         }
     }

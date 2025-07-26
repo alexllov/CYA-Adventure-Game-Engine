@@ -121,6 +121,20 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 else if (choice is not null)
                 {
                     HandleCommand(choice);
+                    if (Env.CommandErrors.Count == 0)
+                    {
+                        foreach (IStmt stmt in Env.GetSuccessfulCommands())
+                        {
+                            stmt.Interpret(Env);
+                        }
+                    }
+                    else
+                    {
+                        foreach (string error in Env.GetCommandErrors())
+                        {
+                            Console.WriteLine(error);
+                        }
+                    }
                 }
                 else { Console.WriteLine("Error, invalid selection."); }
 

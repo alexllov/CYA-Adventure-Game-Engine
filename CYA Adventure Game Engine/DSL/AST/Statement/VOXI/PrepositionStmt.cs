@@ -33,16 +33,29 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
             }
             else
             {
-                // Remaining command should be the indirect object.
-                if (IndirectObjects.TryGetValue(command, out IStmt? indirectObject))
+                // IN SCENE & DEFINED -> stmt
+                // IN SCENE & NotDefined -> default
+                // NOT IN SCENE -> NOT IN SCENE.
+                Dictionary<string, NounStmt> local = state.GetLocalNouns();
+                // Find the requested IndNoun in local nouns.
+                if (local.TryGetValue(command, out NounStmt stmt))
                 {
-                    // Set the new command without the indirect object
-                    state.SetCommand("");
-                    indirectObject.Interpret(state);
+                    // If the Ind obj is defined.
+                    if (IndirectObjects.TryGetValue(command, out IStmt? indirectObject))
+                    {
+                        // Set the new command without the indirect object
+                        state.SetCommand("");
+                        state.AddSuccessfulCommand(indirectObject);
+                    }
+                    // If not defined but present do default.
+                    else
+                    {
+                        state.AddSuccessfulCommand(IndirectObjects["default"]);
+                    }
                 }
                 else
                 {
-                    IndirectObjects["default"].Interpret(state);
+                    state.AddCommandError($"There is no {command} here.");
                 }
             }
         }

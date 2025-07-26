@@ -1,4 +1,4 @@
-﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend
+﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
     internal static class BaseKeywords
     {
@@ -26,8 +26,9 @@
             {"noun", TokenType.Noun},
             {"verb", TokenType.Verb},
             {"prep", TokenType.Prep},
-            {"ind", TokenType.Ind},
+            {"ind", TokenType.Noun},
             {"default", TokenType.Default },
+            {"other", TokenType.Default },
         };
     }
 }

@@ -1,6 +1,4 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend;
-
-namespace CYA_Adventure_Game_Engine.DSL.Runtime
+﻿namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal static class BinaryOperatorType
     {

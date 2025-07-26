@@ -1,4 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
+using CYA_Adventure_Game_Engine.Modules;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 {
@@ -19,14 +20,25 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
         {
             foreach (IExpr nounExpr in Nouns)
             {
-                string noun = nounExpr.Interpret(state).ToString();
-                if (state.GetNoun(noun, out NounStmt nStmt))
+                object noun = nounExpr.Interpret(state);
+                if (noun is Inventory inv)
                 {
-                    state.AddLocalNoun(nStmt);
+                    inv.All().ForEach(i =>
+                    {
+                        if (state.GetNoun(i, out var stmt))
+                            state.AddLocalNoun(stmt!);
+                    });
                 }
                 else
                 {
-                    throw new Exception($"AddNounStmt: Noun doesnt exist.");
+                    if (state.GetNoun((string)noun, out NounStmt nStmt))
+                    {
+                        state.AddLocalNoun(nStmt);
+                    }
+                    else
+                    {
+                        throw new Exception($"AddNounStmt: Noun doesnt exist.");
+                    }
                 }
             }
         }

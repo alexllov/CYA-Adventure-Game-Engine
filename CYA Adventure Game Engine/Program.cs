@@ -2,6 +2,7 @@
 using CYA_Adventure_Game_Engine;
 using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.Frontend;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
 using CYA_Adventure_Game_Engine.Injection;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;

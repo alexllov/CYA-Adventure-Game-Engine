@@ -33,6 +33,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private string Command = new("");
 
+        public List<string> CommandErrors = [];
+
+        private List<IStmt> SuccessfulCommands = [];
+
         private string GoTo = new("");
 
         private bool GoToFlag = false;
@@ -176,6 +180,30 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public string GetCommand()
         {
             return Command;
+        }
+
+        public void AddCommandError(string error)
+        {
+            CommandErrors.Add(error);
+        }
+
+        public List<string> GetCommandErrors()
+        {
+            List<string> errors = CommandErrors;
+            CommandErrors = [];
+            return errors;
+        }
+
+        public void AddSuccessfulCommand(IStmt stmt)
+        {
+            SuccessfulCommands.Add(stmt);
+        }
+
+        public List<IStmt> GetSuccessfulCommands()
+        {
+            List<IStmt> stack = SuccessfulCommands;
+            SuccessfulCommands = [];
+            return stack;
         }
 
         public void SetGoTo(string address)

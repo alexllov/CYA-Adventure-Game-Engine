@@ -1,4 +1,4 @@
-﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend
+﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
     /// <summary>
     /// Token Types.
@@ -18,7 +18,7 @@
         Access,
         GoTo,
         LBracket, RBracket, LParent, RParent, LCurly, RCurly,
-        Noun, Verb, Prep, Ind, Default,
+        Noun, Verb, Prep, Default,
         Dot,
         Comma,
         Colon,
