@@ -2,6 +2,7 @@
 using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {

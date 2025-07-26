@@ -1,4 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {

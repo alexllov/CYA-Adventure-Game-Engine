@@ -1,4 +1,5 @@
-﻿namespace CYA_Adventure_Game_Engine.DSL.Runtime
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
+namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal static class BinaryOperatorType
     {

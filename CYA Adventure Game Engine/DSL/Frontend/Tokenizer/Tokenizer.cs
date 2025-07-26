@@ -5,7 +5,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
     internal class Tokenizer
     {
         // Unprocessed source code as str.
-        private string Source;
+        private readonly string Source;
         // Start is the start of the current token,
         // Pos is the current position in the source code.
         private int Start = 0, Pos = 0;
