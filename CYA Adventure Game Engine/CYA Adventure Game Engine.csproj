@@ -38,7 +38,7 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Gone Fishin.txt">
+    <None Update="Gone Fishin.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Samples\PlayerSheet_Tests.cya">
@@ -71,7 +71,7 @@
     <None Update="Moonrunner.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Somna %28Type 2 Battle Library%29.cya">
+    <None Update="Somna (Type 2 Battle Library).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Somna (Type 2 CYA Combat).txt">

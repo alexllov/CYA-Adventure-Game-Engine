@@ -1,4 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
@@ -26,7 +27,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         public List<ChoiceStmt> LocalChoices = [];
 
-        public Dictionary<string, CommandStmt> LocalCommands = [];
+        public Dictionary<string, NounStmt> Nouns = [];
+
+        public Dictionary<string, NounStmt> LocalNouns = [];
+
+        private string Command = new("");
 
         private string GoTo = new("");
 
@@ -98,7 +103,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void ClearLocal()
         {
             LocalChoices = [];
-            LocalCommands = [];
+            LocalNouns = [];
         }
 
         public void AddLocalChoice(ChoiceStmt interactable)
@@ -126,20 +131,51 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             else { return false; }
         }
 
-        public void AddLocalCommand(CommandStmt stmt)
+        public void AddNoun(NounStmt noun)
         {
-            LocalCommands[stmt.Noun] = stmt;
+            Nouns[noun.Noun] = noun;
         }
 
-        public void AddLocalCommand(Dictionary<string, CommandStmt> commands)
+        public bool GetNoun(string noun, out NounStmt? value)
         {
-            LocalCommands = commands;
+            if (Nouns.TryGetValue(noun, out value))
+            {
+                return true;
+            }
+            return false;
         }
 
-        public bool HasLocalCommand(string noun, out CommandStmt? command)
+        // Single.
+        public void AddLocalNoun(NounStmt noun)
         {
-            if (LocalCommands.TryGetValue(noun, out command)) { return true; }
+            LocalNouns[noun.Noun] = noun;
+        }
+
+        // Multiple overload for Overlay reset.
+        public void AddLocalNoun(Dictionary<string, NounStmt> nouns)
+        {
+            LocalNouns = nouns;
+        }
+
+        public Dictionary<string, NounStmt> GetLocalNouns()
+        {
+            return LocalNouns;
+        }
+
+        // Check for presence of a noun & get it back if so.
+        public bool HasLocalNoun(string noun, out NounStmt? value)
+        {
+            if (LocalNouns.TryGetValue(noun, out value)) { return true; }
             else { return false; }
+        }
+
+        public void SetCommand(string command)
+        {
+            Command = command;
+        }
+        public string GetCommand()
+        {
+            return Command;
         }
 
         public void SetGoTo(string address)

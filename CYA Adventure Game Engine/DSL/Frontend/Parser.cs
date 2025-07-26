@@ -1,6 +1,7 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 
 namespace CYA_Adventure_Game_Engine.DSL.Frontend
 {
@@ -87,7 +88,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 (TokenType.LBracket, TokenType.String) => ParseChoice(),
                 (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}"),
 
-                (TokenType.LCurly, _) => ParseCurly(),
+                // TODO: Remove the lower & move fully to noun parsing.
+                (TokenType.LCurly, TokenType.Noun) => ParseNoun(),
+                (TokenType.LCurly, _) => ParseAddNounStmt(),
                 // GoTo.
                 (TokenType.GoTo, _) => ParseGoTo(),
                 // Scene & Components.
@@ -253,28 +256,97 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
             return new ChoiceStmt(name, body);
         }
 
-        /// <summary>
-        /// Creates Command statements by assigning statements to verbs attached to nouns.
-        /// Allows for Verb-Noun inputs to be processed.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        // TODO: This is very structured atm. Consider making less strict to allow for more customisation.
-        private CommandStmt ParseCurly()
+        private AddNounStmt ParseAddNounStmt()
         {
             Consume(TokenType.LCurly);
-            string noun = Consume(TokenType.String).Lexeme;
-            Consume(TokenType.Colon);
-            Dictionary<string, IStmt> commands = [];
-            while (Peek(0).Type != TokenType.RCurly)
+            List<IExpr> nouns = [];
+            while (Peek(0).Type is not TokenType.RCurly)
             {
-                string verb = Consume(TokenType.String).Lexeme;
-                commands.Add(verb, ParseBlock(TokenType.Comma, TokenType.RCurly));
-                if (Peek(0).Type is TokenType.Comma) { Advance(); }
+                nouns.Add(ParseExpression(0));
             }
-            if (commands.Count == 0) { throw new Exception($"Error, noun {noun} has 0 associated verbs"); }
             Consume(TokenType.RCurly);
-            return new CommandStmt(noun, commands);
+            return new AddNounStmt(nouns);
+        }
+
+        private NounStmt ParseNoun()
+        {
+            // Consume the '{' & 'noun' token.
+            Advance();
+            Advance();
+            // Get string noun name.
+            string noun = Consume(TokenType.String).Lexeme;
+
+            // Get verbs until some other token.
+            Dictionary<string, IVerb> verbs = [];
+            while (Peek(0).Type is TokenType.Verb)
+            {
+                IVerb newVerb = ParseVerb();
+                verbs[newVerb.Verb] = newVerb;
+                // Eat the commas at teh end of verbs segments with them.
+                if (Peek(0).Type is TokenType.Comma) { Consume(TokenType.Comma); }
+            }
+            Consume(TokenType.RCurly);
+            return new NounStmt(noun, verbs);
+        }
+
+        private IVerb ParseVerb()
+        {
+            // Consume the 'verb' token.
+            Advance();
+            // Get string verb name.
+            string verb = Consume(TokenType.String).Lexeme;
+            // Parse the commands for this verb.
+            switch (Peek(0).Type)
+            {
+                case TokenType.RCurly:
+                    throw new Exception($"Error, verb {verb} has no associated commands.");
+                case TokenType.Prep:
+                    return ParseDitransitiveVerb(verb);
+                default:
+                    IStmt action = ParseBlock(TokenType.Verb, TokenType.RCurly);
+                    return new TransitiveVerbStmt(verb, action);
+            }
+        }
+
+        private DitransitiveVerbStmt ParseDitransitiveVerb(string verb)
+        {
+            Dictionary<string, PrepositionStmt> prepositions = [];
+            while (Peek(0).Type is TokenType.Prep)
+            {
+                PrepositionStmt prep = ParsePreposition();
+                prepositions[prep.Name] = prep;
+            }
+            return new DitransitiveVerbStmt(verb, prepositions);
+        }
+
+        private PrepositionStmt ParsePreposition()
+        {
+            TokenType[] prepositionEnds =
+            [
+                TokenType.Prep,
+                TokenType.Default,
+                TokenType.Verb,
+                TokenType.Ind,
+                TokenType.RCurly
+            ];
+            // Consume the 'prep' token.
+            Consume(TokenType.Prep);
+            string prep = Consume(TokenType.String).Lexeme;
+            // Parse the indirect objects for this prep.
+            Dictionary<string, IStmt> indirectObjects = [];
+            while (Peek(0).Type is TokenType.Ind)
+            {
+                Consume(TokenType.Ind);
+                string name = Consume(TokenType.String).Lexeme;
+                indirectObjects[name] = ParseBlock(prepositionEnds);
+            }
+            if (Peek(0).Type is TokenType.Default)
+            {
+                // Consumt the "default" token & get the appropriate action block.
+                Consume(TokenType.Default);
+                indirectObjects["default"] = ParseBlock(prepositionEnds);
+            }
+            return new PrepositionStmt(prep, indirectObjects);
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-
+using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
@@ -92,15 +92,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             {
                 // Check if the choices & commands are empty & the GoTo has been triggered, auto-skip.
                 if (Env.LocalChoices.Count == 0
-                    && Env.LocalCommands.Count == 0
+                    && Env.Nouns.Count == 0
                     && Env.CheckGoToFlag())
                 { break; }
 
                 ShowChoices();
                 string text = "Enter your " + Env switch
                 {
-                    { LocalChoices.Count: > 0, LocalCommands.Count: 0 } => "choice: ",
-                    { LocalChoices.Count: 0, LocalCommands.Count: > 0 } => "command: ",
+                    { LocalChoices.Count: > 0, LocalNouns.Count: 0 } => "choice: ",
+                    { LocalChoices.Count: 0, LocalNouns.Count: > 0 } => "command: ",
                     _ => "choice or command: "
                 };
                 Console.Write(text);
@@ -118,7 +118,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     HandleOverlay(overlay!);
                 }
                 // Command.
-                else if (choice is not null && choice.Split(' ').Length == 2)
+                else if (choice is not null)
                 {
                     HandleCommand(choice);
                 }
@@ -148,20 +148,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private void HandleCommand(string choice)
         {
-            List<string> command = [.. choice.Split(' ')];
-            // Check for the noun in dict.
-            if (!Env.HasLocalCommand(command[1], out CommandStmt? cStmt))
-            {
-                Console.WriteLine($"Unrecognised Noun: {command[1]}.");
-                return;
-            }
-            // Chech for verb on noun.
-            if (cStmt is null || !cStmt.Verbs.TryGetValue(command[0], out IStmt? vStmt))
-            {
-                Console.WriteLine($"Unrecognised Verb: {command[0]} for Noun: {command[1]}.");
-                return;
-            }
-            vStmt.Interpret(Env);
+            CommandHandler.Handle(Env, choice);
         }
 
         /// <summary>
@@ -173,12 +160,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             // Copy interactables to re-load after overlay closes.
             ChoiceStmt[] interactables = [.. Env.LocalChoices];
-            Dictionary<string, CommandStmt> localCommands = Env.LocalCommands;
+            Dictionary<string, NounStmt> localNouns = Env.LocalNouns;
             RunOverlay(overlay);
             // Clear locals from overlay & re-fill with this scene's.
             Env.ClearLocal();
             Env.AddLocalChoice(interactables);
-            Env.AddLocalCommand(localCommands);
+            Env.AddLocalNoun(localNouns);
         }
 
         /// <summary>

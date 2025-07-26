@@ -1,0 +1,72 @@
+﻿
+
+
+import Inventory as i
+
+
+
+
+{noun "door"
+    verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
+    verb "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
+}
+
+{noun "rod"
+    verb "take" (say "got rod")(i.add "rod")
+    verb "take good" (say "f")
+    verb "cast"
+        prep "into"
+            ind "river" (say "casted into river.")
+            ind "pond" (say "casted into pond.")
+            default (say "You can't cast your rod there!")
+    verb "examine" (say "Your dad gave you this in 1956...")
+}
+
+{noun "good rod"
+    verb "take" (say "got rod")(i.add "rod")
+    verb "cast"
+        prep "into"
+            ind "river" (say "casted into river.")
+            ind "pond" (say "casted into pond.")
+            default (say "You can't cast your rod there!")
+    verb "examine" (say "Your dad gave you this in 1956...")
+}
+
+{noun "door" verb "take" (say "tooken")}
+{noun "doorknob" verb "take" (say "tooken")}
+{noun "music" verb "turn down" (say "f")}
+{noun "down feather" verb "turn" (say "f")}
+{noun "feather" verb "turn down" (say "f")}
+
+{
+noun "note"
+verb "give"
+prep "to"
+ind "sally" (say "sally loves it")
+ind "mary" (say "EEEEEE Mary's ugly")
+default (say "They don't want it.")
+}
+
+
+
+START "intro"
+
+overlay "menu" access "m"
+    "this is the menu. Enter 'm' to return"
+
+scene "intro"
+    "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."
+    "Legend says he could eat a man whole. He got away from you once, in the summer of 82'. That's when it all started goin' downhill..."
+    "One day you'll catch 'im."
+    ["continue" -> "home"]
+
+
+scene "home"
+    "Good ol' shack."
+    [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
+    "The door's ahead of ya, and the whole world's just beyond that."
+    
+    # TODO: add the nice fanciness here
+    # nouns: {"door" "rod" inv}
+    {"door" "rod" "note"}
+    [if (i.check "rod") then (say "YOU HAVE THE ROD BAGONGEAPHGPHAW")]

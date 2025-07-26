@@ -18,7 +18,7 @@ List<Token> tokens = tokenizer.Tokenize();
 // Construct the AST from the tokens.
 Parser parser = new(tokens);
 AbstSyntTree AST = parser.Parse();
-//AST.Show();
+AST.Show();
 
 // Find & load modules, create the initial game Env,
 // do the first pass of interpretation & then begin game.
