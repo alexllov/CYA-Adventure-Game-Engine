@@ -16,12 +16,12 @@ namespace Unit_Tests
         public void FuncAndDotExpressionTest()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.LParent, "(", 1, 1),
-                                  new Token(TokenType.Identifier, "inv", 1, 1),
-                                  new Token(TokenType.Dot, ".", 1, 1),
-                                  new Token(TokenType.Identifier, "add", 1, 1),
-                                  new Token(TokenType.String, "sword", 1, 1),
-                                  new Token(TokenType.RParent, ")", 1, 1)];
+            TokenList tokens = new([new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "inv", 1, 1),
+                                    new Token(TokenType.Dot, ".", 1, 1),
+                                    new Token(TokenType.Identifier, "add", 1, 1),
+                                    new Token(TokenType.String, "sword", 1, 1),
+                                    new Token(TokenType.RParent, ")", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new ExprStmt
@@ -58,25 +58,25 @@ namespace Unit_Tests
         public void ComplexSayStmt()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.LParent, "(", 1, 1),
-                                  new Token(TokenType.Identifier, "say", 1, 1),
-                                  new Token(TokenType.String, "string", 1, 1),
-                                  new Token(TokenType.Identifier, "var", 1, 1),
+            TokenList tokens = new([new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "say", 1, 1),
+                                    new Token(TokenType.String, "string", 1, 1),
+                                    new Token(TokenType.Identifier, "var", 1, 1),
 
-                                  new Token(TokenType.Number, "1", 1, 1),
-                                  new Token(TokenType.Plus, "+", 1, 1),
-                                  new Token(TokenType.Number, "3", 1, 1),
-                                  new Token(TokenType.Multiply, "*", 1, 1),
-                                  new Token(TokenType.Number, "4", 1, 1),
+                                    new Token(TokenType.Number, "1", 1, 1),
+                                    new Token(TokenType.Plus, "+", 1, 1),
+                                    new Token(TokenType.Number, "3", 1, 1),
+                                    new Token(TokenType.Multiply, "*", 1, 1),
+                                    new Token(TokenType.Number, "4", 1, 1),
 
-                                  new Token(TokenType.LParent, "(", 1, 1),
-                                  new Token(TokenType.Identifier, "d", 1, 1),
-                                  new Token(TokenType.Dot, ".", 1, 1),
-                                  new Token(TokenType.Identifier, "roll", 1, 1),
-                                  new Token(TokenType.String, "1d6", 1, 1),
-                                  new Token(TokenType.RParent, ")", 1, 1),
+                                    new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "d", 1, 1),
+                                    new Token(TokenType.Dot, ".", 1, 1),
+                                    new Token(TokenType.Identifier, "roll", 1, 1),
+                                    new Token(TokenType.String, "1d6", 1, 1),
+                                    new Token(TokenType.RParent, ")", 1, 1),
 
-                                  new Token(TokenType.RParent, ")", 1, 1)];
+                                    new Token(TokenType.RParent, ")", 1, 1)]);
 
             //(say "string" var 1+3*4 (d.roll "1d6"))
             AbstSyntTree expectedTree = new([

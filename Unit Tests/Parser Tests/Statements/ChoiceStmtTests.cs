@@ -13,13 +13,13 @@ namespace Unit_Tests
         public void AnnotationTest()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.LBracket, "[", 1, 1),
-                                  new Token(TokenType.String, "annotation text", 1, 1),
-                                  new Token(TokenType.LParent, "(", 1, 1),
-                                  new Token(TokenType.Identifier, "say", 1, 1),
-                                  new Token(TokenType.String, "annotation selected", 1, 1),
-                                  new Token(TokenType.RParent, ")", 1, 1),
-                                  new Token(TokenType.RBracket, "]", 1, 1)];
+            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1),
+                                    new Token(TokenType.String, "annotation text", 1, 1),
+                                    new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "say", 1, 1),
+                                    new Token(TokenType.String, "annotation selected", 1, 1),
+                                    new Token(TokenType.RParent, ")", 1, 1),
+                                    new Token(TokenType.RBracket, "]", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new ChoiceStmt
@@ -52,15 +52,15 @@ namespace Unit_Tests
         public void ChoiceTest()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.LBracket, "[", 1, 1),
-                                  new Token(TokenType.String, "choice text", 1, 1),
-                                  new Token(TokenType.LParent, "(", 1, 1),
-                                  new Token(TokenType.Identifier, "say", 1, 1),
-                                  new Token(TokenType.String, "choice selected", 1, 1),
-                                  new Token(TokenType.RParent, ")", 1, 1),
-                                  new Token(TokenType.GoTo, "->", 1, 1),
-                                  new Token(TokenType.String, "next_scene", 1, 1),
-                                  new Token(TokenType.RBracket, "]", 1, 1)];
+            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1),
+                                    new Token(TokenType.String, "choice text", 1, 1),
+                                    new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "say", 1, 1),
+                                    new Token(TokenType.String, "choice selected", 1, 1),
+                                    new Token(TokenType.RParent, ")", 1, 1),
+                                    new Token(TokenType.GoTo, "->", 1, 1),
+                                    new Token(TokenType.String, "next_scene", 1, 1),
+                                    new Token(TokenType.RBracket, "]", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new ChoiceStmt

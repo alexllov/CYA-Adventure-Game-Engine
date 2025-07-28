@@ -14,7 +14,7 @@ var location = AppDomain.CurrentDomain.BaseDirectory;
 string address = Directory.GetFiles(location, "./*.cya").FirstOrDefault()
     ?? throw new Exception("No .cya file found in the directory.");
 Tokenizer tokenizer = new(address, keywords);
-List<Token> tokens = tokenizer.Tokenize();
+TokenList tokens = tokenizer.Tokenize();
 
 // Construct the AST from the tokens.
 Parser parser = new(tokens);

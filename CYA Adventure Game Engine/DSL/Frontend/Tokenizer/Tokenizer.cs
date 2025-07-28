@@ -43,7 +43,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
         /// Tokenizes the source code, returning a list of tokens.
         /// </summary>
         /// <returns>List<Token> obj containing processed game code.</returns>
-        public List<Token> Tokenize()
+        public TokenList Tokenize()
         {
             while (!IsAtEnd())
             {
@@ -51,7 +51,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
                 ScanToken();
             }
             Tokens.Add(new Token(TokenType.EOF, "", Line, Col));
-            return Tokens;
+            return new TokenList(Tokens);
         }
 
         /// <summary>

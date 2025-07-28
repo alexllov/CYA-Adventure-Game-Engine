@@ -17,9 +17,9 @@ namespace Unit_Tests
         public void StringLitAssign()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.Identifier, "string", 1, 1),
+            TokenList tokens = new([new Token(TokenType.Identifier, "string", 1, 1),
                                   new Token(TokenType.Assign, "=", 1, 1),
-                                  new Token(TokenType.String, "test", 1, 1)];
+                                  new Token(TokenType.String, "test", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new AssignStmt
@@ -46,9 +46,9 @@ namespace Unit_Tests
         public void NumLitAssign()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.Identifier, "num", 1, 1),
-                                  new Token(TokenType.Assign, "=", 1, 1),
-                                  new Token(TokenType.Number, "173", 1, 1)];
+            TokenList tokens = new([new Token(TokenType.Identifier, "num", 1, 1),
+                                    new Token(TokenType.Assign, "=", 1, 1),
+                                    new Token(TokenType.Number, "173", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new AssignStmt
@@ -73,13 +73,13 @@ namespace Unit_Tests
         public void MathBinaryExprAssign()
         {
             // Arrange
-            List<Token> tokens = [new Token(TokenType.Identifier, "math", 1, 1),
-                                  new Token(TokenType.Assign, "=", 1, 1),
-                                  new Token(TokenType.Number, "1", 1, 1),
-                                  new Token(TokenType.Plus, "+", 1, 1),
-                                  new Token(TokenType.Number, "2", 1, 1),
-                                  new Token(TokenType.Multiply, "*", 1, 1),
-                                  new Token(TokenType.Number, "3", 1, 1)];
+            TokenList tokens = new([new Token(TokenType.Identifier, "math", 1, 1),
+                                    new Token(TokenType.Assign, "=", 1, 1),
+                                    new Token(TokenType.Number, "1", 1, 1),
+                                    new Token(TokenType.Plus, "+", 1, 1),
+                                    new Token(TokenType.Number, "2", 1, 1),
+                                    new Token(TokenType.Multiply, "*", 1, 1),
+                                    new Token(TokenType.Number, "3", 1, 1)]);
 
             AbstSyntTree expectedTree = new([
                 new AssignStmt

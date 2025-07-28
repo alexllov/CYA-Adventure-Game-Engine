@@ -49,13 +49,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// </summary>
         readonly List<TokenType> HeaderEnds = [TokenType.Scene, TokenType.Table, TokenType.Overlay, TokenType.End, TokenType.EOF];
 
+        // Error Message Helpers.
+        private Token StartOfCurrentStmt;
+        private string CurrentStmtParsing;
+
         // Parser Components.
-        private readonly List<Token> Tokens;
+        public readonly TokenList Tokens;
         private int Pos = 0;
 
         public List<IStmt> AST = [];
 
-        public Parser(List<Token> tokens)
+        public Parser(TokenList tokens)
         {
             Tokens = tokens;
         }
@@ -65,8 +69,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// </summary>
         public AbstSyntTree Parse()
         {
-            while (Peek(0).Type != TokenType.EOF)
+            while (Tokens.Peek(0).Type != TokenType.EOF)
             {
+                StartOfCurrentStmt = Tokens.Peek(0);
                 AST.Add(ParseStmt());
                 //Console.WriteLine(AST.Last());
             }
@@ -79,15 +84,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns></returns>
         private IStmt ParseStmt()
         {
-            Token token = Tokens[Pos];
+            CurrentStmtParsing = "identifying statement type";
+            Token token = Tokens.Peek(0);
 
-            return (token.Type, Peek(1).Type) switch
+            return (token.Type, Tokens.Peek(1).Type) switch
             {
                 (TokenType.Import, _) => ParseImportStmt(),
                 // []'s Hold If stmts & Choices.
                 (TokenType.LBracket, TokenType.If) => ParseIfStmt(),
                 (TokenType.LBracket, TokenType.String) => ParseChoice(),
-                (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}"),
+                (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}. Error started in {StartOfCurrentStmt}, and occurred during {CurrentStmtParsing}"),
 
                 // TODO: Remove the lower & move fully to noun parsing.
                 (TokenType.LCurly, TokenType.Noun) => ParseNoun(),
@@ -127,11 +133,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <exception cref="Exception"></exception>
         public IExpr ParseExpression(int precedence)
         {
-            Token token = Advance();
+            Token token = Tokens.Advance();
 
             if (!PrefixParts.TryGetValue(token.Type, out IPrefixParselet? prefix))
             {
-                throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}.");
+                throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}. Occured while parsing an expression within a {CurrentStmtParsing}. Statement started at {StartOfCurrentStmt}.");
             }
             IExpr left = prefix.Parse(this, token);
 
@@ -142,10 +148,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
              */
             while (precedence < GetPrecedence())
             {
-                token = Advance();
+                token = Tokens.Advance();
                 if (!InfixParts.TryGetValue(token.Type, out IInfixParselet? infix))
                 {
-                    throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}.");
+                    throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}. Occured while parsing an expression within a {CurrentStmtParsing}. Statement started at {StartOfCurrentStmt}.");
                 }
                 left = infix.Parse(this, left, token);
             }
@@ -158,7 +164,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>int</returns>
         private int GetPrecedence()
         {
-            if (!InfixParts.TryGetValue(Peek(0).Type, out IInfixParselet? infix))
+            if (!InfixParts.TryGetValue(Tokens.Peek(0).Type, out IInfixParselet? infix))
             {
                 return 0;
             }
@@ -172,9 +178,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns></returns>
         private AssignStmt ParseAssign()
         {
-            string name = Peek(0).Lexeme;
-            Consume(TokenType.Identifier);
-            Consume(TokenType.Assign);
+            CurrentStmtParsing = "assign statement";
+            string name = Tokens.Peek(0).Lexeme;
+            Tokens.Consume(TokenType.Identifier);
+            Tokens.Consume(TokenType.Assign);
             IExpr value = ParseExpression(0);
             return new AssignStmt(name, value);
         }
@@ -185,12 +192,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>ImportStmt</returns>
         private ImportStmt ParseImportStmt()
         {
+            CurrentStmtParsing = "import statement";
             // Consume the 'import' token that IDd the stmt.
-            Advance();
-            Token module = Consume(TokenType.Identifier);
-            if (Match(TokenType.As))
+            Tokens.Advance();
+            Token module = Tokens.Consume(TokenType.Identifier);
+            if (Tokens.Match(TokenType.As))
             {
-                Token alias = Consume(TokenType.Identifier);
+                Token alias = Tokens.Consume(TokenType.Identifier);
                 return new ImportStmt(module.Lexeme, alias.Lexeme);
             }
             return new ImportStmt(module.Lexeme);
@@ -205,8 +213,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>Stmt</returns>
         private IStmt ParseBlock(params TokenType[] stoppingPoint)
         {
+            CurrentStmtParsing = "block statement";
             List<IStmt> stmts = [];
-            while (!stoppingPoint.Contains(Peek(0).Type))
+            while (!stoppingPoint.Contains(Tokens.Peek(0).Type))
             {
                 stmts.Add(ParseStmt());
             }
@@ -226,20 +235,21 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>IfStmt</returns>
         private IfStmt ParseIfStmt()
         {
+            CurrentStmtParsing = "if statement";
             // Consume the '[' & then 'if' token.
-            Advance();
-            Advance();
+            Tokens.Advance();
+            Tokens.Advance();
             IExpr condition = ParseExpression(0);
-            Consume(TokenType.Then);
+            Tokens.Consume(TokenType.Then);
             IStmt thenBranch = ParseBlock(TokenType.Else, TokenType.RBracket);
             IStmt? elseBranch = null;
-            if (Match(TokenType.Else))
+            if (Tokens.Match(TokenType.Else))
             {
                 elseBranch = ParseBlock(TokenType.RBracket);
             }
             // TODO: Consider moving this into the Bracket Parsing space to avoid duplication.
             // Consume closing bracket.
-            Consume(TokenType.RBracket);
+            Tokens.Consume(TokenType.RBracket);
             return new IfStmt(condition, thenBranch, elseBranch);
         }
 
@@ -249,37 +259,40 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>InteractableStmt</returns>
         private ChoiceStmt ParseChoice()
         {
+            CurrentStmtParsing = "choice statement";
             // Consume the '['
-            Advance();
+            Tokens.Advance();
             IExpr name = ParseExpression(0);
             IStmt body = ParseBlock(TokenType.RBracket);
-            Consume(TokenType.RBracket);
+            Tokens.Consume(TokenType.RBracket);
             return new ChoiceStmt(name, body);
         }
 
         private AddNounStmt ParseAddNounStmt()
         {
-            Consume(TokenType.LCurly);
+            CurrentStmtParsing = "add noun statement";
+            Tokens.Consume(TokenType.LCurly);
             List<IExpr> nouns = [];
-            while (Peek(0).Type is not TokenType.RCurly)
+            while (Tokens.Peek(0).Type is not TokenType.RCurly)
             {
                 nouns.Add(ParseExpression(0));
             }
-            Consume(TokenType.RCurly);
+            Tokens.Consume(TokenType.RCurly);
             return new AddNounStmt(nouns);
         }
 
         private NounStmt ParseNoun()
         {
+            CurrentStmtParsing = "noun statement";
             // Consume the '{' & 'noun' token.
-            Advance();
-            Advance();
+            Tokens.Advance();
+            Tokens.Advance();
             // Get string noun name.
-            string noun = Consume(TokenType.String).Lexeme;
+            string noun = Tokens.Consume(TokenType.String).Lexeme;
 
             // Get verbs until some other token.
             Dictionary<string, IVerb> verbs = [];
-            while (Peek(0).Type is TokenType.Verb)
+            while (Tokens.Peek(0).Type is TokenType.Verb)
             {
                 List<IVerb> newVerbs = ParseVerbs();
                 foreach (IVerb newSingleVerb in newVerbs)
@@ -287,29 +300,30 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                     verbs[newSingleVerb.Verb] = newSingleVerb;
                 }
                 // Eat the commas at teh end of verbs segments with them.
-                if (Peek(0).Type is TokenType.Comma) { Consume(TokenType.Comma); }
+                if (Tokens.Peek(0).Type is TokenType.Comma) { Tokens.Consume(TokenType.Comma); }
             }
-            Consume(TokenType.RCurly);
+            Tokens.Consume(TokenType.RCurly);
             return new NounStmt(noun, verbs);
         }
 
         private List<IVerb> ParseVerbs()
         {
+            CurrentStmtParsing = "verb statement";
             // Consume the 'verb' token.
-            Advance();
+            Tokens.Advance();
 
             List<IVerb> verbs = [];
             List<string> aliases = [];
-            while (Peek(0).Type is TokenType.String)
+            while (Tokens.Peek(0).Type is TokenType.String)
             {
                 // Get string verb name.
-                aliases.Add(Consume(TokenType.String).Lexeme);
+                aliases.Add(Tokens.Consume(TokenType.String).Lexeme);
             }
             // Parse the commands for this verb.
-            switch (Peek(0).Type)
+            switch (Tokens.Peek(0).Type)
             {
                 case TokenType.RCurly:
-                    throw new Exception($"Error, verb {aliases[0]} has no associated commands.");
+                    throw new Exception($"Error, verb {aliases[0]} has no associated commands. Error location: {Tokens.Peek(0)}. Occured during {CurrentStmtParsing}, within {StartOfCurrentStmt}.");
                 case TokenType.Prep:
                     List<DitransitiveVerbStmt> ditransVerbs = ParseDitransitiveVerbs(aliases);
                     foreach (DitransitiveVerbStmt ditransVerb in ditransVerbs)
@@ -340,7 +354,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         {
             // Get all the prepositions & attached indr objects.
             Dictionary<string, PrepositionStmt> prepositions = [];
-            while (Peek(0).Type is TokenType.Prep)
+            while (Tokens.Peek(0).Type is TokenType.Prep)
             {
                 List<PrepositionStmt> preps = ParsePrepositions();
                 foreach (PrepositionStmt prep in preps)
@@ -375,27 +389,27 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 TokenType.RCurly
             ];
             // Consume the 'prep' token.
-            Consume(TokenType.Prep);
+            Tokens.Consume(TokenType.Prep);
             List<string> aliases = [];
 
             // id all aliases for this preposition.
-            while (Peek(0).Type is TokenType.String)
+            while (Tokens.Peek(0).Type is TokenType.String)
             {
-                aliases.Add(Consume(TokenType.String).Lexeme);
+                aliases.Add(Tokens.Consume(TokenType.String).Lexeme);
             }
 
             // Parse the indirect objects for this prep.
             Dictionary<string, IStmt> indirectObjects = [];
-            while (Peek(0).Type is TokenType.Noun)
+            while (Tokens.Peek(0).Type is TokenType.Noun)
             {
-                Consume(TokenType.Noun);
-                string name = Consume(TokenType.String).Lexeme;
+                Tokens.Consume(TokenType.Noun);
+                string name = Tokens.Consume(TokenType.String).Lexeme;
                 indirectObjects[name] = ParseBlock(prepositionEnds);
             }
 
             // Prep block must end in Default.
             // Consume the "default" token & get the appropriate action block.
-            Consume(TokenType.Default);
+            Tokens.Consume(TokenType.Default);
             indirectObjects["default"] = ParseBlock(prepositionEnds);
 
             // Create an identical PrepStmt for each alias.
@@ -414,8 +428,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <exception cref="Exception"></exception>
         private GoToStmt ParseGoTo()
         {
+            CurrentStmtParsing = "goto statement";
             // Consume "GoTo" token.
-            Consume(TokenType.GoTo);
+            Tokens.Consume(TokenType.GoTo);
             IExpr loc = ParseExpression(0);
             // Allowing for VariableExprs allows for -> aliasing for reusable overlays & scenes that -> different locations.
             if (loc is not StringLitExpr && loc is not VariableExpr)
@@ -431,24 +446,25 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns>SceneStmt</returns>
         private SceneStmt ParseSceneStmt()
         {
+            CurrentStmtParsing = "scene statement";
             // Consume the 'scene' token.
-            Advance();
+            Tokens.Advance();
             // Very next Token should be string with ID for scene.
-            Token ID = Consume(TokenType.String);
+            Token ID = Tokens.Consume(TokenType.String);
             List<IStmt> parts = [];
-            while (!HeaderEnds.Contains(Peek(0).Type))
+            while (!HeaderEnds.Contains(Tokens.Peek(0).Type))
             {
                 // Scenes have special sugar for strings,
                 // & can contain special components: interactables.
                 // So we will filter for those.
-                switch (Peek(0).Type)
+                switch (Tokens.Peek(0).Type)
                 {
                     case TokenType.String:
-                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
+                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Tokens.Peek(0).Lexeme)]);
                         ExprStmt sayStmt = new(say);
                         parts.Add(sayStmt);
                         // Advance needed as Stmt hand made, so string part isn't being consumed.
-                        Advance();
+                        Tokens.Advance();
                         break;
 
                     // Default -> ParseStmt using recursive calls to process.
@@ -459,9 +475,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 }
             }
             // Consume the End Token if found.
-            if (Peek(0).Type is TokenType.End)
+            if (Tokens.Peek(0).Type is TokenType.End)
             {
-                Consume(TokenType.End);
+                Tokens.Consume(TokenType.End);
             }
 
             // Convert List parts to BlockStmt.
@@ -477,27 +493,28 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <exception cref="Exception"></exception>
         private TableStmt ParseTable()
         {
+            CurrentStmtParsing = "table statement";
             // Consule table token.
-            Advance();
+            Tokens.Advance();
             // Next token should be variable table name.
             IExpr ID = ParseExpression(0);
-            if (ID is not VariableExpr) { throw new Exception("table declaration should begin with a variable name."); }
+            if (ID is not VariableExpr) { throw new Exception($"table declaration should begin with a variable name. Error began at {Tokens.Peek(0)}"); }
 
             List<List<IExpr>> records = [];
             List<IExpr> row = [];
-            while (!HeaderEnds.Contains(Peek(0).Type))
+            while (!HeaderEnds.Contains(Tokens.Peek(0).Type))
             {
                 // || = end of current row & start of next => store completed row.
-                if (Peek(0).Type is TokenType.Pipe && Peek(1).Type is TokenType.Pipe)
+                if (Tokens.Peek(0).Type is TokenType.Pipe && Tokens.Peek(1).Type is TokenType.Pipe)
                 {
                     records.Add(row);
-                    Advance();
+                    Tokens.Advance();
                     row = [];
                 }
                 // Step over '|'s between columns.
-                else if (Peek(0).Type is TokenType.Pipe)
+                else if (Tokens.Peek(0).Type is TokenType.Pipe)
                 {
-                    Advance();
+                    Tokens.Advance();
                 }
                 else
                 {
@@ -509,15 +526,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                  * Catch last record before EOF to add.
                  * This is separate s.t. it doesn't consume that following token which could be the start of a scene.
                  */
-                if (HeaderEnds.Contains(Peek(1).Type))
+                if (HeaderEnds.Contains(Tokens.Peek(1).Type))
                 {
                     records.Add(row);
-                    Consume(TokenType.Pipe);
+                    Tokens.Consume(TokenType.Pipe);
                     break;
                 }
             }
             // If table ends with an End token, consume it.
-            if (Peek(0).Type is TokenType.End) { Advance(); }
+            if (Tokens.Peek(0).Type is TokenType.End) { Tokens.Advance(); }
             return new TableStmt((VariableExpr)ID, records);
         }
 
@@ -529,33 +546,34 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         /// <returns></returns>
         private OverlayStmt ParseOverlay()
         {
+            CurrentStmtParsing = "overlay statement";
             //Consume overlay
-            Advance();
+            Tokens.Advance();
             // Very next Token should be string with ID for scene.
-            Token ID = Consume(TokenType.String);
+            Token ID = Tokens.Consume(TokenType.String);
             bool Accessible = false;
             string AccessString = "";
-            if (Peek(0).Type is TokenType.Access)
+            if (Tokens.Peek(0).Type is TokenType.Access)
             {
                 Accessible = true;
-                Advance();
-                if (Peek(0).Type is TokenType.String) { AccessString = Peek(0).Lexeme; }
-                Advance();
+                Tokens.Advance();
+                if (Tokens.Peek(0).Type is TokenType.String) { AccessString = Tokens.Peek(0).Lexeme; }
+                Tokens.Advance();
             }
             List<IStmt> parts = [];
-            while (!HeaderEnds.Contains(Peek(0).Type))
+            while (!HeaderEnds.Contains(Tokens.Peek(0).Type))
             {
                 // Scenes have special sugar for strings,
                 // & can contain special components: interactables.
                 // So we will filter for those.
-                switch (Peek(0).Type)
+                switch (Tokens.Peek(0).Type)
                 {
                     case TokenType.String:
-                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Peek(0).Lexeme)]);
+                        FuncExpr say = new(new VariableExpr("say"), [new StringLitExpr(Tokens.Peek(0).Lexeme)]);
                         ExprStmt sayStmt = new(say);
                         parts.Add(sayStmt);
                         // Advance needed as Stmt hand made, so string part isn't being consumed.
-                        Advance();
+                        Tokens.Advance();
                         break;
 
                     // Default -> ParseStmt using recursive calls to process.
@@ -566,9 +584,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
                 }
             }
             // Consume the End Token if found.
-            if (Peek(0).Type is TokenType.End)
+            if (Tokens.Peek(0).Type is TokenType.End)
             {
-                Consume(TokenType.End);
+                Tokens.Consume(TokenType.End);
             }
 
             // Convert List parts to BlockStmt.
@@ -579,90 +597,20 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
 
         private RunStmt ParseRun()
         {
+            CurrentStmtParsing = "run statement";
             // Consume the 'run' token.
-            Advance();
+            Tokens.Advance();
             // Next token should be string with ID for code to run.
-            Token ID = Consume(TokenType.String);
+            Token ID = Tokens.Consume(TokenType.String);
             return new RunStmt(ID.Lexeme);
         }
 
         private ExitStmt ParseExit()
         {
+            CurrentStmtParsing = "exit statement";
             // Consume the 'exit' token.
-            Advance();
+            Tokens.Advance();
             return new ExitStmt();
-        }
-
-        /// <summary>
-        /// Checks for EOF based on position & Tokens length.
-        /// </summary>
-        /// <returns>bool</returns>
-        private bool IsAtEnd()
-        {
-            return Pos >= Tokens.Count;
-        }
-
-        /// <summary>
-        /// Moves position forward, returning the next token.
-        /// </summary>
-        /// <returns>Token</returns>
-        public Token Advance()
-        {
-            if (!IsAtEnd())
-            {
-                return Tokens[Pos++];
-            }
-            return new Token(TokenType.EOF, "", -1, -1);
-        }
-
-        /// <summary>
-        /// Takes an expected token type, compares it to the current token.
-        /// If the type is correct, it is consumed. Else throws error.
-        /// </summary>
-        /// <param name="type">TokenType</param>
-        /// <returns>Token</returns>
-        /// <exception cref="Exception"></exception>
-        public Token Consume(TokenType type)
-        {
-            if (Peek(0).Type == type)
-            {
-                return Advance();
-            }
-            throw new Exception($"Expected token type {type}, but found {Peek(0).Type}.");
-        }
-
-        /// <summary>
-        /// Scans the token at a given position, relative to the current position of Pos.
-        /// returns the scanned token.
-        /// </summary>
-        /// <param name="dist">int: the relative position of the token to scan.</param>
-        /// <returns>Token</returns>
-        public Token Peek(int dist)
-        {
-            if (Pos + dist < Tokens.Count)
-            {
-                return Tokens[Pos + dist];
-            }
-            return new Token(TokenType.EOF, "", -1, -1);
-        }
-
-        /// <summary>
-        /// Checks the Type of the given token to match on a list of types.
-        /// Allows for conditional branching if specific optional tokens are found - e.g. 'else' branches in If statements.
-        /// </summary>
-        /// <param name="types">list of TokenTypes</param>
-        /// <returns>bool</returns>
-        public bool Match(params TokenType[] types)
-        {
-            foreach (var type in types)
-            {
-                if (Peek(0).Type == type)
-                {
-                    Advance();
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

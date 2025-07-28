@@ -66,12 +66,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend
         public IExpr Parse(Parser parser, Token token)
         {
             List<IExpr> parts = [];
-            while (parser.Peek(0).Type is not TokenType.RParent)
+            while (parser.Tokens.Peek(0).Type is not TokenType.RParent)
             {
                 IExpr part = parser.ParseExpression(0);
                 parts.Add(part);
             }
-            parser.Consume(TokenType.RParent);
+            parser.Tokens.Consume(TokenType.RParent);
 
             switch (parts[0])
             {

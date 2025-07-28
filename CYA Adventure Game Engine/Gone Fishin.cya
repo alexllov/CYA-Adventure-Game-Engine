@@ -1,26 +1,27 @@
 ﻿
-{noun "rod"
-    verb "take" "get" "collect" "pick up"
-        prep "at" "on" "upon" "with"
-            noun "sally" (say "f")
-            other (say "cant do that")
-}
-
-{noun "sally"
-    verb "look" "eat" "watch" "hold"
-    (say "f")
-}
-
 import Inventory as i
 
+START "intro"
 
+overlay "menu" access "m"
+    "this is the menu. Enter 'm' to return"
+    ["Inventory" (say i)]
 
+scene "intro"
+    "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."
+    "Legend says he could eat a man whole. He got away from you once, in the summer of 82'. That's when it all started goin' downhill..."
+    "One day you'll catch 'im."
+    ["continue" -> "home"]
+end
 
+# Nouns within "home"
+home_shelf = (i.make)
+(home_shelf.add "note")
+{noun "shelf" verb "examine" {home_shelf} (say "There's a note on your shelf") {"rod"}}
 {noun "door"
     verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
     verb "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
 }
-
 {noun "rod"
     verb "take" "get"
         [if !(i.check "rod") 
@@ -35,48 +36,18 @@ import Inventory as i
     verb "examine" (say "Your dad gave you this in 1956...")
 }
 
-{noun "doorknob" verb "take" (say "tooken")}
-{noun "music" verb "turn down" (say "f")}
-{noun "down feather" verb "turn" (say "f")}
-{noun "feather" verb "turn down" (say "f")}
-
-{
-noun "note"
-verb "give"
-prep "to"
-noun "sally" (say "sally loves it")
-noun "mary" (say "EEEEEE Mary's ugly")
-default (say "They don't want it.")
-verb "take" (i.add "note")
-}
-
-{noun "sally"}
-{noun "michael"}
-
-
-
-START "intro"
-
-overlay "menu" access "m"
-    "this is the menu. Enter 'm' to return"
-
-scene "intro"
-    "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."
-    "Legend says he could eat a man whole. He got away from you once, in the summer of 82'. That's when it all started goin' downhill..."
-    "One day you'll catch 'im."
-    ["continue" -> "home"]
-
-
 scene "home"
     "Good ol' shack."
     [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
     "The door's ahead of ya, and the whole world's just beyond that."
-    
-    # TODO: add the nice fanciness here
-    # nouns: {"door" "rod" inv}
-    {"door" "rod" "note"}
-    [if (i.check "rod") then (say "YOU HAVE THE ROD BAGONGEAPHGPHAW")]
+    {"door" "rod" "shelf"}
+    {
+        noun "out"
+        verb "go"
+            [if (i.check "rod") then -> "outside home" else (say "you shouldn't leave without your rod")]
+    }
+end
 
-scene "outside home"
-    "You're outside the shack. Sally's here."
-    {"sally" i "michael"}
+
+scene "out"
+    "Where to?"

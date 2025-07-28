@@ -6,7 +6,6 @@
 # FEATURES:
 # - Personalisation is demonstrated below via setting a player name.
 # - A choice & annotation interactable are both shown.
-# - An implementation of 'stretchtext' is shown using a branching conditional.
 
 START "1"
 
