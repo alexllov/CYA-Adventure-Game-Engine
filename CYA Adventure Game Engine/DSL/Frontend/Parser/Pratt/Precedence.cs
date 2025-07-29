@@ -1,4 +1,4 @@
-﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend
+﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
 {
     /// <summary>
     /// Contains the binding hierarchy for Pratt Parsing.

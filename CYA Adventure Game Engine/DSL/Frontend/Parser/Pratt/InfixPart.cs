@@ -1,7 +1,7 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 
-namespace CYA_Adventure_Game_Engine.DSL.Frontend
+namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
 {
     /// <summary>
     /// Infix: an operator between a left & right hand expression.

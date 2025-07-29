@@ -1,4 +1,6 @@
-﻿using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 {
     public class PrepositionStmt : IStmt
@@ -58,6 +60,52 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                     state.AddCommandError($"There is no {command} here.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Parses all Prepositions inside a DitransitiveVerbStmt,
+        /// These consist of a "preposition" & indirect object, e.g. the recipient of an action
+        /// Example: "give note 'to sally'"
+        /// </summary>
+        /// <returns>List<PrepositionStmt></returns>
+        public static List<PrepositionStmt> ParsePrepositions(Parser parser)
+        {
+            TokenType[] prepositionEnds =
+            [
+                TokenType.Prep,
+            TokenType.Default,
+            TokenType.Verb,
+            TokenType.Noun,
+            TokenType.RCurly
+            ];
+            List<string> aliases = [];
+
+            // id all aliases for this preposition.
+            while (parser.Tokens.Peek(0).Type is TokenType.String)
+            {
+                aliases.Add(parser.Tokens.Consume(TokenType.String).Lexeme);
+            }
+
+            // Parse the indirect objects for this prep.
+            Dictionary<string, IStmt> indirectObjects = [];
+            while (parser.Tokens.Match(TokenType.Noun))
+            {
+                string name = parser.Tokens.Consume(TokenType.String).Lexeme;
+                indirectObjects[name] = BlockStmt.Parse(parser, prepositionEnds);
+            }
+
+            // Prep block must end in Default.
+            // Consume the "default" token & get the appropriate action block.
+            parser.Tokens.Consume(TokenType.Default);
+            indirectObjects["default"] = BlockStmt.Parse(parser, prepositionEnds);
+
+            // Create an identical PrepStmt for each alias.
+            List<PrepositionStmt> preps = [];
+            foreach (string alias in aliases)
+            {
+                preps.Add(new PrepositionStmt(alias, indirectObjects));
+            }
+            return preps;
         }
     }
 }

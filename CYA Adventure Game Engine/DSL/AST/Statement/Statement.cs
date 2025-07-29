@@ -18,6 +18,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         /// <param name="state">Environment state object</param>
         /// <exception cref="Exception">Invalid Parameter as Variable Name Exception</exception>
         public abstract void Interpret(Environment state);
+
+        //public abstract IStmt Parse(Parser parser);
     }
 
 }

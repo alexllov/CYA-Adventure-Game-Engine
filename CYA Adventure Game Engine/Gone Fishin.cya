@@ -49,5 +49,11 @@ scene "home"
 end
 
 
-scene "out"
+scene "outside home"
     "Where to?"
+    [if 1==1 then (say "math holds true")]
+end
+
+table alex
+|"name"|"surname"|
+|"alex"|"test"|

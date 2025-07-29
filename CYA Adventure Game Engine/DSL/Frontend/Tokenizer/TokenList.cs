@@ -64,7 +64,7 @@
         }
 
         /// <summary>
-        /// Checks the Type of the given token to match on a list of types.
+        /// Checks the Type of the given token to match on a list of types & Consumes on a match.
         /// Allows for conditional branching if specific optional tokens are found - e.g. 'else' branches in If statements.
         /// </summary>
         /// <param name="types">list of TokenTypes</param>

@@ -1,4 +1,6 @@
-﻿using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 {
     public class DitransitiveVerbStmt : IVerb
@@ -56,6 +58,35 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                 state.AddCommandError($"Couldn't understand {parts[0]} as a preposition.");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Parses DitransitiveVerbStmt & constructs a list of them for each alias provided.
+        /// These consist of a verb alias, and a Preposition statement.
+        /// Example "'give' note 'to sally'"
+        /// </summary>
+        /// <param name="verbAliases"></param>
+        /// <returns>List<DitransitiveVerbStmt></returns>
+        public static List<DitransitiveVerbStmt> ParseDitransitiveVerbs(Parser parser, List<string> verbAliases)
+        {
+            // Get all the prepositions & attached indr objects.
+            Dictionary<string, PrepositionStmt> prepositions = [];
+            while (parser.Tokens.Match(TokenType.Prep))
+            {
+                List<PrepositionStmt> preps = PrepositionStmt.ParsePrepositions(parser);
+                foreach (PrepositionStmt prep in preps)
+                {
+                    prepositions[prep.Name] = prep;
+                }
+            }
+
+            // Construct a ditrans verb for each alias
+            List<DitransitiveVerbStmt> ditransVerbs = [];
+            foreach (string verb in verbAliases)
+            {
+                ditransVerbs.Add(new DitransitiveVerbStmt(verb, prepositions));
+            }
+            return ditransVerbs;
         }
     }
 }

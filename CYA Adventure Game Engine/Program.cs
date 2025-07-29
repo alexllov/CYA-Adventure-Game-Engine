@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CYA_Adventure_Game_Engine;
 using CYA_Adventure_Game_Engine.DSL.AST;
-using CYA_Adventure_Game_Engine.DSL.Frontend;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
 using CYA_Adventure_Game_Engine.Injection;
