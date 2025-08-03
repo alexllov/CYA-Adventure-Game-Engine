@@ -1,5 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
-namespace CYA_Adventure_Game_Engine.DSL.Runtime
+namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
     internal static class BinaryOperatorType
     {

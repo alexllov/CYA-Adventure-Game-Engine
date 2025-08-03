@@ -5,7 +5,7 @@ namespace External_Modules.Battle_Library
     {
         public Enemies() { }
 
-        Dictionary<string, Enemy> KnownEnemies = new()
+        public Dictionary<string, Enemy> KnownEnemies = new()
         {
             // Strength.
             { "goblin", new Enemy("Goblin", "strength", 1, new Attack("slashes its dagger at you.", new Weapons ().Get("dagger"))) },

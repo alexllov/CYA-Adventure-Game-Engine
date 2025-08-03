@@ -2,7 +2,7 @@
 using CYA_Adventure_Game_Engine.Modules;
 namespace External_Modules.Battle_Library
 {
-    public class Weapons : IModule
+    public class Weapons : IModule, IStatic
     {
         public Weapons() { }
 

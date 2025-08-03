@@ -1,5 +1,10 @@
 ﻿
 import Inventory as i
+import Sound as s
+
+door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav"
+(s.play door_open)
+	
 
 START "intro"
 
@@ -17,7 +22,29 @@ end
 # Nouns within "home"
 home_shelf = (i.make)
 (home_shelf.add "note")
-{noun "shelf" verb "examine" {home_shelf} (say "There's a note on your shelf") {"rod"}}
+#{noun "shelf" verb "examine" {home_shelf} (say "There's a note on your shelf") {"rod"}}
+{noun "shelf" 
+    verb "examine" "look"
+        [if (home_shelf.check "note") 
+            then (say "There's a note on your shelf") {"note"}
+            else (say "Your shelf is empty")
+        ]
+}
+{noun "note"
+    verb "take"
+        (i.add "note")
+        (say "took note.")
+        [if (home_shelf.check "note")
+        then (home_shelf.remove "note")
+        else (local.remove "note")]
+    verb "drop"
+        (i.remove "note")
+        (local.add "note")
+    verb "read"
+        (say "Its a love note you wrote for Sally. You'll give it to her one day...")
+}
+
+
 {noun "door"
     verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
     verb "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
@@ -36,11 +63,17 @@ home_shelf = (i.make)
     verb "examine" (say "Your dad gave you this in 1956...")
 }
 
+
+home_contents = (i.make)
+(home_contents.add "door")
+(home_contents.add "rod")
+(home_contents.add "shelf")
 scene "home"
+    local = home_contents
     "Good ol' shack."
     [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
     "The door's ahead of ya, and the whole world's just beyond that."
-    {"door" "rod" "shelf"}
+    {local i}
     {
         noun "out"
         verb "go"
@@ -49,11 +82,11 @@ scene "home"
 end
 
 
+outside_home_contents = (i.make)
 scene "outside home"
+    local = outside_home_contents
     "Where to?"
     [if 1==1 then (say "math holds true")]
+    {noun "in" verb "go" -> "home"}
+    {local i}
 end
-
-table alex
-|"name"|"surname"|
-|"alex"|"test"|

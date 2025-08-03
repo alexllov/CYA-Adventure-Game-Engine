@@ -97,11 +97,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 { break; }
 
                 ShowChoices();
-                string text = "Enter your " + Env switch
+                string text = Env switch
                 {
-                    { LocalChoices.Count: > 0, LocalNouns.Count: 0 } => "choice: ",
-                    { LocalChoices.Count: 0, LocalNouns.Count: > 0 } => "command: ",
-                    _ => "choice or command: "
+                    { LocalChoices.Count: > 0, LocalNouns.Count: 0 } => "Enter your choice: ",
+                    { LocalChoices.Count: 0, LocalNouns.Count: > 0 } => "Enter your command: ",
+                    { LocalChoices.Count: > 0, LocalNouns.Count: > 0 } => "Enter your choice or command: ",
+                    { AccessibleOverlays.Count: > 0 } => "You have reached an end. Select an overlay: ",
+                    _ => "You have reached an end."
                 };
                 Console.Write(text);
 

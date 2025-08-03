@@ -8,7 +8,7 @@ import battle
 
 # TABLE OF ENCOUNTERS
 
-START "test"
+START "1"
 
 
 overlay "menu" access "m"

@@ -1,9 +1,9 @@
 ﻿using CYA_Adventure_Game_Engine;
 namespace External_Modules.Battle_Library
 {
-    public class Battle : IModule
+    public class Battle : IModule, IStatic
     {
-        public Battle() { }
+        //public Battle() { }
 
         /// <summary>
         /// Runs the core battle loop. Will return 1 of 3 strings:
@@ -15,7 +15,7 @@ namespace External_Modules.Battle_Library
         /// <param name="player">CombatPlayer object</param>
         /// <param name="enemy">Enemy object</param>
         /// <returns></returns>
-        public string Trigger(CombatPlayer player, Enemy enemy)
+        public static string Trigger(CombatPlayer player, Enemy enemy)
         {
             Console.WriteLine($"A wild {enemy.Name} appears! ({enemy.Stat}: {enemy.StatValue})");
             Console.WriteLine("Options:\n1. Fight!\n2. Run!!!");
@@ -62,7 +62,7 @@ namespace External_Modules.Battle_Library
             }
         }
 
-        private bool HandleFight(CombatPlayer player, Enemy enemy)
+        private static bool HandleFight(CombatPlayer player, Enemy enemy)
         {
             Console.WriteLine("You chose to fight!");
             string battleType = enemy.Stat;
@@ -116,7 +116,7 @@ namespace External_Modules.Battle_Library
         }
 
 
-        private void HandleDefeat(CombatPlayer player, Enemy enemy)
+        private static void HandleDefeat(CombatPlayer player, Enemy enemy)
         {
             Console.WriteLine($"You were defeated by the {enemy.Name}. You lose 1 life. The {enemy.Name} loses interest and walks off.");
             player.Health -= 1;
@@ -125,10 +125,11 @@ namespace External_Modules.Battle_Library
         /// <summary>
         /// On victory, the player can gain experience OR take the enemy's weapon - if its an obtainable weapon.
         /// </summary>
-        private void HandleVictory(CombatPlayer player, Enemy enemy)
+        private static void HandleVictory(CombatPlayer player, Enemy enemy)
         {
             Console.WriteLine($"You defeated the {enemy.Name}!");
             List<string> choices = [$"1. Gain {enemy.StatValue} experience."];
+            // If the enemy has an obtainable weapon, add it as an option.
             if (Weapons.WeaponList.TryGetValue(enemy.Attack.Weapon.Name, out Weapon? enemyWeapon))
             {
                 choices.Add($"2. Take the enemy's weapon: {enemyWeapon}.");
@@ -168,7 +169,8 @@ namespace External_Modules.Battle_Library
             }
         }
 
-        private bool AttemptRunAway(CombatPlayer player, Enemy enemy)
+        // If the player has > stat than the enemy's combat stat, they successfully run awway.
+        private static bool AttemptRunAway(CombatPlayer player, Enemy enemy)
         {
             int enemyStatValue = enemy.StatValue;
             string enemyStat = enemy.Stat;

@@ -17,22 +17,18 @@ namespace CYA_Adventure_Game_Engine.Injection
         private static Dictionary<string, IModule> AddExternalModules(this Dictionary<string, IModule> modules)
         {
             // Gets location that the exe is currently within.
-            var location = AppDomain.CurrentDomain.BaseDirectory;
+            string location = AppDomain.CurrentDomain.BaseDirectory;
             // "**/modules/**/*.dll"
             /*
              * ** = go any # dirs deep
              * modules = match on modules folder
              * .dll = matches on the dll files.
              */
-            //#if DEBUG
-            //            var moduleFiles = Directory.GetFiles(location, "*.dll");
-            //#else
-            var moduleFiles = Directory.GetFiles(location, "modules\\*.dll");
-            //#endif
+            string[] moduleFiles = Directory.GetFiles(location, "modules\\*.dll");
             foreach (var file in moduleFiles)
             {
                 // Load the assembly to get access to the types.
-                var ass = Assembly.LoadFrom(file);
+                Assembly ass = Assembly.LoadFrom(file);
                 if (ass is not null)
                 {
                     // Filter ass to leave just the IModules.
@@ -43,8 +39,15 @@ namespace CYA_Adventure_Game_Engine.Injection
                         // so to allow things that don't need to be instantiated to avoid it.
                         foreach (var type in types)
                         {
-                            var instanciatedModule = (IModule)Activator.CreateInstance(type);
-                            modules[type.Name.ToLower()] = instanciatedModule;
+                            if (type is IStatic)
+                            {
+                                modules[type.Name.ToLower()] = (IModule)type;
+                            }
+                            else
+                            {
+                                IModule instanciatedModule = (IModule)Activator.CreateInstance(type);
+                                modules[type.Name.ToLower()] = instanciatedModule;
+                            }
                         }
                     }
                     else

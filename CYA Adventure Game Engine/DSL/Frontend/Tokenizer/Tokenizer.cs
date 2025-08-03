@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
+﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
     internal class Tokenizer
     {
@@ -197,7 +195,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
                     }
                     else
                     {
-                        throw Error($"Unexpected character: `{c}`");
+                        throw new Exception($"Unexpected character: `{c}` on line {Line}");
                     }
                     break;
             }
@@ -333,14 +331,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
         {
             string text = Source[Start..Pos];
             Tokens.Add(new Token(type, text, Line, Col));
-        }
-
-        /// <summary>
-        /// Creates err msg with location info.
-        /// </summary>
-        private Exception Error(string message, [CallerLineNumber] int line = 0, [CallerFilePath] string file = "")
-        {
-            return new Exception($"Error at line {Line}, Col {Col}: {message}");
         }
     }
 }

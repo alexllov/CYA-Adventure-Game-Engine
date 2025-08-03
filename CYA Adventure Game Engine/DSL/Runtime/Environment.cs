@@ -23,7 +23,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private Dictionary<string, OverlayStmt> Overlays = [];
 
-        private Dictionary<string, OverlayStmt> AccessibleOverlays = [];
+        public Dictionary<string, OverlayStmt> AccessibleOverlays = [];
 
         public List<ChoiceStmt> LocalChoices = [];
 

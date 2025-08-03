@@ -43,7 +43,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             if (parser.Tokens.Match(TokenType.Access))
             {
                 Accessible = true;
-                parser.Tokens.Advance();
                 if (parser.Tokens.Peek(0).Type is TokenType.String)
                 { AccessString = parser.Tokens.Peek(0).Lexeme; }
                 parser.Tokens.Advance();
