@@ -109,6 +109,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
                 // Get & process user input.
                 var choice = Console.ReadLine();
+
                 // Choice.
                 if (int.TryParse(choice, out int i) && Env.HasLocalChoice(i))
                 {
@@ -119,17 +120,18 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 {
                     HandleOverlay(overlay!);
                 }
+
                 // Command.
-                else if (choice is not null)
+                else if (choice is not null
+                         && AnyActiveChoicers(out List<IChoiceHandler> activeChoicers))
                 {
-                    /*
-                     * TODO: This needs changing to enable multiple Choice modules at once.
-                     *  Need to check if any successfuls after each command handle attempt.
-                     *  If any command succeeds but not the whole, then we need to throw up appropriate errors.
-                     */
-                    HandleCommand(choice);
-                    if (Env.CommandErrors.Count == 0)
+                    HandleCommand(activeChoicers, choice);
+                    if (Env.CheckSuccessfulCommands())
                     {
+                        // Consider doing some sort of "errors from latest" check
+                        // to ensure the breaking CH didn't have any errors.
+                        // Current: successfuls only added after all errors -> early return,
+                        // however this means that needs to be properly implemented by every module writer.
                         foreach (IStmt stmt in Env.GetSuccessfulCommands())
                         {
                             stmt.Interpret(Env);
@@ -167,11 +169,38 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             iStmt.Body.Interpret(Env);
         }
 
-        private void HandleCommand(string choice)
+        /// <summary>
+        /// Scan through the held IChoiceHandler modules. If any are active, return true.
+        /// Any actives are added to activeChoicers list.
+        /// </summary>
+        /// <param name="activeChoicers"></param>
+        /// <returns></returns>
+        private bool AnyActiveChoicers(out List<IChoiceHandler> activeChoicers)
         {
-            foreach (IChoiceHandler choiceHandler in Env.ChoiceHandlers)
+            activeChoicers = [];
+            foreach (IChoiceHandler choicer in Env.ChoiceHandlers)
+            {
+                if (choicer.IsActive())
+                {
+                    activeChoicers.Add(choicer);
+                }
+            }
+            if (activeChoicers.Count > 0) { return true; }
+            return false;
+        }
+
+        /// <summary>
+        /// Calls on each 'active' IChoiceHandler to attempt to handle the user's input.
+        /// </summary>
+        /// <param name="choicers"></param>
+        /// <param name="choice"></param>
+        private void HandleCommand(List<IChoiceHandler> choicers, string choice)
+        {
+            // RESET COMMAND ERRORS & SUCCESSFUL COMMANDS.
+            foreach (IChoiceHandler choiceHandler in choicers)
             {
                 choiceHandler.HandleCommand(choice);
+                if (Env.CheckSuccessfulCommands()) { break; }
             }
         }
 
@@ -184,15 +213,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             // Copy interactables to re-load after overlay closes.
             ChoiceStmt[] interactables = [.. Env.LocalChoices];
-
-            //Dictionary<string, REMOVENounStmt> localNouns = Env.LocalNouns;
+            foreach (IChoiceHandler choicer in Env.ChoiceHandlers) { choicer.StoreLocal(); }
 
             RunOverlay(overlay);
+
             // Clear locals from overlay & re-fill with this scene's.
             Env.ClearLocal();
             Env.AddLocalChoice(interactables);
-
-            //Env.AddLocalNoun(localNouns);
+            foreach (IChoiceHandler choicer in Env.ChoiceHandlers) { choicer.DumpLocal(); }
         }
 
         /// <summary>

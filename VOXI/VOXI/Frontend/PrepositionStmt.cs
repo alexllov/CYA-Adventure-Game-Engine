@@ -2,7 +2,7 @@
 using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI.Frontend
+namespace VOXI.Frontend
 {
     public class PrepositionStmt : IStmt
     {
@@ -72,8 +72,12 @@ namespace External_Modules.VOXI.Frontend
         /// <returns>List<PrepositionStmt></returns>
         public static List<PrepositionStmt> ParsePrepositions(Parser parser)
         {
-            TokenType[] prepositionEndTokens = [TokenType.RCurly];
-            string[] prepositionEndStrings = ["prep", "default", "verb", "noun"];
+            static bool Stopper(Token token) => token switch
+            {
+                { Type: TokenType.RCurly } => true,
+                { Type: TokenType.Identifier, Lexeme: "prep" or "default" or "verb" or "noun" } => true,
+                _ => false,
+            };
 
             List<string> aliases = [];
 
@@ -88,7 +92,7 @@ namespace External_Modules.VOXI.Frontend
             while (parser.Tokens.IdentLexemeMatch("noun"))
             {
                 string name = parser.Tokens.Consume(TokenType.String).Lexeme;
-                indirectObjects[name] = BlockStmt.Parse(parser, prepositionEndTokens, prepositionEndStrings);
+                indirectObjects[name] = BlockStmt.Parse(parser, Stopper);
             }
 
             // Prep block must end in Default.
@@ -99,7 +103,7 @@ namespace External_Modules.VOXI.Frontend
                 throw new Exception("Warning, preposition blocks must always end in a 'default'");
             }
 
-            indirectObjects["default"] = BlockStmt.Parse(parser, prepositionEndTokens, prepositionEndStrings);
+            indirectObjects["default"] = BlockStmt.Parse(parser, Stopper);
 
             // Create an identical PrepStmt for each alias.
             List<PrepositionStmt> preps = [];

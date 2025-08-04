@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "External Modules", "Externa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests", "Unit Tests\Unit Tests.csproj", "{D162B0C1-FC18-4EF5-B7C7-D397E55E92A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VOXI", "VOXI\VOXI.csproj", "{16827FE4-BB43-47F5-93E2-73E455DC6A3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D162B0C1-FC18-4EF5-B7C7-D397E55E92A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D162B0C1-FC18-4EF5-B7C7-D397E55E92A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D162B0C1-FC18-4EF5-B7C7-D397E55E92A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16827FE4-BB43-47F5-93E2-73E455DC6A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16827FE4-BB43-47F5-93E2-73E455DC6A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16827FE4-BB43-47F5-93E2-73E455DC6A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16827FE4-BB43-47F5-93E2-73E455DC6A3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

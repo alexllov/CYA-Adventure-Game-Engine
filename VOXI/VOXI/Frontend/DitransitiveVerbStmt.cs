@@ -1,7 +1,7 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI.Frontend
+namespace VOXI.Frontend
 {
     public class DitransitiveVerbStmt : IVerb
     {

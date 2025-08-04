@@ -3,7 +3,7 @@ using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI.Frontend
+namespace VOXI.Frontend
 {
     public class NounExpr : IExpr
     {
@@ -86,7 +86,14 @@ namespace External_Modules.VOXI.Frontend
                     break;
 
                 default:
-                    IStmt action = BlockStmt.Parse(parser, [TokenType.RCurly], ["verb"]);
+                    IStmt action = BlockStmt.Parse(parser,
+                        (Token token) => token switch
+                        {
+                            { Type: TokenType.RCurly } => true,
+                            { Type: TokenType.Identifier, Lexeme: "verb" } => true,
+                            _ => false,
+                        }
+                        );
                     foreach (string alias in aliases)
                     {
                         verbs.Add(new TransitiveVerbStmt(alias, action));

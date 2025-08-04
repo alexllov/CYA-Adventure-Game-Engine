@@ -5,7 +5,7 @@ using CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using CYA_Adventure_Game_Engine.Modules;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI.Frontend
+namespace VOXI.Frontend
 {
     public class AddNounStmt : IStmt
     {

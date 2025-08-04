@@ -1,4 +1,4 @@
-﻿namespace External_Modules.VOXI.Frontend
+﻿namespace VOXI.Frontend
 {
     public class NounObject
     {

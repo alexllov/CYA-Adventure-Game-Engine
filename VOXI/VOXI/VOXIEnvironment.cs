@@ -1,6 +1,6 @@
-﻿using External_Modules.VOXI.Frontend;
+﻿using VOXI.Frontend;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI
+namespace VOXI
 {
     public class VOXIEnvironment
     {
@@ -13,6 +13,8 @@ namespace External_Modules.VOXI
         public Dictionary<string, NounObject> Nouns = [];
 
         public Dictionary<string, NounObject> LocalNouns = [];
+
+        public Dictionary<string, NounObject> LocalBackup = [];
 
         private string Command = new("");
 

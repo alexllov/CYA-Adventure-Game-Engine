@@ -1,4 +1,4 @@
-﻿namespace External_Modules.VOXI.Runtime
+﻿namespace VOXI.Runtime
 {
     public enum PhraseType
     {

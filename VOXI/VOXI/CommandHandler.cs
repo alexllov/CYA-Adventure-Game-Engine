@@ -1,7 +1,7 @@
 ﻿
-using External_Modules.VOXI.Frontend;
-using External_Modules.VOXI.Runtime;
-namespace External_Modules.VOXI
+using VOXI.Frontend;
+using VOXI.Runtime;
+namespace VOXI
 {
     public static class CommandHandler
     {

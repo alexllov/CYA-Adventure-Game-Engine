@@ -1,6 +1,5 @@
-﻿using External_Modules.VOXI.Frontend;
-
-namespace External_Modules.VOXI.Runtime
+﻿using VOXI.Frontend;
+namespace VOXI.Runtime
 {
     public class VerbNounObject
     {

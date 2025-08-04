@@ -38,43 +38,48 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         /// </summary>
         /// <param name="stoppingPoint">Token types list representing end point for Stmt collection.</param>
         /// <returns>Stmt</returns>
-        public static IStmt Parse(Parser parser, TokenType[] stoppingPoint, string[]? foreignTokenIdentifierStrings = null)
+        public static IStmt Parse(Parser parser, TokenType[] stoppingPoint)
         {
             parser.CurrentStmtParsing = "block statement";
             List<IStmt> stmts = [];
-            if (foreignTokenIdentifierStrings is null)
+            while (!stoppingPoint.Contains(parser.Tokens.Peek(0).Type))
             {
-                while (!stoppingPoint.Contains(parser.Tokens.Peek(0).Type))
-                {
-                    stmts.Add(parser.ParseStmt());
-                }
-                if (stmts.Count > 1)
-                {
-                    return new BlockStmt(stmts);
-                }
-                else
-                {
-                    return stmts[0];
-                }
+                stmts.Add(parser.ParseStmt());
+            }
+            if (stmts.Count > 1)
+            {
+                return new BlockStmt(stmts);
             }
             else
             {
-                Token token = parser.Tokens.Peek(0);
-                while (!stoppingPoint.Contains(token.Type)
-                       && !(token.Type is TokenType.Identifier
-                           && foreignTokenIdentifierStrings.Contains(token.Lexeme)))
-                {
-                    stmts.Add(parser.ParseStmt());
-                    token = parser.Tokens.Peek(0);
-                }
-                if (stmts.Count > 1)
-                {
-                    return new BlockStmt(stmts);
-                }
-                else
-                {
-                    return stmts[0];
-                }
+                return stmts[0];
+            }
+        }
+
+        /// <summary>
+        /// Parse overload, allows for additional end-points to be declared.
+        /// Main use: allows "foreign tokens" to be matched on (e.g. type: Identifier, lexeme: xyz)
+        /// </summary>
+        /// <param name="parser"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static IStmt Parse(Parser parser, Func<Token, bool> predicate)
+        {
+            parser.CurrentStmtParsing = "block statement";
+            List<IStmt> stmts = [];
+            Token token = parser.Tokens.Peek(0);
+            while (!predicate(token))
+            {
+                stmts.Add(parser.ParseStmt());
+                token = parser.Tokens.Peek(0);
+            }
+            if (stmts.Count > 1)
+            {
+                return new BlockStmt(stmts);
+            }
+            else
+            {
+                return stmts[0];
             }
         }
     }

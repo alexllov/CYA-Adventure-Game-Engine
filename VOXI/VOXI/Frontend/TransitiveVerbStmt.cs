@@ -1,6 +1,6 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace External_Modules.VOXI.Frontend
+namespace VOXI.Frontend
 {
     public class TransitiveVerbStmt : IVerb
     {

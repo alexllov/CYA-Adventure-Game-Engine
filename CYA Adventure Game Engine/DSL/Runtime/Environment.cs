@@ -24,6 +24,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "num", NativeFunctions.Num },
         };
 
+        // TODO: needs implementing.
         public void Save()
         {
             Console.Write("Enter Save Name: ");
@@ -34,6 +35,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return;
         }
 
+        // TODO: needs implementing.
         private void Load()
         {
 
@@ -47,8 +49,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         public List<ChoiceStmt> LocalChoices = [];
 
+        // Errors from IChoiceHandlers
         public List<string> CommandErrors = [];
 
+        // Statements correctly identified to be ran from IChoiceHandlers
         private List<IStmt> SuccessfulCommands = [];
 
         private string GoTo = new("");
@@ -62,11 +66,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public Environment(Dictionary<string, IModule> modules)
         {
             Modules = modules;
-            SetVal("save", Save);
-            SetVal("load", Load);
+            //SetVal("save", Save);
+            //SetVal("load", Load);
         }
 
-
+        /// <summary>
+        /// Used by Import statements to bring modules into the game's variable environment.
+        /// </summary>
+        /// <returns>requiested module</returns>
         public IModule GetModule(string name)
         {
             if (!Modules.TryGetValue(name.ToLower(), out IModule? value)) { throw new Exception($"Error, couldn't load module, {name}. Name not found."); }
@@ -95,36 +102,57 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return Env[name];
         }
 
+        /// <summary>
+        /// Attempts to find a variable.
+        /// </summary>
         public bool TryGetVal(string name, out object target)
         {
             if (Env.TryGetValue(name, out target)) { return true; }
             return false;
         }
 
+        /// <summary>
+        /// Adds new scene to Scenes dictionary.
+        /// Checks that name hasn't been used already.
+        /// </summary>
         public void SetScene(string name, SceneStmt value)
         {
             if (Scenes.ContainsKey(name)) { throw new Exception($"Error, a Scene with the name {name} has already been declared."); }
             Scenes[name] = value;
         }
 
+        /// <summary>
+        /// Returns requested scene from Scenes if valid.
+        /// </summary>
         public SceneStmt GetScene(string name)
         {
             if (Scenes.TryGetValue(name, out SceneStmt? scene)) { return scene; }
             else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
         }
 
+        /// <summary>
+        /// Adds Overlay to the Overlays dict.
+        /// If it has a keybind, adds it to the AccessibleOverlays too.
+        /// </summary>
         public void SetOverlay(string name, OverlayStmt value)
         {
             Overlays[name] = value;
             if (value.KeyBind is not null) { AccessibleOverlays[value.KeyBind] = value; }
         }
 
+        /// <summary>
+        /// Checks if string matches an access keybind for an accessible overlay.
+        /// Returns the overlay if match found.
+        /// </summary>
         public bool CheckAccessibleOverlay(string input, out OverlayStmt? overlay)
         {
             return AccessibleOverlays.TryGetValue(input, out overlay);
         }
 
-        // TODO: THIS NEEDS MODIFYING TO GO THROUGH ALL ENVIRONMENTS
+        /// <summary>
+        /// Clears the LocalChoices from Env.
+        /// Calls on all IChoiceHandlers to clear their local environments too in order to reset.
+        /// </summary>
         public void ClearLocal()
         {
             LocalChoices = [];
@@ -174,6 +202,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void AddSuccessfulCommand(IStmt stmt)
         {
             SuccessfulCommands.Add(stmt);
+        }
+
+        public bool CheckSuccessfulCommands()
+        {
+            if (SuccessfulCommands.Count > 0) { return true; }
+            return false;
         }
 
         public List<IStmt> GetSuccessfulCommands()
