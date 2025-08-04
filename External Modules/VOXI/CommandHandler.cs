@@ -1,18 +1,26 @@
 ﻿
 using External_Modules.VOXI.Frontend;
+using External_Modules.VOXI.Runtime;
 namespace External_Modules.VOXI
 {
     public static class CommandHandler
     {
         public static void Handle(VOXIEnvironment VOXIState, string choice)
         {
+            // If env localNouns is empty, then a VOXI input shouldn't be allowed.
+            if (VOXIState.LocalNouns.Count == 0)
+            {
+                return;
+            }
+
             List<string> tokens = [.. choice.ToLower().Split(' ')];
 
             // 1. Strip the articles.
             tokens = StripArticles(tokens);
 
             // 2. Split on conjunctions.
-            List<string> commands = SplitOnConjunctions(tokens);
+            List<string> commandStrings = SplitOnConjunctions(tokens);
+            List<CommandPhrase> commands = [.. commandStrings.Select(c => new CommandPhrase([.. c.Split(' ')]))];
 
             /*
              * 3. Construct simple Verb-Nouns & try to match on them.
@@ -56,18 +64,21 @@ namespace External_Modules.VOXI
                 IVerb verb = kvp.Key;
                 CommandPhrase command = kvp.Value.Item1;
                 // Interpret the verb with the command string.
-                VOXIState.SetCommand(command.Lexeme);
+                VOXIState.SetCommand(command.String);
                 verb.Interpret(VOXIState.BaseEnv);
             }
             return;
         }
 
+        // Articles arejust removed.
+        // A better implementation would use these as indicators for NP identification.
         public static List<string> StripArticles(List<string> tokens)
         {
             List<string> articles = ["a", "an", "the"];
             return [.. tokens.Where(token => !articles.Contains(token))];
         }
 
+        // CONJ used as delimiterto split on & separate into a list of commands.
         public static List<string> SplitOnConjunctions(List<string> tokens)
         {
             List<string> conjunctions = ["and", "then"];
@@ -77,6 +88,7 @@ namespace External_Modules.VOXI
             {
                 if (conjunctions.Contains(token))
                 {
+                    // This avoids creating an empty command if a user enters "xyz and then xyz"
                     if (command.Count > 0)
                     {
                         commands.Add(string.Join(' ', command));
@@ -93,26 +105,28 @@ namespace External_Modules.VOXI
             return commands;
         }
 
-        public static Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> TryMatchVerbNouns(VOXIEnvironment VOXIstate, List<string> commands)
+
+        public static Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> TryMatchVerbNouns(VOXIEnvironment VOXIstate, List<CommandPhrase> commands)
         {
             Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> identifiedCommands = [];
-            foreach (string command in commands)
-            {
-                // 3i. Construct all Verb-NounObject strings from local scope.
-                Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings = CreateVerbNouns(VOXIstate);
 
+            // 3i. Construct all Verb-NounObject strings from local scope.
+            VerbNounObject localVerbNouns = CreateVerbNouns(VOXIstate);
+
+            foreach (CommandPhrase command in commands)
+            {
                 // 3ii. Match command to Verb-Nouns.
-                Dictionary<(VerbPhrase, NounPhrase), string> matchingVerbNouns = MatchVerbNounsToCommand(command, verbNounStrings);
-                switch (matchingVerbNouns.Count)
+                Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> matches = localVerbNouns.FindMatchingVerbNounsFromCommand(command);
+                switch (matches.Count)
                 {
                     case 0:
                         // TODO: Need cleaner message here somehow.
-                        VOXIstate.BaseEnv.AddCommandError($"Could not understand {command}");
+                        VOXIstate.BaseEnv.AddCommandError($"Could not understand {command.String}");
                         break;
                     case 1:
                         // If only one match, is fine.
                         // TODO:: PUT THE COMMAND CONST HERE......
-                        identifiedCommands[matchingVerbNouns.First().Key] = new CommandPhrase(matchingVerbNouns.First().Value);
+                        identifiedCommands[matches.First().Key] = matches.First().Value;
                         break;
                     default:
                         // If multiple matches, prompt user to choose.
@@ -123,48 +137,28 @@ namespace External_Modules.VOXI
             return identifiedCommands;
         }
 
-        public static Dictionary<(VerbPhrase, NounPhrase), string> CreateVerbNouns(VOXIEnvironment VOXIstate)
+        /// <summary>
+        /// Creates a dictionary of available VP-NP (Verb-Noun) strings
+        /// from the Nouns available in local scope & all verbs applicable to them.
+        /// </summary>
+        /// <param name="VOXIstate"></param>
+        /// <returns>Dictionary<(VerbPhrase, NounPhrase), string> VP-NP strings w/ Noun, Verb key</returns>
+        public static VerbNounObject CreateVerbNouns(VOXIEnvironment VOXIstate)
         {
-            Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings = [];
-            Dictionary<string, NounObject> nouns = VOXIstate.GetLocalNouns();
-            foreach (NounObject noun in nouns.Values)
-            {
-                foreach (string verb in noun.Verbs.Keys)
-                {
-                    VerbPhrase mVerb = new(verb);
-                    NounPhrase mNoun = new(noun.Name);
-                    verbNounStrings[(mVerb, mNoun)] = $"{verb} {noun.Name}";
-                }
-            }
-            return verbNounStrings;
+            return new VerbNounObject(VOXIstate);
         }
-
-        public static Dictionary<(VerbPhrase, NounPhrase), string> MatchVerbNounsToCommand(string command, Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings)
-        {
-            Dictionary<(VerbPhrase, NounPhrase), string> successfulVerbNouns = [];
-            foreach (KeyValuePair<(VerbPhrase, NounPhrase), string> record in verbNounStrings)
-            {
-                if (command.StartsWith(record.Value))
-                {
-                    // Pass command here to preserve the whole: eg. 'take rod from shelf'.
-                    successfulVerbNouns[record.Key] = command;
-                }
-            }
-            return successfulVerbNouns;
-        }
-
 
         public static Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> StripVerbNounsFromCommand(Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> dirtyCommands)
         {
             Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> cleanedCommands = [];
-            foreach (KeyValuePair<(VerbPhrase, NounPhrase), CommandPhrase> kvp in dirtyCommands)
+            foreach (KeyValuePair<(VerbPhrase Verb, NounPhrase Noun), CommandPhrase> kvp in dirtyCommands)
             {
-                VerbPhrase verb = kvp.Key.Item1;
-                NounPhrase noun = kvp.Key.Item2;
-                string command = kvp.Value.Lexeme;
+                int VerbAndNounPhraseLength = kvp.Key.Verb.Lexemes.Count() + kvp.Key.Noun.Lexemes.Count();
+                List<string> command = kvp.Value.Lexemes;
                 // Remove the verb and noun from the command.
-                string cleanedCommand = command.Replace($"{verb.Lexeme} {noun.Lexeme}", "").Trim();
-                cleanedCommands[(verb, noun)] = (new CommandPhrase(cleanedCommand), command);
+                // TODO: Test slice position here.
+                CommandPhrase leftoverCommand = new(command[VerbAndNounPhraseLength..]);
+                cleanedCommands[kvp.Key] = (leftoverCommand, string.Join(' ', command));
             }
             return cleanedCommands;
         }
@@ -176,9 +170,9 @@ namespace External_Modules.VOXI
             {
                 VerbPhrase verb = kvp.Key.Item1;
                 NounPhrase noun = kvp.Key.Item2;
-                if (VOXIState.GetLocalNouns().TryGetValue(noun.Lexeme, out NounObject? nObj))
+                if (VOXIState.GetLocalNouns().TryGetValue(noun.String, out NounObject? nObj))
                 {
-                    if (nObj.TryGetVerb(verb.Lexeme, out IVerb? vStmt))
+                    if (nObj.TryGetVerb(verb.String, out IVerb? vStmt))
                     {
                         verbDict[vStmt!] = (kvp.Value);
                     }
@@ -192,12 +186,12 @@ namespace External_Modules.VOXI
             foreach (KeyValuePair<IVerb, (CommandPhrase, string)> kvp in verbDict)
             {
                 // Too many args error.
-                if (kvp.Key is TransitiveVerbStmt && kvp.Value.Item1.Lexeme != "")
+                if (kvp.Key is TransitiveVerbStmt && kvp.Value.Item1.String != "")
                 {
                     VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too many arguments.");
                 }
                 // Too few args error.
-                else if (kvp.Key is DitransitiveVerbStmt && kvp.Value.Item1.Lexeme == "")
+                else if (kvp.Key is DitransitiveVerbStmt && kvp.Value.Item1.String == "")
                 {
                     VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too few arguments.");
                 }

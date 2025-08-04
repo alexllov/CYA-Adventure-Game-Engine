@@ -34,7 +34,6 @@ namespace External_Modules.VOXI
         // Multiple overload for Overlay reset.
         public void AddLocalNoun(Dictionary<string, NounObject> nouns)
         {
-            Console.WriteLine("IN ENV, ADDED LOCAL NOUN");
             LocalNouns = nouns;
         }
 
