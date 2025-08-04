@@ -1,16 +1,33 @@
-﻿
+﻿noun rod = {noun "rod"
+    verb "take" "get"
+        [if !(i.check "rod") 
+        then (say "got rod")(i.add "rod")
+        else (say "already got rod")]
+    verb "take good" (say "f")
+    verb "cast"
+        prep "into"
+            noun "river" (say "casted into river.")
+            noun "pond" (say "casted into pond.")
+            default (say "you can't do that here.")
+    verb "examine" (say "Your dad gave you this in 1956...")
+}
+
+
 import Inventory as i
 import Sound as s
 
 door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav"
 (s.play door_open)
-	
+
+
+noun door = {noun "door" verb "open" (say "opened door.")}
 
 START "intro"
 
 overlay "menu" access "m"
     "this is the menu. Enter 'm' to return"
     ["Inventory" (say i)]
+    ["Save Game" (save)]
 
 scene "intro"
     "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."
@@ -22,15 +39,14 @@ end
 # Nouns within "home"
 home_shelf = (i.make)
 (home_shelf.add "note")
-#{noun "shelf" verb "examine" {home_shelf} (say "There's a note on your shelf") {"rod"}}
-{noun "shelf" 
+noun shelf = {noun "shelf" 
     verb "examine" "look"
         [if (home_shelf.check "note") 
-            then (say "There's a note on your shelf") {"note"}
+            then (say "There's a note on your shelf") {note}
             else (say "Your shelf is empty")
         ]
 }
-{noun "note"
+noun note = {noun "note"
     verb "take"
         (i.add "note")
         (say "took note.")
@@ -38,6 +54,7 @@ home_shelf = (i.make)
         then (home_shelf.remove "note")
         else (local.remove "note")]
     verb "drop"
+        (say "dropped note.")
         (i.remove "note")
         (local.add "note")
     verb "read"
@@ -45,23 +62,11 @@ home_shelf = (i.make)
 }
 
 
-{noun "door"
+noun door = {noun "door"
     verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
     verb "examine" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
 }
-{noun "rod"
-    verb "take" "get"
-        [if !(i.check "rod") 
-        then (say "got rod")(i.add "rod")
-        else (say "already got rod")]
-    verb "take good" (say "f")
-    verb "cast"
-        prep "into"
-            noun "river" (say "casted into river.")
-            noun "pond" (say "casted into pond.")
-            default (say "You can't cast your rod there!")
-    verb "examine" (say "Your dad gave you this in 1956...")
-}
+
 
 
 home_contents = (i.make)
@@ -73,12 +78,12 @@ scene "home"
     "Good ol' shack."
     [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
     "The door's ahead of ya, and the whole world's just beyond that."
-    {local i}
-    {
+    noun out = {
         noun "out"
         verb "go"
             [if (i.check "rod") then -> "outside home" else (say "you shouldn't leave without your rod")]
     }
+    {local i out}
 end
 
 
@@ -87,6 +92,6 @@ scene "outside home"
     local = outside_home_contents
     "Where to?"
     [if 1==1 then (say "math holds true")]
-    {noun "in" verb "go" -> "home"}
-    {local i}
+    noun in = {noun "in" verb "go" -> "home"}
+    {local i in}
 end

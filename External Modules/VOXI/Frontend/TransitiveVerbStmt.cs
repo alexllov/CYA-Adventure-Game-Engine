@@ -1,5 +1,6 @@
-﻿using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+namespace External_Modules.VOXI.Frontend
 {
     public class TransitiveVerbStmt : IVerb
     {
@@ -18,9 +19,10 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
         public void Interpret(Environment state)
         {
-            if (!(state.GetCommand() == ""))
+            VOXI voxi = (VOXI)state.Modules["voxi"];
+            if (!(voxi.Env.GetCommand() == ""))
             {
-                state.AddCommandError($"Error, cannot perform '{Verb} ... {state.GetCommand()}', too many arguments.");
+                state.AddCommandError($"Error, cannot perform '{Verb} ... {voxi.Env.GetCommand()}', too many arguments.");
             }
             else
             {

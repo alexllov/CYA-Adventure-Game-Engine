@@ -81,6 +81,23 @@
             }
             return false;
         }
+
+        /// <summary>
+        /// Checks if the current token is of tokentype Identifier
+        /// && that its lexeme matches the value passed.
+        /// </summary>
+        /// <param name="targetLexeme"></param>
+        /// <returns></returns>
+        public bool IdentLexemeMatch(string targetLexeme)
+        {
+            Token token = Peek(0);
+            if (token.Type is TokenType.Identifier && token.Lexeme == targetLexeme)
+            {
+                Advance();
+                return true;
+            }
+            return false;
+        }
     }
 }
 

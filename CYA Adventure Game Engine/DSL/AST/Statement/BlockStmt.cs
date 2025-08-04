@@ -38,21 +38,43 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         /// </summary>
         /// <param name="stoppingPoint">Token types list representing end point for Stmt collection.</param>
         /// <returns>Stmt</returns>
-        public static IStmt Parse(Parser parser, params TokenType[] stoppingPoint)
+        public static IStmt Parse(Parser parser, TokenType[] stoppingPoint, string[]? foreignTokenIdentifierStrings = null)
         {
             parser.CurrentStmtParsing = "block statement";
             List<IStmt> stmts = [];
-            while (!stoppingPoint.Contains(parser.Tokens.Peek(0).Type))
+            if (foreignTokenIdentifierStrings is null)
             {
-                stmts.Add(parser.ParseStmt());
-            }
-            if (stmts.Count > 1)
-            {
-                return new BlockStmt(stmts);
+                while (!stoppingPoint.Contains(parser.Tokens.Peek(0).Type))
+                {
+                    stmts.Add(parser.ParseStmt());
+                }
+                if (stmts.Count > 1)
+                {
+                    return new BlockStmt(stmts);
+                }
+                else
+                {
+                    return stmts[0];
+                }
             }
             else
             {
-                return stmts[0];
+                Token token = parser.Tokens.Peek(0);
+                while (!stoppingPoint.Contains(token.Type)
+                       && !(token.Type is TokenType.Identifier
+                           && foreignTokenIdentifierStrings.Contains(token.Lexeme)))
+                {
+                    stmts.Add(parser.ParseStmt());
+                    token = parser.Tokens.Peek(0);
+                }
+                if (stmts.Count > 1)
+                {
+                    return new BlockStmt(stmts);
+                }
+                else
+                {
+                    return stmts[0];
+                }
             }
         }
     }

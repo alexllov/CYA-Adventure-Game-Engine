@@ -1,14 +1,16 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Expression;
+using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
+namespace External_Modules.VOXI.Frontend
 {
-    public class NounStmt : IStmt
+    public class NounExpr : IExpr
     {
         public string Noun;
         public Dictionary<string, IVerb> Verbs;
 
-        public NounStmt(string noun, Dictionary<string, IVerb> verbs)
+        public NounExpr(string noun, Dictionary<string, IVerb> verbs)
         {
             Noun = noun;
             Verbs = verbs;
@@ -22,28 +24,15 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                 actions.Add($"Verb({kvp.Key}): {kvp.Value.ToString()}");
             }
             string actString = string.Join("\n  ", actions);
-            return $"NounStmt({Noun}:\n  {actString})";
+            return $"NounExpr({Noun}:\n  {actString})";
         }
 
-        public void Interpret(Environment state)
+        public object Interpret(Environment state)
         {
-            state.AddNoun(this);
-            state.AddLocalNoun(this);
+            return new NounObject(this);
         }
 
-        public bool TryGetVerb(string verb, out IVerb? vStmt)
-        {
-            if (Verbs.TryGetValue(verb, out vStmt))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static NounStmt Parse(Parser parser)
+        public static NounExpr Parse(Parser parser)
         {
             parser.CurrentStmtParsing = "noun statement";
             // Consume the '{' & 'noun' token.
@@ -54,7 +43,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
             // Get verbs until some other token.
             Dictionary<string, IVerb> verbs = [];
-            while (parser.Tokens.Peek(0).Type is TokenType.Verb)
+            while (parser.Tokens.IdentLexemeMatch("verb"))
             {
                 List<IVerb> newVerbs = ParseVerbs(parser);
                 foreach (IVerb newSingleVerb in newVerbs)
@@ -65,14 +54,14 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                 if (parser.Tokens.Peek(0).Type is TokenType.Comma) { parser.Tokens.Consume(TokenType.Comma); }
             }
             parser.Tokens.Consume(TokenType.RCurly);
-            return new NounStmt(noun, verbs);
+            return new NounExpr(noun, verbs);
         }
 
         private static List<IVerb> ParseVerbs(Parser parser)
         {
             parser.CurrentStmtParsing = "verb statement";
             // Consume the 'verb' token.
-            parser.Tokens.Advance();
+            //parser.Tokens.Advance();
 
             List<IVerb> verbs = [];
             List<string> aliases = [];
@@ -82,13 +71,13 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                 aliases.Add(parser.Tokens.Consume(TokenType.String).Lexeme);
             }
             // Parse the commands for this verb.
-            switch (parser.Tokens.Peek(0).Type)
+            switch (parser.Tokens.Peek(0))
             {
-                case TokenType.RCurly:
+                case { Type: TokenType.RCurly }:
                     throw new Exception($"Error, verb {aliases[0]} has no associated commands. " +
                         $"Error location: {parser.Tokens.Peek(0)}. " +
                         $"Occured during {parser.CurrentStmtParsing}, within {parser.StartOfCurrentStmt}.");
-                case TokenType.Prep:
+                case { Type: TokenType.Identifier, Lexeme: "prep" }:
                     List<DitransitiveVerbStmt> ditransVerbs = DitransitiveVerbStmt.ParseDitransitiveVerbs(parser, aliases);
                     foreach (DitransitiveVerbStmt ditransVerb in ditransVerbs)
                     {
@@ -97,7 +86,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                     break;
 
                 default:
-                    IStmt action = BlockStmt.Parse(parser, [TokenType.Verb, TokenType.RCurly]);
+                    IStmt action = BlockStmt.Parse(parser, [TokenType.RCurly], ["verb"]);
                     foreach (string alias in aliases)
                     {
                         verbs.Add(new TransitiveVerbStmt(alias, action));

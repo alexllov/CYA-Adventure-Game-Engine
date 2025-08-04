@@ -23,12 +23,6 @@
             {"or", TokenType.Or },
             {"true", TokenType.Boolean },
             {"false", TokenType.Boolean },
-            {"noun", TokenType.Noun},
-            {"verb", TokenType.Verb},
-            {"prep", TokenType.Prep},
-            {"ind", TokenType.Noun},
-            {"default", TokenType.Default },
-            {"other", TokenType.Default },
         };
     }
 }

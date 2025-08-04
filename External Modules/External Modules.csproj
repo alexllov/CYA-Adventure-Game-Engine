@@ -11,4 +11,8 @@
     <ProjectReference Include="..\CYA Adventure Game Engine\CYA Adventure Game Engine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="VOXI\Runtime\" />
+  </ItemGroup>
+
 </Project>

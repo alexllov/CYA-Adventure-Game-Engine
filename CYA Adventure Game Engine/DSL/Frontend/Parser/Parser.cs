@@ -1,6 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 
@@ -20,17 +19,21 @@ public class Parser
         TokenType.EOF
     ];
 
+
+
     // Error Message Helpers.
     public Token StartOfCurrentStmt;
     public string CurrentStmtParsing;
 
     // Parser Components.
     public readonly TokenList Tokens;
+    private List<IParserExtender> ParserExtenders;
 
     public List<IStmt> AST = [];
 
-    public Parser(TokenList tokens)
+    public Parser(TokenList tokens, List<IParserExtender>? parserExtenders = null)
     {
+        ParserExtenders = (parserExtenders is not null) ? parserExtenders : [];
         Tokens = tokens;
     }
 
@@ -64,10 +67,6 @@ public class Parser
             (TokenType.LBracket, TokenType.If) => IfStmt.Parse(this),
             (TokenType.LBracket, TokenType.String) => ChoiceStmt.Parse(this),
             (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}. Error started in {StartOfCurrentStmt}, and occurred during {CurrentStmtParsing}"),
-
-            // TODO: Remove the lower & move fully to noun parsing.
-            (TokenType.LCurly, TokenType.Noun) => NounStmt.Parse(this),
-            (TokenType.LCurly, _) => AddNounStmt.Parse(this),
             // GoTo.
             (TokenType.GoTo, _) => GoToStmt.Parse(this),
             // Scene & Components.
@@ -81,7 +80,15 @@ public class Parser
             // Assignment.
             (TokenType.Identifier, TokenType.Assign) => AssignStmt.Parse(this),
             // Default: loose expression, to be wrapped as Expression Statement.
-            _ => ExprStmt.Parse(this)
+            _ => TryExtenders(),
         };
+    }
+    private IStmt TryExtenders()
+    {
+        foreach (IParserExtender pe in ParserExtenders)
+        {
+            if (pe.TryParseStmt(this, out IStmt? stmt)) { return stmt; }
+        }
+        return ExprStmt.Parse(this);
     }
 }

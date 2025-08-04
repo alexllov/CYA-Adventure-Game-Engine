@@ -1,4 +1,4 @@
-﻿namespace CYA_Adventure_Game_Engine.DSL.Runtime
+﻿namespace External_Modules.VOXI
 {
     public enum PhraseType
     {
@@ -16,67 +16,67 @@
         string Lexeme { get; }
     }
 
-    public class Verb : IPhrase
+    public class VerbPhrase : IPhrase
     {
         public PhraseType Type => PhraseType.Verb;
         public string Lexeme { get; }
 
-        public Verb(string lexeme)
+        public VerbPhrase(string lexeme)
         {
             Lexeme = lexeme;
         }
     }
 
-    public class Noun : IPhrase
+    public class NounPhrase : IPhrase
     {
         public PhraseType Type => PhraseType.Noun;
         public string Lexeme { get; }
 
-        public Noun(string lexeme)
+        public NounPhrase(string lexeme)
         {
             Lexeme = lexeme;
         }
     }
 
-    public class Preposition : IPhrase
+    public class PrepositionPhrase : IPhrase
     {
         public PhraseType Type => PhraseType.Preposition;
         public string Lexeme { get; }
 
-        public Preposition(string lexeme)
+        public PrepositionPhrase(string lexeme)
         {
             Lexeme = lexeme;
         }
     }
 
-    public class IndirectNoun : IPhrase
+    public class IndirectNounPhrase : IPhrase
     {
         public PhraseType Type => PhraseType.IndirectNoun;
         public string Lexeme { get; }
 
-        public IndirectNoun(string lexeme)
+        public IndirectNounPhrase(string lexeme)
         {
             Lexeme = lexeme;
         }
     }
 
-    public class Article : IPhrase
+    public class ArticlePhrase : IPhrase
     {
         public PhraseType Type => PhraseType.Article;
         public string Lexeme { get; }
 
-        public Article(string lexeme)
+        public ArticlePhrase(string lexeme)
         {
             Lexeme = lexeme;
         }
     }
 
-    public class Command : IPhrase
+    public class CommandPhrase : IPhrase
     {
         public PhraseType Type => PhraseType.Command;
         public string Lexeme { get; }
 
-        public Command(string lexeme)
+        public CommandPhrase(string lexeme)
         {
             Lexeme = lexeme;
         }

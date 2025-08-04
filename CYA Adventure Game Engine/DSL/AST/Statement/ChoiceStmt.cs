@@ -37,7 +37,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             // Consume the '['
             parser.Tokens.Advance();
             IExpr name = parser.ParseExpression(0);
-            IStmt body = BlockStmt.Parse(parser, TokenType.RBracket);
+            IStmt body = BlockStmt.Parse(parser, [TokenType.RBracket]);
             parser.Tokens.Consume(TokenType.RBracket);
             return new ChoiceStmt(name, body);
         }

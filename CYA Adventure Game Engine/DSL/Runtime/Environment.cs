@@ -1,12 +1,17 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     public class Environment
     {
 
-        private Dictionary<string, IModule> Modules;
+        public readonly Dictionary<string, IModule> Modules;
+
+        public List<IChoiceHandler> ChoiceHandlers =>
+            [.. Modules
+             .Values
+             .Select(m => m as IChoiceHandler)
+             .Where(m => m is not null)];
 
         /// <summary>
         /// Dict stores all assignments crated in interpretation.
@@ -19,6 +24,21 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "num", NativeFunctions.Num },
         };
 
+        public void Save()
+        {
+            Console.Write("Enter Save Name: ");
+            string saveName = Console.ReadLine();
+            Console.WriteLine($"Saved as {saveName}");
+            Console.WriteLine("---------->>>>><<<<<----------");
+            SaveObject save = new(this);
+            return;
+        }
+
+        private void Load()
+        {
+
+        }
+
         private Dictionary<string, SceneStmt> Scenes = [];
 
         private Dictionary<string, OverlayStmt> Overlays = [];
@@ -26,12 +46,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public Dictionary<string, OverlayStmt> AccessibleOverlays = [];
 
         public List<ChoiceStmt> LocalChoices = [];
-
-        public Dictionary<string, NounStmt> Nouns = [];
-
-        public Dictionary<string, NounStmt> LocalNouns = [];
-
-        private string Command = new("");
 
         public List<string> CommandErrors = [];
 
@@ -48,6 +62,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public Environment(Dictionary<string, IModule> modules)
         {
             Modules = modules;
+            SetVal("save", Save);
+            SetVal("load", Load);
         }
 
 
@@ -79,6 +95,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return Env[name];
         }
 
+        public bool TryGetVal(string name, out object target)
+        {
+            if (Env.TryGetValue(name, out target)) { return true; }
+            return false;
+        }
+
         public void SetScene(string name, SceneStmt value)
         {
             if (Scenes.ContainsKey(name)) { throw new Exception($"Error, a Scene with the name {name} has already been declared."); }
@@ -102,12 +124,14 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return AccessibleOverlays.TryGetValue(input, out overlay);
         }
 
-        // TODO: This should be expanded to clear local commands now too.
-        // DONE: Need to check if working properly.
+        // TODO: THIS NEEDS MODIFYING TO GO THROUGH ALL ENVIRONMENTS
         public void ClearLocal()
         {
             LocalChoices = [];
-            LocalNouns = [];
+            foreach (IChoiceHandler choicer in ChoiceHandlers)
+            {
+                choicer.ClearLocal();
+            }
         }
 
         public void AddLocalChoice(ChoiceStmt interactable)
@@ -133,53 +157,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             if (i != 0 && LocalChoices.Count() >= i) { return true; }
             else { return false; }
-        }
-
-        public void AddNoun(NounStmt noun)
-        {
-            Nouns[noun.Noun] = noun;
-        }
-
-        public bool GetNoun(string noun, out NounStmt? value)
-        {
-            if (Nouns.TryGetValue(noun, out value))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        // Single.
-        public void AddLocalNoun(NounStmt noun)
-        {
-            LocalNouns[noun.Noun] = noun;
-        }
-
-        // Multiple overload for Overlay reset.
-        public void AddLocalNoun(Dictionary<string, NounStmt> nouns)
-        {
-            LocalNouns = nouns;
-        }
-
-        public Dictionary<string, NounStmt> GetLocalNouns()
-        {
-            return LocalNouns;
-        }
-
-        // Check for presence of a noun & get it back if so.
-        public bool HasLocalNoun(string noun, out NounStmt? value)
-        {
-            if (LocalNouns.TryGetValue(noun, out value)) { return true; }
-            else { return false; }
-        }
-
-        public void SetCommand(string command)
-        {
-            Command = command;
-        }
-        public string GetCommand()
-        {
-            return Command;
         }
 
         public void AddCommandError(string error)

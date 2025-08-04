@@ -1,7 +1,7 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
+namespace External_Modules.VOXI.Frontend
 {
     public class DitransitiveVerbStmt : IVerb
     {
@@ -27,7 +27,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
         public void Interpret(Environment state)
         {
-            string command = state.GetCommand();
+            VOXI voxi = (VOXI)state.Modules["voxi"];
+            string command = voxi.Env.GetCommand();
             if (command == "")
             {
                 throw new Exception("DitransitiveVerb: Command not found! Engine error.");
@@ -43,13 +44,14 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
         private bool TryMatchPreposition(Environment state, string command, out PrepositionStmt prep)
         {
+            VOXI voxi = (VOXI)state.Modules["voxi"];
             // Split the command & first should be preposition.
             List<string> parts = [.. command.Split(' ')];
             string start = parts[0];
             if (Prepositions.TryGetValue(start, out prep))
             {
                 string newCommand = string.Join(' ', parts[1..]);
-                state.SetCommand(newCommand);
+                voxi.Env.SetCommand(newCommand);
                 return true;
             }
             else
@@ -71,13 +73,20 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
         {
             // Get all the prepositions & attached indr objects.
             Dictionary<string, PrepositionStmt> prepositions = [];
-            while (parser.Tokens.Match(TokenType.Prep))
+
+            Token token = parser.Tokens.Peek(0);
+            while (token.Type is TokenType.Identifier
+                   && token.Lexeme is "prep")
             {
+                // Eat the 'prep'
+                parser.Tokens.Advance();
                 List<PrepositionStmt> preps = PrepositionStmt.ParsePrepositions(parser);
                 foreach (PrepositionStmt prep in preps)
                 {
                     prepositions[prep.Name] = prep;
                 }
+                // Update token.
+                token = parser.Tokens.Peek(0);
             }
 
             // Construct a ditrans verb for each alias

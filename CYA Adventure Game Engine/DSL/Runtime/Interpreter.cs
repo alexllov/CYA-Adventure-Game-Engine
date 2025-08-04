@@ -1,6 +1,5 @@
 ﻿using CYA_Adventure_Game_Engine.DSL.AST;
 using CYA_Adventure_Game_Engine.DSL.AST.Statement;
-using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
 namespace CYA_Adventure_Game_Engine.DSL.Runtime
 {
     internal class Interpreter
@@ -91,17 +90,18 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             while (true)
             {
                 // Check if the choices & commands are empty & the GoTo has been triggered, auto-skip.
-                if (Env.LocalChoices.Count == 0
-                    && Env.Nouns.Count == 0
-                    && Env.CheckGoToFlag())
-                { break; }
+                //if (Env.LocalChoices.Count == 0
+                //    && Env.Nouns.Count == 0
+                //    && Env.CheckGoToFlag())
+                //{ break; }
 
                 ShowChoices();
                 string text = Env switch
                 {
-                    { LocalChoices.Count: > 0, LocalNouns.Count: 0 } => "Enter your choice: ",
-                    { LocalChoices.Count: 0, LocalNouns.Count: > 0 } => "Enter your command: ",
-                    { LocalChoices.Count: > 0, LocalNouns.Count: > 0 } => "Enter your choice or command: ",
+                    { LocalChoices.Count: > 0 } => Env.ChoiceHandlers
+                        .Aggregate("Enter your choice", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
+                    { LocalChoices.Count: 0 } => Env.ChoiceHandlers
+                        .Aggregate("", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
                     { AccessibleOverlays.Count: > 0 } => "You have reached an end. Select an overlay: ",
                     _ => "You have reached an end."
                 };
@@ -122,6 +122,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 // Command.
                 else if (choice is not null)
                 {
+                    /*
+                     * TODO: This needs changing to enable multiple Choice modules at once.
+                     *  Need to check if any successfuls after each command handle attempt.
+                     *  If any command succeeds but not the whole, then we need to throw up appropriate errors.
+                     */
                     HandleCommand(choice);
                     if (Env.CommandErrors.Count == 0)
                     {
@@ -164,7 +169,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private void HandleCommand(string choice)
         {
-            CommandHandler.Handle(Env, choice);
+            foreach (IChoiceHandler choiceHandler in Env.ChoiceHandlers)
+            {
+                choiceHandler.HandleCommand(choice);
+            }
         }
 
         /// <summary>
@@ -176,12 +184,15 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         {
             // Copy interactables to re-load after overlay closes.
             ChoiceStmt[] interactables = [.. Env.LocalChoices];
-            Dictionary<string, NounStmt> localNouns = Env.LocalNouns;
+
+            //Dictionary<string, REMOVENounStmt> localNouns = Env.LocalNouns;
+
             RunOverlay(overlay);
             // Clear locals from overlay & re-fill with this scene's.
             Env.ClearLocal();
             Env.AddLocalChoice(interactables);
-            Env.AddLocalNoun(localNouns);
+
+            //Env.AddLocalNoun(localNouns);
         }
 
         /// <summary>

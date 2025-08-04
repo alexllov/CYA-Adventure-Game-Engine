@@ -1,0 +1,65 @@
+﻿using External_Modules.VOXI.Frontend;
+using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
+namespace External_Modules.VOXI
+{
+    public class VOXIEnvironment
+    {
+        public Environment BaseEnv;
+        public VOXIEnvironment(Environment environment)
+        {
+            BaseEnv = environment;
+        }
+
+        public Dictionary<string, NounObject> Nouns = [];
+
+        public Dictionary<string, NounObject> LocalNouns = [];
+
+        private string Command = new("");
+
+        public bool GetNoun(string noun, out NounObject? value)
+        {
+            if (Nouns.TryGetValue(noun, out value))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // Single.
+        public void AddLocalNoun(NounObject noun)
+        {
+            LocalNouns[noun.Name] = noun;
+        }
+
+        // Multiple overload for Overlay reset.
+        public void AddLocalNoun(Dictionary<string, NounObject> nouns)
+        {
+            Console.WriteLine("IN ENV, ADDED LOCAL NOUN");
+            LocalNouns = nouns;
+        }
+
+        public Dictionary<string, NounObject> GetLocalNouns()
+        {
+            return LocalNouns;
+        }
+
+        // Check for presence of a noun & get it back if so.
+        public bool HasLocalNoun(string noun, out NounObject? value)
+        {
+            if (LocalNouns.TryGetValue(noun, out value)) { return true; }
+            else { return false; }
+        }
+
+        public void SetCommand(string command)
+        {
+            Command = command;
+        }
+        public string GetCommand()
+        {
+            return Command;
+        }
+    }
+}
+
+
+

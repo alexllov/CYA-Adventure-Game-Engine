@@ -1,7 +1,8 @@
-﻿using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
-namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
+namespace External_Modules.VOXI.Frontend
 {
     public class PrepositionStmt : IStmt
     {
@@ -27,8 +28,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
         public void Interpret(Environment state)
         {
+            VOXI voxi = (VOXI)state.Modules["voxi"];
             // Get the command from the state.
-            string command = state.GetCommand();
+            string command = voxi.Env.GetCommand();
             if (command == "")
             {
                 throw new Exception("Preposition: Command not found! Engine error.");
@@ -38,15 +40,15 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
                 // IN SCENE & DEFINED -> stmt
                 // IN SCENE & NotDefined -> default
                 // NOT IN SCENE -> NOT IN SCENE.
-                Dictionary<string, NounStmt> local = state.GetLocalNouns();
+                Dictionary<string, NounObject> local = voxi.Env.GetLocalNouns();
                 // Find the requested IndNoun in local nouns.
-                if (local.TryGetValue(command, out NounStmt stmt))
+                if (local.TryGetValue(command, out NounObject? stmt))
                 {
                     // If the Ind obj is defined.
                     if (IndirectObjects.TryGetValue(command, out IStmt? indirectObject))
                     {
                         // Set the new command without the indirect object
-                        state.SetCommand("");
+                        voxi.Env.SetCommand("");
                         state.AddSuccessfulCommand(indirectObject);
                     }
                     // If not defined but present do default.
@@ -70,14 +72,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
         /// <returns>List<PrepositionStmt></returns>
         public static List<PrepositionStmt> ParsePrepositions(Parser parser)
         {
-            TokenType[] prepositionEnds =
-            [
-                TokenType.Prep,
-            TokenType.Default,
-            TokenType.Verb,
-            TokenType.Noun,
-            TokenType.RCurly
-            ];
+            TokenType[] prepositionEndTokens = [TokenType.RCurly];
+            string[] prepositionEndStrings = ["prep", "default", "verb", "noun"];
+
             List<string> aliases = [];
 
             // id all aliases for this preposition.
@@ -88,16 +85,21 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI
 
             // Parse the indirect objects for this prep.
             Dictionary<string, IStmt> indirectObjects = [];
-            while (parser.Tokens.Match(TokenType.Noun))
+            while (parser.Tokens.IdentLexemeMatch("noun"))
             {
                 string name = parser.Tokens.Consume(TokenType.String).Lexeme;
-                indirectObjects[name] = BlockStmt.Parse(parser, prepositionEnds);
+                indirectObjects[name] = BlockStmt.Parse(parser, prepositionEndTokens, prepositionEndStrings);
             }
 
             // Prep block must end in Default.
             // Consume the "default" token & get the appropriate action block.
-            parser.Tokens.Consume(TokenType.Default);
-            indirectObjects["default"] = BlockStmt.Parse(parser, prepositionEnds);
+            Token token = parser.Tokens.Peek(0);
+            if (!parser.Tokens.IdentLexemeMatch("default"))
+            {
+                throw new Exception("Warning, preposition blocks must always end in a 'default'");
+            }
+
+            indirectObjects["default"] = BlockStmt.Parse(parser, prepositionEndTokens, prepositionEndStrings);
 
             // Create an identical PrepStmt for each alias.
             List<PrepositionStmt> preps = [];

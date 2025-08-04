@@ -1,9 +1,10 @@
-﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement.VOXI;
-namespace CYA_Adventure_Game_Engine.DSL.Runtime
+﻿
+using External_Modules.VOXI.Frontend;
+namespace External_Modules.VOXI
 {
-    internal static class CommandHandler
+    public static class CommandHandler
     {
-        public static void Handle(Environment state, string choice)
+        public static void Handle(VOXIEnvironment VOXIState, string choice)
         {
             List<string> tokens = [.. choice.ToLower().Split(' ')];
 
@@ -19,26 +20,26 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
              *    
              *    Errors 2 types:
              *    1. Commands that are not understood - no match found.
-             *    2. Ambiguous commands - multiple matches found.
+             *    2. Ambiguous commands - multiple matches found. 
              */
-            Dictionary<(Verb, Noun), Command> identifiedCommands = TryMatchVerbNouns(state, commands);
+            Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> identifiedCommands = TryMatchVerbNouns(VOXIState, commands);
             // Check for errors to early return.
-            if (state.CommandErrors.Count > 0)
+            if (VOXIState.BaseEnv.CommandErrors.Count > 0)
             {
                 return;
             }
 
-            // 4. Strip Verb-Noun from command.
+            // 4. Strip Verb-NounObject from command.
             // At this point, properly formated transitive verb commands should have a command of "".
-            Dictionary<(Verb, Noun), (Command, string)> cleanedCommands = StripVerbNounsFromCommand(identifiedCommands);
+            Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> cleanedCommands = StripVerbNounsFromCommand(identifiedCommands);
 
             // 5. Get the actual Verbs from nouns
-            Dictionary<IVerb, (Command, string)> verbDict = GetVerbs(state, cleanedCommands);
+            Dictionary<IVerb, (CommandPhrase, string)> verbDict = GetVerbs(VOXIState, cleanedCommands);
 
             // 6. Match Verbs with argument types
-            MatchVerbsWithArgNumber(state, verbDict);
+            MatchVerbsWithArgNumber(VOXIState, verbDict);
             // Check for errors to early return.
-            if (state.CommandErrors.Count > 0)
+            if (VOXIState.BaseEnv.CommandErrors.Count > 0)
             {
                 return;
             }
@@ -50,13 +51,13 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
              * - Ditransitive verb with invalid Indir Object.
              * All failures added to state properly.
              */
-            foreach (KeyValuePair<IVerb, (Command, string)> kvp in verbDict)
+            foreach (KeyValuePair<IVerb, (CommandPhrase, string)> kvp in verbDict)
             {
                 IVerb verb = kvp.Key;
-                Command command = kvp.Value.Item1;
+                CommandPhrase command = kvp.Value.Item1;
                 // Interpret the verb with the command string.
-                state.SetCommand(command.Lexeme);
-                verb.Interpret(state);
+                VOXIState.SetCommand(command.Lexeme);
+                verb.Interpret(VOXIState.BaseEnv);
             }
             return;
         }
@@ -92,56 +93,56 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return commands;
         }
 
-        public static Dictionary<(Verb, Noun), Command> TryMatchVerbNouns(Environment state, List<string> commands)
+        public static Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> TryMatchVerbNouns(VOXIEnvironment VOXIstate, List<string> commands)
         {
-            Dictionary<(Verb, Noun), Command> identifiedCommands = [];
+            Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> identifiedCommands = [];
             foreach (string command in commands)
             {
-                // 3i. Construct all Verb-Noun strings from local scope.
-                Dictionary<(Verb, Noun), string> verbNounStrings = CreateVerbNouns(state);
+                // 3i. Construct all Verb-NounObject strings from local scope.
+                Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings = CreateVerbNouns(VOXIstate);
 
                 // 3ii. Match command to Verb-Nouns.
-                Dictionary<(Verb, Noun), string> matchingVerbNouns = MatchVerbNounsToCommand(command, verbNounStrings);
+                Dictionary<(VerbPhrase, NounPhrase), string> matchingVerbNouns = MatchVerbNounsToCommand(command, verbNounStrings);
                 switch (matchingVerbNouns.Count)
                 {
                     case 0:
                         // TODO: Need cleaner message here somehow.
-                        state.AddCommandError($"Could not understand {command}");
+                        VOXIstate.BaseEnv.AddCommandError($"Could not understand {command}");
                         break;
                     case 1:
                         // If only one match, is fine.
                         // TODO:: PUT THE COMMAND CONST HERE......
-                        identifiedCommands[matchingVerbNouns.First().Key] = new Command(matchingVerbNouns.First().Value);
+                        identifiedCommands[matchingVerbNouns.First().Key] = new CommandPhrase(matchingVerbNouns.First().Value);
                         break;
                     default:
                         // If multiple matches, prompt user to choose.
-                        state.AddCommandError($"Multiple matches found for {command}. Please disambiguate the noun using 'the, a, or an'.");
+                        VOXIstate.BaseEnv.AddCommandError($"Multiple matches found for {command}. Please disambiguate the noun using 'the, a, or an'.");
                         break;
                 }
             }
             return identifiedCommands;
         }
 
-        public static Dictionary<(Verb, Noun), string> CreateVerbNouns(Environment state)
+        public static Dictionary<(VerbPhrase, NounPhrase), string> CreateVerbNouns(VOXIEnvironment VOXIstate)
         {
-            Dictionary<(Verb, Noun), string> verbNounStrings = [];
-            Dictionary<string, NounStmt> nouns = state.GetLocalNouns();
-            foreach (NounStmt noun in nouns.Values)
+            Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings = [];
+            Dictionary<string, NounObject> nouns = VOXIstate.GetLocalNouns();
+            foreach (NounObject noun in nouns.Values)
             {
                 foreach (string verb in noun.Verbs.Keys)
                 {
-                    Verb mVerb = new(verb);
-                    Noun mNoun = new(noun.Noun);
-                    verbNounStrings[(mVerb, mNoun)] = $"{verb} {noun.Noun}";
+                    VerbPhrase mVerb = new(verb);
+                    NounPhrase mNoun = new(noun.Name);
+                    verbNounStrings[(mVerb, mNoun)] = $"{verb} {noun.Name}";
                 }
             }
             return verbNounStrings;
         }
 
-        public static Dictionary<(Verb, Noun), string> MatchVerbNounsToCommand(string command, Dictionary<(Verb, Noun), string> verbNounStrings)
+        public static Dictionary<(VerbPhrase, NounPhrase), string> MatchVerbNounsToCommand(string command, Dictionary<(VerbPhrase, NounPhrase), string> verbNounStrings)
         {
-            Dictionary<(Verb, Noun), string> successfulVerbNouns = [];
-            foreach (KeyValuePair<(Verb, Noun), string> record in verbNounStrings)
+            Dictionary<(VerbPhrase, NounPhrase), string> successfulVerbNouns = [];
+            foreach (KeyValuePair<(VerbPhrase, NounPhrase), string> record in verbNounStrings)
             {
                 if (command.StartsWith(record.Value))
                 {
@@ -153,31 +154,31 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         }
 
 
-        public static Dictionary<(Verb, Noun), (Command, string)> StripVerbNounsFromCommand(Dictionary<(Verb, Noun), Command> dirtyCommands)
+        public static Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> StripVerbNounsFromCommand(Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> dirtyCommands)
         {
-            Dictionary<(Verb, Noun), (Command, string)> cleanedCommands = [];
-            foreach (KeyValuePair<(Verb, Noun), Command> kvp in dirtyCommands)
+            Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> cleanedCommands = [];
+            foreach (KeyValuePair<(VerbPhrase, NounPhrase), CommandPhrase> kvp in dirtyCommands)
             {
-                Verb verb = kvp.Key.Item1;
-                Noun noun = kvp.Key.Item2;
+                VerbPhrase verb = kvp.Key.Item1;
+                NounPhrase noun = kvp.Key.Item2;
                 string command = kvp.Value.Lexeme;
                 // Remove the verb and noun from the command.
                 string cleanedCommand = command.Replace($"{verb.Lexeme} {noun.Lexeme}", "").Trim();
-                cleanedCommands[(verb, noun)] = (new Command(cleanedCommand), command);
+                cleanedCommands[(verb, noun)] = (new CommandPhrase(cleanedCommand), command);
             }
             return cleanedCommands;
         }
 
-        public static Dictionary<IVerb, (Command, string)> GetVerbs(Environment state, Dictionary<(Verb, Noun), (Command, string)> cleanedCommands)
+        public static Dictionary<IVerb, (CommandPhrase, string)> GetVerbs(VOXIEnvironment VOXIState, Dictionary<(VerbPhrase, NounPhrase), (CommandPhrase, string)> cleanedCommands)
         {
-            Dictionary<IVerb, (Command, string)> verbDict = [];
-            foreach (KeyValuePair<(Verb, Noun), (Command, string)> kvp in cleanedCommands)
+            Dictionary<IVerb, (CommandPhrase, string)> verbDict = [];
+            foreach (KeyValuePair<(VerbPhrase, NounPhrase), (CommandPhrase, string)> kvp in cleanedCommands)
             {
-                Verb verb = kvp.Key.Item1;
-                Noun noun = kvp.Key.Item2;
-                if (state.GetLocalNouns().TryGetValue(noun.Lexeme, out NounStmt? nStmt))
+                VerbPhrase verb = kvp.Key.Item1;
+                NounPhrase noun = kvp.Key.Item2;
+                if (VOXIState.GetLocalNouns().TryGetValue(noun.Lexeme, out NounObject? nObj))
                 {
-                    if (nStmt.TryGetVerb(verb.Lexeme, out IVerb? vStmt))
+                    if (nObj.TryGetVerb(verb.Lexeme, out IVerb? vStmt))
                     {
                         verbDict[vStmt!] = (kvp.Value);
                     }
@@ -186,19 +187,19 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return verbDict;
         }
 
-        private static void MatchVerbsWithArgNumber(Environment state, Dictionary<IVerb, (Command, string)> verbDict)
+        private static void MatchVerbsWithArgNumber(VOXIEnvironment VOXIState, Dictionary<IVerb, (CommandPhrase, string)> verbDict)
         {
-            foreach (KeyValuePair<IVerb, (Command, string)> kvp in verbDict)
+            foreach (KeyValuePair<IVerb, (CommandPhrase, string)> kvp in verbDict)
             {
                 // Too many args error.
                 if (kvp.Key is TransitiveVerbStmt && kvp.Value.Item1.Lexeme != "")
                 {
-                    state.AddCommandError($"{kvp.Value.Item2} has too many arguments.");
+                    VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too many arguments.");
                 }
                 // Too few args error.
                 else if (kvp.Key is DitransitiveVerbStmt && kvp.Value.Item1.Lexeme == "")
                 {
-                    state.AddCommandError($"{kvp.Value.Item2} has too few arguments.");
+                    VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too few arguments.");
                 }
                 // Just Right :)
             }

@@ -53,9 +53,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
                 action(args);
                 return null;
             }
-            else if (function is Action<List<object>> argAction)
+            else if (function is Action arglessAction)
             {
-                argAction(args);
+                arglessAction();
                 return null;
             }
             else if (function is Func<object[], object?> DotExprFunc)

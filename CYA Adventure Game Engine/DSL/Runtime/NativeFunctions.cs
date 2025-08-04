@@ -34,11 +34,5 @@
             if (float.TryParse(arg[0].ToString(), out float fl)) { return fl; }
             else { throw new Exception($"Error, could not convert arg: {arg} of type: {arg.GetType()} to num."); }
         }
-
-        // TODO: Needs work & integrating into Environment.
-        public static void Set(Environment env, string name, object value)
-        {
-            env.SetVal(name, value);
-        }
     }
 }
