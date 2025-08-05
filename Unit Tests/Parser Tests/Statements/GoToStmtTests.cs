@@ -60,5 +60,29 @@ namespace Unit_Tests
             Assert.Equivalent(expectedTree, tree);
         }
 
+        // START "scene"
+        [Fact]
+        public void StartGoTo()
+        {
+            // Arrange
+            TokenList tokens = new([new Token(TokenType.GoTo, "START", 1, 1),
+                                  new Token(TokenType.Identifier, "scene", 1, 1)]);
+
+            AbstSyntTree expectedTree = new([
+                new GoToStmt
+                (
+                    new VariableExpr("scene")
+                )
+            ]);
+
+            var sut = new Parser(tokens);
+
+            // Act
+            AbstSyntTree tree = sut.Parse();
+
+            // Assert
+            Assert.Single(tree.Tree);
+            Assert.Equivalent(expectedTree, tree);
+        }
     }
 }

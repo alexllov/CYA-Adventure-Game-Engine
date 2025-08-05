@@ -6,7 +6,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
     {
         public void Interpret(Environment state)
         {
-            state.SetOverlayExitFlag(true);
+            state.TriggerOverlayExitFlag();
         }
 
         public override string ToString()

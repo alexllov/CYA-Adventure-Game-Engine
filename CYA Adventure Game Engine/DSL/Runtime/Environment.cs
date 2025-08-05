@@ -24,23 +24,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             { "num", NativeFunctions.Num },
         };
 
-        // TODO: needs implementing.
-        public void Save()
-        {
-            Console.Write("Enter Save Name: ");
-            string saveName = Console.ReadLine();
-            Console.WriteLine($"Saved as {saveName}");
-            Console.WriteLine("---------->>>>><<<<<----------");
-            SaveObject save = new(this);
-            return;
-        }
-
-        // TODO: needs implementing.
-        private void Load()
-        {
-
-        }
-
         private Dictionary<string, SceneStmt> Scenes = [];
 
         private Dictionary<string, OverlayStmt> Overlays = [];
@@ -70,6 +53,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             //SetVal("load", Load);
         }
 
+        ///////////////////////
+        // MODULE COMPONENTS //
+        ///////////////////////
+
         /// <summary>
         /// Used by Import statements to bring modules into the game's variable environment.
         /// </summary>
@@ -79,6 +66,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             if (!Modules.TryGetValue(name.ToLower(), out IModule? value)) { throw new Exception($"Error, couldn't load module, {name}. Name not found."); }
             return value;
         }
+
+        ////////////////////
+        // ENV COMPONENTS //
+        ////////////////////
 
         /// <summary>
         /// Set a value to a given alias.
@@ -111,6 +102,64 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             return false;
         }
 
+        //////////////////////////
+        // LOCAL ENV COMPONENTS //
+        //////////////////////////
+
+        /// <summary>
+        /// Clears the LocalChoices from Env.
+        /// Calls on all IChoiceHandlers to clear their local environments too in order to reset.
+        /// </summary>
+        public void ClearLocal()
+        {
+            LocalChoices = [];
+            foreach (IChoiceHandler choicer in ChoiceHandlers)
+            {
+                choicer.ClearLocal();
+            }
+        }
+
+        /// <summary>
+        /// Add new ChoiceStmt to Local choices.
+        /// </summary>
+        public void AddLocalChoice(ChoiceStmt interactable)
+        {
+            LocalChoices.Add(interactable);
+        }
+
+        /// <summary>
+        /// Overload, add a list of ChoiceStmts to Local choices.
+        /// </summary>
+        public void AddLocalChoice(params ChoiceStmt[] interactables)
+        {
+            foreach (ChoiceStmt interactable in interactables)
+            {
+                LocalChoices.Add(interactable);
+            }
+        }
+
+        /// <summary>
+        /// Returns choice at index corresponding to input value.
+        /// </summary>
+        public ChoiceStmt GetLocalChoice(int i)
+        {
+            if (LocalChoices.Count() < i) { throw new Exception("List index out of range."); }
+            else { return LocalChoices[i]; }
+        }
+
+        /// <summary>
+        /// Check that integer is within valid range for local choices.
+        /// </summary>
+        public bool HasLocalChoice(int i)
+        {
+            if (i != 0 && LocalChoices.Count() >= i) { return true; }
+            else { return false; }
+        }
+
+        //////////////////////
+        // SCENE COMPONENTS //
+        //////////////////////
+
         /// <summary>
         /// Adds new scene to Scenes dictionary.
         /// Checks that name hasn't been used already.
@@ -129,6 +178,40 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             if (Scenes.TryGetValue(name, out SceneStmt? scene)) { return scene; }
             else { throw new Exception($"Error, requested a scene that does not exist: {name}"); }
         }
+
+        /////////////////////
+        // GOTO COMPONENTS //
+        /////////////////////
+
+        /// <summary>
+        /// Sets new scene GoTo location & triggers GoTo flag.
+        /// </summary>
+        public void SetGoTo(string address)
+        {
+            GoTo = address;
+            GoToFlag = true;
+        }
+
+        /// <summary>
+        /// Gets the latest GoTo location & resets flag.
+        /// </summary>
+        public string GetGoTo()
+        {
+            GoToFlag = false;
+            return GoTo;
+        }
+
+        /// <summary>
+        /// returns value of the GoTo flag.
+        /// </summary>
+        public bool CheckGoToFlag()
+        {
+            return GoToFlag;
+        }
+
+        ////////////////////////
+        // OVERLAY COMPONENTS //
+        ////////////////////////
 
         /// <summary>
         /// Adds Overlay to the Overlays dict.
@@ -150,95 +233,17 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         }
 
         /// <summary>
-        /// Clears the LocalChoices from Env.
-        /// Calls on all IChoiceHandlers to clear their local environments too in order to reset.
+        /// Sets RunOverlay flag to true & stores overlay name.
         /// </summary>
-        public void ClearLocal()
-        {
-            LocalChoices = [];
-            foreach (IChoiceHandler choicer in ChoiceHandlers)
-            {
-                choicer.ClearLocal();
-            }
-        }
-
-        public void AddLocalChoice(ChoiceStmt interactable)
-        {
-            LocalChoices.Add(interactable);
-        }
-
-        public void AddLocalChoice(params ChoiceStmt[] interactables)
-        {
-            foreach (ChoiceStmt interactable in interactables)
-            {
-                LocalChoices.Add(interactable);
-            }
-        }
-
-        public ChoiceStmt GetLocalChoice(int i)
-        {
-            if (LocalChoices.Count() < i) { throw new Exception("List index out of range."); }
-            else { return LocalChoices[i]; }
-        }
-
-        public bool HasLocalChoice(int i)
-        {
-            if (i != 0 && LocalChoices.Count() >= i) { return true; }
-            else { return false; }
-        }
-
-        public void AddCommandError(string error)
-        {
-            CommandErrors.Add(error);
-        }
-
-        public List<string> GetCommandErrors()
-        {
-            List<string> errors = CommandErrors;
-            CommandErrors = [];
-            return errors;
-        }
-
-        public void AddSuccessfulCommand(IStmt stmt)
-        {
-            SuccessfulCommands.Add(stmt);
-        }
-
-        public bool CheckSuccessfulCommands()
-        {
-            if (SuccessfulCommands.Count > 0) { return true; }
-            return false;
-        }
-
-        public List<IStmt> GetSuccessfulCommands()
-        {
-            List<IStmt> stack = SuccessfulCommands;
-            SuccessfulCommands = [];
-            return stack;
-        }
-
-        public void SetGoTo(string address)
-        {
-            GoTo = address;
-            GoToFlag = true;
-        }
-
-        public string GetGoTo()
-        {
-            GoToFlag = false;
-            return GoTo;
-        }
-
-        public bool CheckGoToFlag()
-        {
-            return GoToFlag;
-        }
-
         public void SetRunOverlayFlag(string name)
         {
             RunOverlayFlag = (true, name);
         }
 
+        /// <summary>
+        /// If the RunOverlay flag is true, this returns true
+        /// & outs the OverlayStmt corresponding to the flagged overlay.
+        /// </summary>
         public bool CheckRunOverlayFlag(out OverlayStmt? overlay)
         {
             if (Overlays.TryGetValue(RunOverlayFlag.Item2, out overlay)
@@ -250,11 +255,18 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             else { return false; }
         }
 
-        public void SetOverlayExitFlag(bool value)
+        /// <summary>
+        /// Sets overlay exit flag to true.
+        /// </summary>
+        public void TriggerOverlayExitFlag()
         {
-            OverlayExitFlag = value;
+            OverlayExitFlag = true;
         }
 
+        /// <summary>
+        /// If the overlay exit flag has been triggered, 
+        /// this returns true & resets the flag.
+        /// </summary>
         public bool CheckOverlayExitFlag()
         {
             if (OverlayExitFlag)
@@ -263,6 +275,80 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 return true;
             }
             return false;
+        }
+
+        ///////////////////////////////
+        // CHOICE HANDLER COMPONENTS //
+        ///////////////////////////////
+
+        /// <summary>
+        /// Adds unsuccessfully parsed command from Choice handlers.
+        /// </summary>
+        /// <param name="error">string error mesage to display to user</param>
+        public void AddCommandError(string error)
+        {
+            CommandErrors.Add(error);
+        }
+
+        /// <summary>
+        /// Gets & resets the list of Command errors.
+        /// </summary>
+        public List<string> GetCommandErrors()
+        {
+            List<string> errors = CommandErrors;
+            CommandErrors = [];
+            return errors;
+        }
+
+        /// <summary>
+        /// Adds the statement resulting from a successfully parsed 
+        /// command from a Choice handler to the list of successes.
+        /// 
+        /// Successes should only be added after any errors have triggered an early return.
+        /// </summary>
+        public void AddSuccessfulCommand(IStmt stmt)
+        {
+            SuccessfulCommands.Add(stmt);
+        }
+
+        /// <summary>
+        /// returns true if there are any commands in the list of successful commands.
+        /// </summary>
+        public bool CheckSuccessfulCommands()
+        {
+            if (SuccessfulCommands.Count > 0) { return true; }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns & resets the statements to be ran from successful commands.
+        /// </summary>
+        public List<IStmt> GetSuccessfulCommands()
+        {
+            List<IStmt> stack = SuccessfulCommands;
+            SuccessfulCommands = [];
+            return stack;
+        }
+
+        /////////////////
+        // SAVE & LOAD //
+        /////////////////
+
+        // TODO: needs implementing.
+        public void Save()
+        {
+            Console.Write("Enter Save Name: ");
+            string saveName = Console.ReadLine();
+            Console.WriteLine($"Saved as {saveName}");
+            Console.WriteLine("---------->>>>><<<<<----------");
+            SaveObject save = new(this);
+            return;
+        }
+
+        // TODO: needs implementing.
+        private void Load()
+        {
+
         }
     }
 }

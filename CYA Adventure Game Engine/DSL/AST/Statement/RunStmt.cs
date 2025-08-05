@@ -3,7 +3,7 @@ using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
 {
-    internal class RunStmt : IStmt
+    public class RunStmt : IStmt
     {
         public string Overlay;
         public RunStmt(string overlay)

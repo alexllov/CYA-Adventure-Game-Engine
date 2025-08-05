@@ -18,7 +18,6 @@
         Access,
         GoTo,
         LBracket, RBracket, LParent, RParent, LCurly, RCurly,
-        //Noun, Verb, Prep, Default,
         Dot,
         Comma,
         Colon,

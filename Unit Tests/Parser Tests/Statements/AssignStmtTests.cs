@@ -14,7 +14,7 @@ namespace Unit_Tests
     {
         // string = "test"
         [Fact]
-        public void StringLitAssign()
+        public void TableAssign()
         {
             // Arrange
             TokenList tokens = new([new Token(TokenType.Identifier, "string", 1, 1),
