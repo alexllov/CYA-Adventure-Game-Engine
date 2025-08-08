@@ -59,8 +59,15 @@ noun note = {noun "note"
         (local.add "note")
     verb "read"
         (say "Its a love note you wrote for Sally. You'll give it to her one day...")
+    verb "give"
+        prep "to"
+            noun "sally" (say "She reads it... She tells you she loves you too")
+            default (say "they don't want it")
 }
-
+noun sally = {noun "sally"
+    verb "talk to"
+        (say "She seems happy to see you")
+}
 
 noun door = {noun "door"
     verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
@@ -93,5 +100,5 @@ scene "outside home"
     "Where to?"
     [if 1==1 then (say "math holds true")]
     noun in = {noun "in" verb "go" -> "home"}
-    {local i in}
+    {local i in sally}
 end

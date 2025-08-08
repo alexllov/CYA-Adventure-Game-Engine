@@ -79,7 +79,8 @@ public class Parser
             (TokenType.Exit, _) => ExitStmt.Parse(this),
             // Assignment.
             (TokenType.Identifier, TokenType.Assign) => AssignStmt.Parse(this),
-            // Default: loose expression, to be wrapped as Expression Statement.
+            // Default: foreign statement
+            // or loose expression, to be wrapped as Expression Statement.
             _ => TryExtenders(),
         };
     }

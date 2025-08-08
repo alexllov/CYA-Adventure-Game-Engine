@@ -44,7 +44,10 @@ Interpreter interpreter = new(AST, env);
 // First pass for top-level setup.
 interpreter.Interpret();
 // Actual game engine.
-interpreter.RunGame();
+if (env.CheckGoToFlag())
+{
+    interpreter.RunGame();
+}
 
 
 

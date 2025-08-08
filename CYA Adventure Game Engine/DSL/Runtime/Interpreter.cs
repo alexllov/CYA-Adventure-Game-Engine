@@ -28,7 +28,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void Interpret()
         {
             int startCount = AST.Tree.Count(s => s is GoToStmt);
-            if (startCount != 1) { throw new Exception($"Warning, a Game file needs exactly 1 'START' command. {startCount} were found."); }
+            if (startCount > 1) { throw new Exception($"Warning, a Game file at most 1 'START' command. {startCount} were found."); }
             foreach (IStmt stmt in AST)
             {
                 stmt.Interpret(Env);

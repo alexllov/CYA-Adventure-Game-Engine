@@ -42,6 +42,9 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             return true;
         }
 
+        /// <summary>
+        /// Helper func, attempts to convert left & right to floats for math operations.
+        /// </summary>
         private List<float> CoerceToFloat(object[] items)
         {
             List<float> results = new();

@@ -31,6 +31,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
         }
     }
 
+    /*
+     * The following 'PrefixOperatorParselet' class is adapted from a class of the same name from:
+     * Author: jfcardinal
+     * Source: https://github.com/jfcardinal/BantamCs
+     * Used under MIT Lisence
+     */
     /// <summary>
     /// Handles prefix operators like '+' Plus, '-' Minus, & '!' Not.
     /// Currently these are the only three implemented.
@@ -52,7 +58,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
         }
     }
 
-    // TODO: Add support for module.func style stuff.
+    /// <summary>
+    /// Used to process expressions within parenthesis.
+    /// Switch case used to distinguish between Polish function calls 
+    /// & () around expressions to change binding.
+    /// </summary>
     public class ParentParselet : IPrefixParselet
     {
 
@@ -75,6 +85,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
 
             switch (parts[0])
             {
+                // Assumes only one expr in the same parents, as (1+2 3*4) should be invalid anyway.
                 case BinaryExpr:
                     return parts[0];
                 default:

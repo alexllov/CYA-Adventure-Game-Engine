@@ -8,10 +8,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
         // Part Dicts for Pratt.
         static readonly Dictionary<TokenType, IPrefixParselet> PrefixParts = new()
         {
+            // Datas.
             {TokenType.Identifier, new NameParselet()},
             {TokenType.Number, new NameParselet()},
             {TokenType.String, new NameParselet()},
             {TokenType.Boolean, new NameParselet()},
+            // Prefixes.
             {TokenType.Plus, new PrefixOperatorParselet()},
             {TokenType.Minus, new PrefixOperatorParselet()},
             {TokenType.Not, new PrefixOperatorParselet()},
@@ -39,7 +41,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
             {TokenType.Dot, new DotParselet(Precedence.DOT)},
         };
 
-
+        /*
+         * The following 'ParseExpression' function is adapted from a function of the same name from:
+         * Author: jfcardinal
+         * Source: https://github.com/jfcardinal/BantamCs
+         * Used under MIT Lisence
+         */
         /// <summary>
         /// Expression Parsing - Implements a Pratt Parser.
         /// </summary>
@@ -76,6 +83,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
             return left;
         }
 
+        /*
+         * The following 'GetPrecedence' function is taken from a function of the same name from:
+         * Author: jfcardinal
+         * Source: https://github.com/jfcardinal/BantamCs
+         * Used under MIT Lisence
+         */
         /// <summary>
         /// Helper func to get precedence of the next token.
         /// </summary>

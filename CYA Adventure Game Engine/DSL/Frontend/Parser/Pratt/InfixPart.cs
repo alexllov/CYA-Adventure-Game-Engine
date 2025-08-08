@@ -12,6 +12,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
         int GetPrecedence();
     }
 
+    /*
+     * The following 'BinaryOperatorParselet' class is adapted from a class of the same name from:
+     * Author: jfcardinal
+     * Source: https://github.com/jfcardinal/BantamCs
+     * Used under MIT Lisence
+     */
     /// <summary>
     /// Processes a binary operator between two expressions.
     /// </summary>
