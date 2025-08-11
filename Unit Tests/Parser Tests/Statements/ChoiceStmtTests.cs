@@ -90,5 +90,49 @@ namespace Unit_Tests
             Assert.Single(tree.Tree);
             Assert.Equivalent(expectedTree, tree);
         }
+
+        // Choice using a different expression type than string lit for its name.
+        [Fact]
+        public void ChoiceWithVarNameTest()
+        {
+            // Arrange
+            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1),
+                                    new Token(TokenType.Identifier, "name", 1, 1),
+                                    new Token(TokenType.LParent, "(", 1, 1),
+                                    new Token(TokenType.Identifier, "say", 1, 1),
+                                    new Token(TokenType.String, "choice selected", 1, 1),
+                                    new Token(TokenType.RParent, ")", 1, 1),
+                                    new Token(TokenType.GoTo, "->", 1, 1),
+                                    new Token(TokenType.String, "next_scene", 1, 1),
+                                    new Token(TokenType.RBracket, "]", 1, 1)]);
+
+            AbstSyntTree expectedTree = new([
+                new ChoiceStmt
+                (
+                    new VariableExpr("name"),
+                    new BlockStmt
+                    ([
+                        new ExprStmt
+                        (
+                            new FuncExpr
+                            (
+                                new VariableExpr("say"),
+                                [new StringLitExpr("choice selected")]
+                            )
+                        ),
+                        new GoToStmt(new StringLitExpr("next_scene"))
+                    ])
+                )
+            ]);
+
+            var sut = new Parser(tokens);
+
+            // Act
+            AbstSyntTree tree = sut.Parse();
+
+            // Assert
+            Assert.Single(tree.Tree);
+            Assert.Equivalent(expectedTree, tree);
+        }
     }
 }

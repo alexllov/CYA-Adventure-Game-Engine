@@ -89,22 +89,37 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
             while (true)
             {
-                // Check if the choices & commands are empty & the GoTo has been triggered, auto-skip.
-                //if (Env.LocalChoices.Count == 0
-                //    && Env.Nouns.Count == 0
-                //    && Env.CheckGoToFlag())
-                //{ break; }
+                // Check if the native choices are empty
+                // & no external ChoiceHandlers are active
+                // & the GoTo has been triggered,
+                // => auto-skip.
+                if (Env.LocalChoices.Count == 0
+                    && !AnyActiveChoicers(out List<IChoiceHandler> _)
+                    && Env.CheckGoToFlag())
+                { break; }
 
+                // Show the available native choices for the scene (if any).
                 ShowChoices();
+
+                // Construct the input prompt.
                 string text = Env switch
                 {
                     { LocalChoices.Count: > 0 } => Env.ChoiceHandlers
                         .Aggregate("Enter your choice", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
                     { LocalChoices.Count: 0 } => Env.ChoiceHandlers
                         .Aggregate("", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
-                    { AccessibleOverlays.Count: > 0 } => "You have reached an end. Select an overlay: ",
-                    _ => "You have reached an end."
                 };
+
+                // If the choices are empty, then construct an end message.
+                if (text == ": ")
+                {
+                    if (Env.AccessibleOverlays.Count > 0)
+                    {
+                        text = "You have reached an end. Select an overlay: ";
+                    }
+                    text = "You have reached an end.";
+                }
+
                 Console.Write(text);
 
                 // Get & process user input.
@@ -232,9 +247,10 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             Env.ClearLocal();
             Console.WriteLine("\n");
             overlay.Body.Interpret(Env);
-            ShowChoices();
+
             while (true)
             {
+                ShowChoices();
                 Console.Write("Enter your Selection: ");
                 var choice = Console.ReadLine();
                 if (int.TryParse(choice, out int i) && Env.HasLocalChoice(i))
@@ -251,6 +267,16 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
                 // If a GoTo or Exit statement was executed, break from the loop to leave the overlay.
                 if (Env.CheckGoToFlag() || Env.CheckOverlayExitFlag()) { break; }
+
+                // Check if overlay triggered by a Choice or Command with a 'run' stmt attached.
+                // Directly run rather than handle s.t. local scope for the root scene isn't interfered with.
+                if (Env.CheckRunOverlayFlag(out OverlayStmt? oStmt))
+                {
+                    ChoiceStmt[] choices = [.. Env.LocalChoices];
+                    RunOverlay(oStmt!);
+                    Env.ClearLocal();
+                    Env.AddLocalChoice(choices);
+                }
             }
         }
     }

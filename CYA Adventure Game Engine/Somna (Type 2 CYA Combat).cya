@@ -1,9 +1,24 @@
 ﻿
 
-import baseplayer as p
+
 import dice as d
 
-# TABLE OF ENCOUNTERS
+# CHARACTER SHEET
+table player
+| "attribute"  | "value" |
+| "strength"   | 0       |
+| "arcane"     | 0       |
+| "health"     | 0       |
+| "experience" | 30       |
+end
+
+p_str = (player.get "strength")
+p_arc = (player.get "arcane")
+p_hea = (player.get "health")
+p_exp = (player.get "experience")
+
+
+# TABLES OF ENCOUNTERS
 
 table monsters
 | "name"      | "type"        | "modifier"   |
@@ -17,35 +32,35 @@ table monsters2
 | "barking toad"    | "arcane"      | 1            |
 end
 
+overlay "levelup"
+	"Select an attribute to increase."
+	["Strength" 
+		(p_str.set "value" (p_str.get "value")+1)
+		(p_exp.set "value" (p_exp.get "value")-1)
+		(say "You've increased your strength to" (p_str.get "value"))
+		exit]
+	["Arcane" 
+		(p_arc.set "value" (p_arc.get "value")+1)
+		(p_exp.set "value" (p_exp.get "value")-1)
+		(say "You've increased your arcane to" (p_arc.get "value"))
+		exit]
+	["Health" 
+		(p_hea.set "value" (p_hea.get "value")+1)
+		(p_exp.set "value" (p_exp.get "value")-1)
+		(say "You've increased your health to" (p_hea.get "value"))
+		exit]
+	["Back" 
+		(say "No experience spent.")
+		exit]
 
 overlay "menu" access "m"
 	"Menu: enter 'm' to exit."
-	["See stats" (say "Strength: "p.strength", Arcane: "p.arcane", Health: "p.health", Experience: "p.experience)]
+	["See stats" (say player)]
 	["Level up"
 		(say "You may spend 3 experience points to increase one of your attributes by 1.")
-		[if p.experience < 3
+		[if (p_exp.get "value") < 3
 			then (say "You don't have enough experience right now.")
-			else
-			choice = (ask "Which attribute do you want to increase? (strength/arcane/health): ")
-				[
-					if choice == "strength"
-					then (p.set "str" p.strength + 1)(p.set "exp" p.experience - 3)
-						(say "You have increased your strength to "p.strength".")
-				]
-				[
-					if choice == "arcane"
-					then (p.set "arc" p.arcane + 1)(p.set "exp" p.experience - 3)
-						(say "You have increased your arcane power to "p.arcane".")
-				]
-				[	
-					if choice == "health"
-					then (p.set "hea" p.health + 1)(p.set "exp" p.experience - 3)
-						(say "You have increased your health to "p.health".")
-				]
-				[
-					if choice != "strength" and choice != "arcane" and choice != "health"
-					then (say "Invalid choice. No experience spent.")
-				]
+			else (say "triggered levelup") run "levelup"
 		]
 	]
 end
@@ -62,17 +77,25 @@ scene "opening"
 	(say "You have "points" points to spend on your two attributes: strength and arcane power.")
 	
 	# NEED TO ADD TYPE CHECKING TO SYSTEM TO ALLOW FOR if input is num.
-	str_choice = (num (ask "How many points do you want to spend on strength? The rest will be assigned to arcane (0-"points"): "))
-	[
-		if str_choice >= 0 and str_choice <= 6
-		then (p.set "str" str_choice)(p.set "arc" points-str_choice)(p.set "hea" 5)
-			["Continue" 
-				-> "1" 
-				trigger_battle = true
-				(say "Successfully assigned the following values: Strength="p.strength" & Arcane="p.arcane"")
+	str_choice = (ask "How many points do you want to spend on strength? The rest will be assigned to arcane (0-"points"): ")
+	[	
+		if !(isnum str_choice)
+		then 
+			(say "Invalid, you must enter a number.") -> "opening"
+		else 
+			str_choice = (num str_choice)
+			[
+				if str_choice >= 0 and str_choice <= 6
+				then (p_str.set "value" str_choice)(p_arc.set "value" points-str_choice)(p_hea.set "value" 5)
+					["Continue" 
+						-> "1" 
+						trigger_battle = true
+						(say "Successfully assigned the following values: Strength: "(p_str.get "value")" & Arcane: "(p_arc.get "value")".")
+					]
+				else 
+					(say "Invalid entry. Must be in range 0-6")
+					-> "opening"
 			]
-		else (say "invalid entry.")
-			["Try Again" -> "opening"]
 	]
 
 scene "1"
@@ -107,20 +130,24 @@ overlay "battle"
 	enemy_mod = (monster.get "modifier")
 	(say "Oh no! A " enemy_name"! It looks like it wants to fight!")
 	(say enemy_name" has "type": "enemy_mod)
-	(say "your "type": "(p.get type))
+
+	player_mod = ((player.get type).get "value")
+	(say "your "type": " player_mod)
 
 	["Fight!"
 		m_score = (d.roll "1d6")+enemy_mod
-		p_score = (d.roll "1d6")+(p.get type)
+		p_score = (d.roll "1d6")+player_mod
 		(say enemy_name" got: "m_score". You got: "p_score)
 		[if p_score > m_score
 			then (say "You defeated the "enemy_name"!")
 				(say "You gain "enemy_mod" experience.")
-				(p.set "exp" p.experience + enemy_mod)
+				(p_exp.set "value" (p_exp.get "value")+enemy_mod)
 				-> back
+
 			else (say "You were defeated by the "enemy_name"!")
-				(say "You lose 1 health.")(p.set "hea" p.health - 1)
-				[if p.health <= 0
+				(say "You lose 1 health.")
+				(p_hea.set "value" (p_hea.get "value")-1)
+				[if (p_hea.get "value") <= 0
 					then (say "You have no health left. You are defeated.")
 						-> "gameover"
 					else (say "The monster loses interest in you and leaves.")
@@ -130,9 +157,9 @@ overlay "battle"
 		]
 	]
 	["Run!!!"
-		[if (p.get type) > enemy_mod
+		[if player_mod > enemy_mod
 			then (say "You run away safely.")
-				["Continue" -> back]
+				-> back
 			else (say "You can't run away from a monster stronger than you.")
 		]
 	]

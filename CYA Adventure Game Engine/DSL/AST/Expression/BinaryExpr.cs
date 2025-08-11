@@ -51,7 +51,10 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             foreach (object item in items)
             {
                 if (float.TryParse(item.ToString(), out var flt)) { results.Add(flt); }
-                else { throw new Exception($"Cannot coerce {item} to float."); }
+                else
+                {
+                    throw new Exception($"Cannot coerce {item} to float.");
+                }
             }
             return results;
         }

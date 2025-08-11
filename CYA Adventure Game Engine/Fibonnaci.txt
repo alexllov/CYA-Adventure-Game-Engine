@@ -1,0 +1,34 @@
+﻿
+
+START "setup"
+
+
+scene "fib"
+	[
+		if count < lim - 2
+		then 
+			count = count + 1
+			(say "Fib #" count " = " a)
+			c=a+b
+			a=b
+			b=c
+			-> "fib"
+		else
+			[if lim > 2 then a = c]
+			-> "result"
+	]
+end
+
+
+scene "setup"
+	lim = (num (ask "What fib number do you want?: "))
+	a = 1
+	b = 1
+	count = 0
+	-> "fib"
+
+
+scene "result"
+	(say "Fib #" lim " = " a)
+	-> "setup"
+

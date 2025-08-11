@@ -57,8 +57,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             {
                 elseBranch = BlockStmt.Parse(parser, [TokenType.RBracket]);
             }
-            // TODO: Consider moving this into the Bracket Parsing space to avoid duplication.
-            // Consume closing bracket.
             parser.Tokens.Consume(TokenType.RBracket);
             return new IfStmt(condition, thenBranch, elseBranch);
         }

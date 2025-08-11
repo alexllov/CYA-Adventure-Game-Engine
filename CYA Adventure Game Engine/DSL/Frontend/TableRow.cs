@@ -18,6 +18,15 @@
             else { throw new Exception($"Error, tableRow does not contain a record: {name}"); }
         }
 
+        public void Set(string name, object val)
+        {
+            if (Data.TryGetValue(name, out object? value))
+            {
+                Data[name] = val;
+            }
+            else { throw new Exception($"Error, tableRow does not contain a record: {name}"); }
+        }
+
         public override string ToString()
         {
             List<string> header = [.. Data.Keys];

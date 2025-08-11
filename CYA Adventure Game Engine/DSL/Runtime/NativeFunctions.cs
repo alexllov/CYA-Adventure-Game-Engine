@@ -29,10 +29,25 @@
             return result;
         }
 
+        /// <summary>
+        /// Converts a string to number & returns the float. Throws error if unable.
+        /// </summary>
+        /// <param name="arg"></param>
         public static object Num(List<object> arg)
         {
             if (float.TryParse(arg[0].ToString(), out float fl)) { return fl; }
             else { throw new Exception($"Error, could not convert arg: {arg} of type: {arg.GetType()} to num."); }
+        }
+
+        /// <summary>
+        /// Returns bool of if input can be converted to a number.
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object IsNum(List<object> arg)
+        {
+            if (float.TryParse(arg[0].ToString(), out float fl)) { return true; }
+            return false;
         }
     }
 }

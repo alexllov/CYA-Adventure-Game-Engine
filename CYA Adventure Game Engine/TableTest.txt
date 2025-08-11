@@ -1,0 +1,41 @@
+﻿
+
+
+
+table player
+| "attribute"  | "value" |
+| "strength"   | 13      |
+| "arcane"     | ""      |
+| "health"     | ""      |
+| "experience" | ""      |
+end
+
+(say (player.get "strength"))
+strength = (player.get "strength")
+(say (strength.get "value"))
+(say "====================================")
+(say ((player.get "strength").get "value"))
+
+import inventory as i
+
+attributes = (i.make)
+strength = 0
+arcane = 0
+health = 0
+experience = 0
+(attributes.add strength)
+(attributes.add arcane)
+(attributes.add health)
+(attributes.add experience)
+(say attributes)
+
+(say "Player table:")(say player)
+((player.get "strength").set "value" (num 77))
+strength = (player.get "strength")
+(strength.set "value" 33)
+(say player)
+
+(strength.set "value" 133)
+(say player)
+
+(say player.strength)
