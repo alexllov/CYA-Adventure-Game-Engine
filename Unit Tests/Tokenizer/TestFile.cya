@@ -1,0 +1,7 @@
+﻿
+(say "hello world")
+
+1 + 2 == 3
+
+scene "1"
+["pancake" -> "1"]

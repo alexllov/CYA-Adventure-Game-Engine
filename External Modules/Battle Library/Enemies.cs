@@ -8,11 +8,11 @@ namespace External_Modules.Battle_Library
         public Dictionary<string, Enemy> KnownEnemies = new()
         {
             // Strength.
-            { "goblin", new Enemy("Goblin", "strength", 1, new Attack("slashes its dagger at you.", new Weapons ().Get("dagger"))) },
-            { "orc", new Enemy("Orc", "strength", 2, new Attack("thrusts its sword at you.", new Weapons ().Get("sword"))) },
-            { "troll", new Enemy("Troll", "strength", 3, new Attack("swings its club down towards you.", new Weapons ().Get("club"))) },
+            { "goblin", new Enemy("Goblin", "strength", 1, new Attack("slashes its dagger at you", new Weapons ().Get("dagger"))) },
+            { "orc", new Enemy("Orc", "strength", 2, new Attack("thrusts its sword at you", new Weapons ().Get("sword"))) },
+            { "troll", new Enemy("Troll", "strength", 3, new Attack("swings its club down towards you", new Weapons ().Get("club"))) },
             // Arcane.
-            { "bull frog", new Enemy("Bull Frog", "arcane", 1, new Attack("flicks its tongue at you.", new Weapon("tongue", "1d4", 0, "arcane"))) },
+            { "bull frog", new Enemy("Bull Frog", "arcane", 1, new Attack("flicks its tongue at you", new Weapon("tongue", "1d4", 0, "arcane"))) },
             { "wizard", new Enemy("Wizard", "arcane", 2, new Attack("throws a mote of fire at you", new Weapon("fireball", "1d4", 2, "arcane"))) },
             { "dragon", new Enemy("Dragon", "arcane", 5, new Attack("breathes fire at you", new Weapon("fire breath", "1d6", 2, "arcane"))) }
         };

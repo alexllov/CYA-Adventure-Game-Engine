@@ -1,6 +1,6 @@
 ﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
-    internal class Tokenizer
+    public class Tokenizer
     {
         // Unprocessed source code as str.
         private readonly string Source;

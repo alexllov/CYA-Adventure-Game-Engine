@@ -11,8 +11,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
 
         private Environment Env;
 
-        private string? GoToAddress;
-
         public Interpreter(AbstSyntTree Tree, Environment env, string mode = "default")
         {
             AST = Tree;

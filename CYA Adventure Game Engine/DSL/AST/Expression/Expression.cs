@@ -2,8 +2,6 @@
 
 namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 {
-    // =============== Abstract ===============
-
     // Expression: evaluates to a value.
     /// <summary>
     /// Expression: Contains a code-piece that can be evaluated to a value.

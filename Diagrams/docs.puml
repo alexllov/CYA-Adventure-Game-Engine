@@ -1,0 +1,114 @@
+@startuml
+
+' https://plantuml.com/class-diagram
+
+Tokenizer -[hidden]> Parser
+Parser -[hidden]> Interpreter
+
+enum TokenType
+
+class Token {
+    + TokenType TokenType
+    + String Lexeme
+    + Int[] position
+}
+
+class TokenList {
+    -Tokens: List<Token>
+    -Pos: int
+    +Advance()
+    +Consume()
+    +Peek()
+    +Match()
+    +IdentLexemeMatch()
+}
+
+TokenList o-- Token 
+Token *-- TokenType 
+
+class Tokenizer {
+    -string Source
+    '-int Start
+    '-int Pos
+    '-int Line
+    '-int Col
+    +List<Token> Tokens
+    +Dictionary<string, TokenType> Keywords
+    +TokenList Tokenize()
+}
+
+Tokenizer - TokenList : Creates >
+
+class Parser {
+    +List<TokenType> HeaderEnds
+    +Token StartOfCurrentStmt
+    +string CurrentStmtParsing
+    -List<IParserExtender> ParserExtenders
+    +List<IStmt> AST
+    +Parse()
+    +ParseStmt()
+    -TryExtenders()
+}
+
+Parser --> TokenList
+Parser - AbstSyntTree : Creates >
+
+class AbstSyntTree {
+    +List<IStmt> Tree
+    +IStmt GetEnumerator()
+}
+
+interface IStmt {
+    +void Interpret(Environment)
+}
+
+'abstract Stmt {}
+
+AbstSyntTree o-- IStmt
+IStmt *-- IExpr
+
+interface IExpr {
+    +object Interpret(Environment)
+}
+
+class Interpreter {
+    +AST: AbstSyntTree
+    '-DebugMode: bool
+    -Env: Environment
+    +Interpret()
+    +RunGame()
+}
+
+Interpreter --> AbstSyntTree
+
+class Environment {
+    +Dictionary<string, IModule> Modules
+    '+List<IChoiceHandler> ChoiceHandlers
+    -Dictionary<string, object> Env
+    -Dictionary<string, SceneStmt> Scenes
+    -Dictionary<string, OverlayStmt> Overlays
+    '+Dictionary<string, OverlayStmt> AccessibleOverlays
+    '+List<ChoiceStmt> LocalChoices
+    '+List<string> CommandErrors
+    '-List<IStmt> SuccessfulCommands
+    '-string GoTo
+    '-bool GoToFlag
+    '-(bool, string) RunOverlayFlag
+    '-bool ExitOverlayFlag
+}
+
+
+interface IModule {}
+
+
+interface IParserExtender {}
+
+IParserExtender - IModule: Exports <
+
+IParserExtender --o Parser
+
+IModule --o Environment
+
+Environment <-- Interpreter
+
+@enduml

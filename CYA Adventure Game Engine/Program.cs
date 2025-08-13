@@ -23,7 +23,6 @@ foreach (var module in modules)
 }
 
 
-
 // Load up the keywords dict, find the local '.cya' game file, & Tokenize.
 Dictionary<string, TokenType> keywords = BaseKeywords.Keywords;
 var location = AppDomain.CurrentDomain.BaseDirectory;
@@ -36,8 +35,6 @@ TokenList tokens = tokenizer.Tokenize();
 Parser parser = new(tokens, ParserExtenders);
 AbstSyntTree AST = parser.Parse();
 //AST.Show();
-
-
 
 // add "debug" for debug mode.
 Interpreter interpreter = new(AST, env);

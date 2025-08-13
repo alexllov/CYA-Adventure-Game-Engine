@@ -10,11 +10,11 @@ namespace Unit_Tests
      * Type of assignment allowed:
      * Identifier = Expression
      */
-    public class AssignStmtTests
+    public class AssignStmtTest
     {
         // string = "test"
         [Fact]
-        public void TableAssign()
+        public void StringAssign()
         {
             // Arrange
             TokenList tokens = new([new Token(TokenType.Identifier, "string", 1, 1),

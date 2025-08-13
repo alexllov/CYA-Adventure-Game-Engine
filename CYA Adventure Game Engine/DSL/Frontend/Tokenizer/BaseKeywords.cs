@@ -1,8 +1,8 @@
 ﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
-    internal static class BaseKeywords
+    public static class BaseKeywords
     {
-        internal static Dictionary<string, TokenType> Keywords = new()
+        public static Dictionary<string, TokenType> Keywords = new()
         {
             {"import", TokenType.Import },
             {"as", TokenType.As },

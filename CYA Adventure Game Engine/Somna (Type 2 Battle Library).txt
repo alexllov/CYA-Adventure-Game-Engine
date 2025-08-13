@@ -23,8 +23,7 @@ scene "1"
 	# Assign 6 stat points to char sheet.
 	(p.assignpoints 6)
 	
-	# Add 2 random weapons, 1 of each battle type.
-	# TODO: fix overloading in dot stmts s.t. this can take "strength"/"arcane" or ------ properly.
+	# Add 2 random weapons to player inventory.
 	(p.inventory.add (w.getrandom))
 	(p.inventory.add (w.getrandom))
 

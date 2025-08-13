@@ -4,12 +4,13 @@
 import dice as d
 
 # CHARACTER SHEET
+
 table player
 | "attribute"  | "value" |
 | "strength"   | 0       |
 | "arcane"     | 0       |
 | "health"     | 0       |
-| "experience" | 30       |
+| "experience" | 0       |
 end
 
 p_str = (player.get "strength")
@@ -76,7 +77,6 @@ scene "opening"
 	points = 6
 	(say "You have "points" points to spend on your two attributes: strength and arcane power.")
 	
-	# NEED TO ADD TYPE CHECKING TO SYSTEM TO ALLOW FOR if input is num.
 	str_choice = (ask "How many points do you want to spend on strength? The rest will be assigned to arcane (0-"points"): ")
 	[	
 		if !(isnum str_choice)
@@ -164,12 +164,15 @@ overlay "battle"
 		]
 	]
 
+
 scene "gameover"
 	"You have been defeated by Somnus' minions. You'll never get a good night's sleep."
 	["Restart" -> "opening"]
 
+
 scene "twisty woods"
 	"Well, this is the twisty woods."
+
 
 scene "riverbank"
 	"This is the riverbank."

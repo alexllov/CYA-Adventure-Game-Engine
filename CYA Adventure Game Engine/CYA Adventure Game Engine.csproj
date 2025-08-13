@@ -38,7 +38,7 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Somna (Type 2 CYA Combat w. baseplayer).txt">
+    <None Update="Somna (OLD).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TableTest.txt">
