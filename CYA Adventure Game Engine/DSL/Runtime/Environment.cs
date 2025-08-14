@@ -50,8 +50,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public Environment(Dictionary<string, IModule> modules)
         {
             Modules = modules;
-            //SetVal("save", Save);
-            //SetVal("load", Load);
+            SetVal("save", Save);
+            SetVal("load", Load);
         }
 
         ///////////////////////
@@ -335,21 +335,41 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         // SAVE & LOAD //
         /////////////////
 
-        // TODO: needs implementing.
         public void Save()
         {
             Console.Write("Enter Save Name: ");
             string saveName = Console.ReadLine();
+            /*
+             * Use "0" to store last GoTo location.
+             * Since RINO only allows values to be assigned to identifiers,
+             * a game can NEVER save something to 0, so this value is safe.
+             */
+            Env["0"] = GoTo;
+            string json = SaveLoad.Serialize(this.Env);
+            File.WriteAllText($"./saves/{saveName}.json", json);
             Console.WriteLine($"Saved as {saveName}");
             Console.WriteLine("---------->>>>><<<<<----------");
-            SaveObject save = new(this);
             return;
         }
 
-        // TODO: needs implementing.
         private void Load()
         {
+            if (!SaveLoad.TrySelectSaveFile(out string json))
+            {
+                // Either no save file to be found, or player chose to back out.
+                return;
+            }
 
+            // Get the backed-up data & replace the relevant Env records w/ the saved ones.
+            Dictionary<string, object> backUp = SaveLoad.LoadSave(json);
+            foreach (var kvp in backUp)
+            {
+                Env[kvp.Key] = kvp.Value;
+            }
+            // Trigger the GoTo to move player to the correct scene.
+            SetGoTo((string)Env["0"]);
+            Console.WriteLine("Loaded Save.");
+            Console.WriteLine("---------->>>>><<<<<----------");
         }
     }
 }

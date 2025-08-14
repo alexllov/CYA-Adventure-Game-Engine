@@ -50,7 +50,7 @@ class Parser {
     -TryExtenders()
 }
 
-Parser --> TokenList
+Parser o-- TokenList
 Parser - AbstSyntTree : Creates >
 
 class AbstSyntTree {
@@ -72,14 +72,14 @@ interface IExpr {
 }
 
 class Interpreter {
-    +AST: AbstSyntTree
+    +AbstSyntTree AST
     '-DebugMode: bool
-    -Env: Environment
+    -Environment Env
     +Interpret()
     +RunGame()
 }
 
-Interpreter --> AbstSyntTree
+Interpreter o-- AbstSyntTree
 
 class Environment {
     +Dictionary<string, IModule> Modules
@@ -109,6 +109,6 @@ IParserExtender --o Parser
 
 IModule --o Environment
 
-Environment <-- Interpreter
+Environment --* Interpreter
 
 @enduml

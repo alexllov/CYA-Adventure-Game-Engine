@@ -1,6 +1,5 @@
 ﻿
 
-
 import dice as d
 
 # CHARACTER SHEET
@@ -10,14 +9,8 @@ table player
 | "strength"   | 0       |
 | "arcane"     | 0       |
 | "health"     | 0       |
-| "experience" | 0       |
+| "experience" |  0      |
 end
-
-p_str = (player.get "strength")
-p_arc = (player.get "arcane")
-p_hea = (player.get "health")
-p_exp = (player.get "experience")
-
 
 # TABLES OF ENCOUNTERS
 
@@ -34,21 +27,27 @@ table monsters2
 end
 
 overlay "levelup"
+	# Shorthand vals.
+	p_str = (player.get "strength")
+	p_arc = (player.get "arcane")
+	p_hea = (player.get "health")
+	p_exp = (player.get "experience")
+
 	"Select an attribute to increase."
 	["Strength" 
 		(p_str.set "value" (p_str.get "value")+1)
-		(p_exp.set "value" (p_exp.get "value")-1)
+		(p_exp.set "value" (p_exp.get "value")-3)
 		(say "You've increased your strength to" (p_str.get "value"))
 		exit]
 	["Arcane" 
 		(p_arc.set "value" (p_arc.get "value")+1)
-		(p_exp.set "value" (p_exp.get "value")-1)
+		(p_exp.set "value" (p_exp.get "value")-3)
 		(say "You've increased your arcane to" (p_arc.get "value"))
 		exit]
 	["Health" 
 		(p_hea.set "value" (p_hea.get "value")+1)
-		(p_exp.set "value" (p_exp.get "value")-1)
-		(say "You've increased your health to" (p_hea.get "value"))
+		(p_exp.set "value" (p_exp.get "value")-3)
+		(say "You've increased your health to " (p_hea.get "value"))
 		exit]
 	["Back" 
 		(say "No experience spent.")
@@ -64,12 +63,20 @@ overlay "menu" access "m"
 			else (say "triggered levelup") run "levelup"
 		]
 	]
+	["Save" (save)]
+	["Load" (load)]
 end
 
 
 START "opening"
 
 scene "opening"
+	# Shorthand vals.
+	p_str = (player.get "strength")
+	p_arc = (player.get "arcane")
+	p_hea = (player.get "health")
+	p_exp = (player.get "experience")
+
 	name = (ask "What is your name?: ")
 	(say name", you are a computer science student and have angered Somnus, the god of sleep, by staying up too late!")
 	"You must fight your way through his hoardes using a combination of your strength and arcane powers to finally get a good night's rest."
