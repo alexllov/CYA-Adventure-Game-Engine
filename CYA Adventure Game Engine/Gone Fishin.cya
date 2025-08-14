@@ -1,4 +1,9 @@
-﻿noun rod = {noun "rod"
+﻿import Inventory as i
+#import Sound as s
+door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav"
+#(s.play door_open)
+
+noun rod = {noun "rod"
     verb "take" "get"
         [if !(i.check "rod") 
         then (say "got rod")(i.add "rod")
@@ -12,14 +17,6 @@
     verb "examine" (say "Your dad gave you this in 1956...")
 }
 
-
-import Inventory as i
-import Sound as s
-
-door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav"
-(s.play door_open)
-
-
 noun door = {noun "door" verb "open" (say "opened door.")}
 
 START "intro"
@@ -28,6 +25,7 @@ overlay "menu" access "m"
     "this is the menu. Enter 'm' to return"
     ["Inventory" (say i)]
     ["Save Game" (save)]
+    ["Load Game" (load)]
 
 scene "intro"
     "You are Gary, local celebrity fisherman! Well, at least you were back in the 70s. Now you're just some old man who stalks the local rivers and ponds searchin' for that legendary cat 'Big Whiskers'."

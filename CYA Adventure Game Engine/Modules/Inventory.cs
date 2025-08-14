@@ -1,8 +1,10 @@
-﻿namespace CYA_Adventure_Game_Engine.Modules
+﻿using Newtonsoft.Json;
+namespace CYA_Adventure_Game_Engine.Modules
 {
+    [JsonObject]
     public class Inventory : IModule, IInstantiable<Inventory>, IEnumerable<object>
     {
-        private List<object> Items;
+        public List<object> Items;
 
         public Inventory()
         {

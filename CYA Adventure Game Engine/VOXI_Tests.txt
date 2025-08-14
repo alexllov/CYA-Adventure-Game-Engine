@@ -1,0 +1,34 @@
+﻿import Inventory as i
+
+noun rod = {noun "rod"
+    verb "take" "get"
+        [if !(i.check "rod") 
+        then (say "got rod")(i.add "rod")
+        else (say "already got rod")]
+    verb "take good" (say "f")
+    verb "cast"
+        prep "into"
+            noun "river" (say "casted into river.")
+            noun "pond" (say "casted into pond.")
+            default (say "you can't do that here.")
+    verb "examine" (say "Your dad gave you this in 1956...")
+}
+
+(i.add "rod")
+
+START "intro"
+
+overlay "menu" access "m"
+    "this is the menu. Enter 'm' to return"
+    ["Inventory" (say i)]
+    ["Save Game" (save)]
+    ["Load Game" (load)]
+
+scene "intro"
+    "Small test case"
+    ["continue" -> "home"]
+end
+
+scene "home"
+    {i}
+    "IN HOME"

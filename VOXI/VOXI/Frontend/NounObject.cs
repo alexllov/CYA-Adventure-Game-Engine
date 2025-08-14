@@ -1,4 +1,6 @@
-﻿namespace VOXI.Frontend
+﻿using System.Text.Json.Serialization;
+
+namespace VOXI.Frontend
 {
     public class NounObject
     {
@@ -10,6 +12,10 @@
             Name = nounExpr.Noun;
             Verbs = nounExpr.Verbs;
         }
+
+        [JsonConstructor]
+        public NounObject() { }
+
 
         public bool TryGetVerb(string verb, out IVerb? vStmt)
         {

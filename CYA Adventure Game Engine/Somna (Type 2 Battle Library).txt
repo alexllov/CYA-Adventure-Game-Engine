@@ -5,10 +5,9 @@ import weapons as w
 import enemies
 import battle
 
-
 # TABLE OF ENCOUNTERS
 
-START "1"
+START "0"
 
 
 overlay "menu" access "m"
@@ -16,10 +15,14 @@ overlay "menu" access "m"
 	["See Character Sheet" (say p)]
 	["See Inventory" (say p.inventory)]
 	["Level up" (p.levelup)]
+	["Save" (save)]
+	["Load" (load)]
 
+scene "0"
+	"Welcome to the Somna Adventure Game!"
+	["Continue" -> "1"]
 
 scene "1"
-	"Welcome to the Somna Adventure Game!"
 	# Assign 6 stat points to char sheet.
 	(p.assignpoints 6)
 	
