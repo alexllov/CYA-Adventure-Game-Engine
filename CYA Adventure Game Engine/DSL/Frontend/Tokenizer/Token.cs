@@ -32,16 +32,19 @@
 
         public int[] position;
 
-        public Token(TokenType type, string lexeme, int line, int col)
+        public string SourceFile;
+
+        public Token(TokenType type, string lexeme, int line, int col, string sourceFile)
         {
             Type = type;
             Lexeme = lexeme;
             position = [line, col];
+            SourceFile = sourceFile;
         }
 
         public override string ToString()
         {
-            return $"{Type} '{Lexeme}', at line {position[0]}, column {position[1]}";
+            return $"{Type} '{Lexeme}', at line {position[0]}, column {position[1]}, in file: {SourceFile}";
         }
     }
 }

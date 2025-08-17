@@ -20,14 +20,14 @@ namespace Unit_Tests
         public void SceneConstruction()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Scene, "scene", 1, 1),
-                                    new Token(TokenType.String, "test", 1, 1),
-                                    new Token(TokenType.String, "string 1", 1, 1),
-                                    new Token(TokenType.LBracket, "[", 1, 1),
-                                    new Token(TokenType.String, "choice 1", 1, 1),
-                                    new Token(TokenType.GoTo, "->", 1, 1),
-                                    new Token(TokenType.String, "next", 1, 1),
-                                    new Token(TokenType.RBracket, "]", 1, 1),]);
+            TokenList tokens = new([new Token(TokenType.Scene, "scene", 1, 1, ""),
+                                    new Token(TokenType.String, "test", 1, 1, ""),
+                                    new Token(TokenType.String, "string 1", 1, 1, ""),
+                                    new Token(TokenType.LBracket, "[", 1, 1, ""),
+                                    new Token(TokenType.String, "choice 1", 1, 1, ""),
+                                    new Token(TokenType.GoTo, "->", 1, 1, ""),
+                                    new Token(TokenType.String, "next", 1, 1, ""),
+                                    new Token(TokenType.RBracket, "]", 1, 1, ""),]);
 
             AbstSyntTree expectedTree = new([
                 new SceneStmt

@@ -13,17 +13,17 @@ namespace Unit_Tests
         public void IfStmtNoElse()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1),
-                                    new Token(TokenType.If, "if", 1, 1),
-                                    new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Equal, "==", 1, 1),
-                                    new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Then, "then", 1, 1),
-                                    new Token(TokenType.LParent, "(", 1, 1),
-                                    new Token(TokenType.Identifier, "say", 1, 1),
-                                    new Token(TokenType.String, "hello world", 1, 1),
-                                    new Token(TokenType.RParent, ")", 1, 1),
-                                    new Token(TokenType.RBracket, "]", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1, ""),
+                                    new Token(TokenType.If, "if", 1, 1, ""),
+                                    new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Equal, "==", 1, 1, ""),
+                                    new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Then, "then", 1, 1, ""),
+                                    new Token(TokenType.LParent, "(", 1, 1, ""),
+                                    new Token(TokenType.Identifier, "say", 1, 1, ""),
+                                    new Token(TokenType.String, "hello world", 1, 1, ""),
+                                    new Token(TokenType.RParent, ")", 1, 1, ""),
+                                    new Token(TokenType.RBracket, "]", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new IfStmt
@@ -49,22 +49,22 @@ namespace Unit_Tests
         public void IfStmtWithElse()
         {
 
-            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1),
-                                    new Token(TokenType.If, "if", 1, 1),
-                                    new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Equal, "==", 1, 1),
-                                    new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Then, "then", 1, 1),
-                                    new Token(TokenType.LParent, "(", 1, 1),
-                                    new Token(TokenType.Identifier, "say", 1, 1),
-                                    new Token(TokenType.String, "hello world", 1, 1),
-                                    new Token(TokenType.RParent, ")", 1, 1),
-                                    new Token(TokenType.Else, "else", 1, 1),
-                                    new Token(TokenType.LParent, "(", 1, 1),
-                                    new Token(TokenType.Identifier, "say", 1, 1),
-                                    new Token(TokenType.String, "fail", 1, 1),
-                                    new Token(TokenType.RParent, ")", 1, 1),
-                                    new Token(TokenType.RBracket, "]", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.LBracket, "[", 1, 1, ""),
+                                    new Token(TokenType.If, "if", 1, 1, ""),
+                                    new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Equal, "==", 1, 1, ""),
+                                    new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Then, "then", 1, 1, ""),
+                                    new Token(TokenType.LParent, "(", 1, 1, ""),
+                                    new Token(TokenType.Identifier, "say", 1, 1, ""),
+                                    new Token(TokenType.String, "hello world", 1, 1, ""),
+                                    new Token(TokenType.RParent, ")", 1, 1, ""),
+                                    new Token(TokenType.Else, "else", 1, 1, ""),
+                                    new Token(TokenType.LParent, "(", 1, 1, ""),
+                                    new Token(TokenType.Identifier, "say", 1, 1, ""),
+                                    new Token(TokenType.String, "fail", 1, 1, ""),
+                                    new Token(TokenType.RParent, ")", 1, 1, ""),
+                                    new Token(TokenType.RBracket, "]", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new IfStmt

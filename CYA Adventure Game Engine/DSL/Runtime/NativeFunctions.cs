@@ -49,5 +49,16 @@
             if (float.TryParse(arg[0].ToString(), out float fl)) { return true; }
             return false;
         }
+
+        /// <summary>
+        /// Returns bool of if input is an integer.
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object IsInt(List<object> arg)
+        {
+            if (int.TryParse(arg[0].ToString(), out int i)) { return true; }
+            return false;
+        }
     }
 }

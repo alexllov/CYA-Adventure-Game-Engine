@@ -16,8 +16,8 @@ namespace Unit_Tests
         public void StringTargetRunStmt()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Run, "run", 1, 1),
-                                  new Token(TokenType.String, "test", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Run, "run", 1, 1, ""),
+                                  new Token(TokenType.String, "test", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new RunStmt("test")

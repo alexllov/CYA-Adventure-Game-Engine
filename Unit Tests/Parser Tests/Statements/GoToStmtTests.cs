@@ -14,8 +14,8 @@ namespace Unit_Tests
         public void StringLitGoTo()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.GoTo, "->", 1, 1),
-                                  new Token(TokenType.String, "test", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.GoTo, "->", 1, 1, ""),
+                                  new Token(TokenType.String, "test", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new GoToStmt
@@ -40,8 +40,8 @@ namespace Unit_Tests
         public void VariableExprGoTo()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.GoTo, "->", 1, 1),
-                                  new Token(TokenType.Identifier, "variable", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.GoTo, "->", 1, 1, ""),
+                                  new Token(TokenType.Identifier, "variable", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new GoToStmt
@@ -65,8 +65,8 @@ namespace Unit_Tests
         public void StartGoTo()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.GoTo, "START", 1, 1),
-                                  new Token(TokenType.Identifier, "scene", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.GoTo, "START", 1, 1, ""),
+                                  new Token(TokenType.Identifier, "scene", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new GoToStmt

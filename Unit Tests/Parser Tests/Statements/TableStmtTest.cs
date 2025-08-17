@@ -19,21 +19,21 @@ namespace Unit_Tests
         public void TableConstruction()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Table, "table", 1, 1),
-                                    new Token(TokenType.Identifier, "test", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),
-                                    new Token(TokenType.String, "test", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),
-                                    new Token(TokenType.String, "value", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),
-                                    new Token(TokenType.String, "this", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),
-                                    new Token(TokenType.LParent, "(", 1, 1),
-                                    new Token(TokenType.Identifier, "say", 1, 1),
-                                    new Token(TokenType.String, "pass", 1, 1),
-                                    new Token(TokenType.RParent, ")", 1, 1),
-                                    new Token(TokenType.Pipe, "|", 1, 1),]);
+            TokenList tokens = new([new Token(TokenType.Table, "table", 1, 1, ""),
+                                    new Token(TokenType.Identifier, "test", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),
+                                    new Token(TokenType.String, "test", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),
+                                    new Token(TokenType.String, "value", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),
+                                    new Token(TokenType.String, "this", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),
+                                    new Token(TokenType.LParent, "(", 1, 1, ""),
+                                    new Token(TokenType.Identifier, "say", 1, 1, ""),
+                                    new Token(TokenType.String, "pass", 1, 1, ""),
+                                    new Token(TokenType.RParent, ")", 1, 1, ""),
+                                    new Token(TokenType.Pipe, "|", 1, 1, ""),]);
 
             AbstSyntTree expectedTree = new([
                 new TableStmt

@@ -26,7 +26,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
                 TokenType.Number => new NumberLitExpr(float.Parse(token.Lexeme)),
                 TokenType.String => new StringLitExpr(token.Lexeme),
                 TokenType.Boolean => new BooleanExpr(token.Lexeme),
-                _ => throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}"),
+                _ => throw new Exception($"Unexpected token type: {token.Type} at {token.position[0]}:{token.position[1]}, in file: {token.SourceFile}"),
             };
         }
     }

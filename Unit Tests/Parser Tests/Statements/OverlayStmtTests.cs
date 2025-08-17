@@ -12,11 +12,11 @@ namespace Unit_Tests
         public void AccessibleOverlay()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Overlay, "overlay", 1, 1),
-                                    new Token(TokenType.String, "menu", 1, 1),
-                                    new Token(TokenType.Access, "access", 1, 1),
-                                    new Token(TokenType.String, "m", 1, 1),
-                                    new Token(TokenType.End, "end", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Overlay, "overlay", 1, 1, ""),
+                                    new Token(TokenType.String, "menu", 1, 1, ""),
+                                    new Token(TokenType.Access, "access", 1, 1, ""),
+                                    new Token(TokenType.String, "m", 1, 1, ""),
+                                    new Token(TokenType.End, "end", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new OverlayStmt
@@ -41,9 +41,9 @@ namespace Unit_Tests
         [Fact]
         public void InaccessibleOverlay()
         {
-            TokenList tokens = new([new Token(TokenType.Overlay, "overlay", 1, 1),
-                                    new Token(TokenType.String, "menu", 1, 1),
-                                    new Token(TokenType.End, "end", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Overlay, "overlay", 1, 1, ""),
+                                    new Token(TokenType.String, "menu", 1, 1, ""),
+                                    new Token(TokenType.End, "end", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new OverlayStmt

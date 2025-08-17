@@ -58,7 +58,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
 
             if (!PrefixParts.TryGetValue(token.Type, out IPrefixParselet? prefix))
             {
-                throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}. " +
+                throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]} in file: {token.SourceFile}. " +
                     $"Occured while parsing an expression within a {parser.CurrentStmtParsing}. " +
                     $"Statement started at {parser.StartOfCurrentStmt}.");
             }
@@ -74,7 +74,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
                 token = parser.Tokens.Advance();
                 if (!InfixParts.TryGetValue(token.Type, out IInfixParselet? infix))
                 {
-                    throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]}. " +
+                    throw new Exception($"Unexpected token type: {token.Type} on line {token.position[0]} in file: {token.SourceFile}. " +
                         $"Occured while parsing an expression within a {parser.CurrentStmtParsing}. " +
                         $"Statement started at {parser.StartOfCurrentStmt}.");
                 }

@@ -10,7 +10,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
         }
         public override string ToString()
         {
-            // TODO: Set up a DebugToString for parser purposes that contians this return.
             return $"BooleanExpr({Value})";
         }
 

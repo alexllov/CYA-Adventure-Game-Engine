@@ -1,21 +1,15 @@
-﻿using System.Text.Json.Serialization;
-
-namespace VOXI.Frontend
+﻿namespace VOXI.Frontend
 {
     public class NounObject
     {
         public string Name;
         public Dictionary<string, IVerb> Verbs;
 
-        public NounObject(NounExpr nounExpr)
+        public NounObject(string name, Dictionary<string, IVerb> verbs)
         {
-            Name = nounExpr.Noun;
-            Verbs = nounExpr.Verbs;
+            Name = name;
+            Verbs = verbs;
         }
-
-        [JsonConstructor]
-        public NounObject() { }
-
 
         public bool TryGetVerb(string verb, out IVerb? vStmt)
         {

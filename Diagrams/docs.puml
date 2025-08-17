@@ -11,6 +11,7 @@ class Token {
     + TokenType TokenType
     + String Lexeme
     + Int[] position
+    + String SourceFile
 }
 
 class TokenList {
@@ -27,7 +28,7 @@ TokenList o-- Token
 Token *-- TokenType 
 
 class Tokenizer {
-    -string Source
+    -List<Source> Sources
     '-int Start
     '-int Pos
     '-int Line

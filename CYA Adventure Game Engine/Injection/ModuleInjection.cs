@@ -24,7 +24,13 @@ namespace CYA_Adventure_Game_Engine.Injection
              * modules = match on modules folder
              * .dll = matches on the dll files.
              */
-            string[] moduleFiles = Directory.GetFiles(location, "modules\\*.dll");
+            string[] moduleFiles = [];
+            try
+            {
+                moduleFiles = [.. Directory.GetFiles(location, "modules\\*.dll")];
+            }
+            catch (DirectoryNotFoundException dirEx) { }
+
             foreach (var file in moduleFiles)
             {
                 // Load the assembly to get access to the types.

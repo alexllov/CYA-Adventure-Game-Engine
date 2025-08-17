@@ -1,5 +1,6 @@
 ﻿using CYA_Adventure_Game_Engine;
 using CYA_Adventure_Game_Engine.DSL.AST;
+using CYA_Adventure_Game_Engine.DSL.Frontend;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Parser;
 using CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer;
 using CYA_Adventure_Game_Engine.DSL.Runtime;
@@ -23,12 +24,10 @@ foreach (var module in modules)
 }
 
 
-// Load up the keywords dict, find the local '.cya' game file, & Tokenize.
+// Load up the keywords dict, find the local '.cya' game file, & all within 'scripts' & Tokenize.
 Dictionary<string, TokenType> keywords = BaseKeywords.Keywords;
-var location = AppDomain.CurrentDomain.BaseDirectory;
-string address = Directory.GetFiles(location, "./*.cya").FirstOrDefault()
-    ?? throw new Exception("No .cya file found in the directory.");
-Tokenizer tokenizer = new(address, keywords);
+List<Source> sources = Source.LoadSources();
+Tokenizer tokenizer = new(sources, keywords);
 TokenList tokens = tokenizer.Tokenize();
 
 // Construct the AST from the tokens.

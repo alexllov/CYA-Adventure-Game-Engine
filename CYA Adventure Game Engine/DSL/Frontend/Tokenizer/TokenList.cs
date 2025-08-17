@@ -29,7 +29,7 @@
             {
                 return Tokens[Pos++];
             }
-            return new Token(TokenType.EOF, "", -1, -1);
+            return new Token(TokenType.EOF, "", -1, -1, "");
         }
 
         /// <summary>
@@ -60,7 +60,7 @@
             {
                 return Tokens[Pos + dist];
             }
-            return new Token(TokenType.EOF, "", -1, -1);
+            return new Token(TokenType.EOF, "", -1, -1, "");
         }
 
         /// <summary>

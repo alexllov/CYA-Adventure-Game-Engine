@@ -13,11 +13,11 @@ namespace Unit_Tests
         public void ASTIsCorrectlyConstructedForMaths()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Plus, "+", 1, 1),
-                                    new Token(TokenType.Number, "2", 1, 1),
-                                    new Token(TokenType.Multiply, "*", 1, 1),
-                                    new Token(TokenType.Number, "3", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Plus, "+", 1, 1, ""),
+                                    new Token(TokenType.Number, "2", 1, 1, ""),
+                                    new Token(TokenType.Multiply, "*", 1, 1, ""),
+                                    new Token(TokenType.Number, "3", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new ExprStmt
@@ -52,13 +52,13 @@ namespace Unit_Tests
         public void ASTIsCorrectlyConstructedForMathsInverted()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.LParent, "(", 1, 1),
-                                    new Token(TokenType.Number, "1", 1, 1),
-                                    new Token(TokenType.Plus, "+", 1, 1),
-                                    new Token(TokenType.Number, "2", 1, 1),
-                                    new Token(TokenType.RParent, ")", 1, 1),
-                                    new Token(TokenType.Multiply, "*", 1, 1),
-                                    new Token(TokenType.Number, "3", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.LParent, "(", 1, 1, ""),
+                                    new Token(TokenType.Number, "1", 1, 1, ""),
+                                    new Token(TokenType.Plus, "+", 1, 1, ""),
+                                    new Token(TokenType.Number, "2", 1, 1, ""),
+                                    new Token(TokenType.RParent, ")", 1, 1, ""),
+                                    new Token(TokenType.Multiply, "*", 1, 1, ""),
+                                    new Token(TokenType.Number, "3", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new ExprStmt

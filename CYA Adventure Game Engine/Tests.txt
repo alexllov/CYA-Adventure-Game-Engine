@@ -1,0 +1,7 @@
+﻿
+
+START "1"
+
+scene "1"
+"Hello World"
+["" (say "hi")]

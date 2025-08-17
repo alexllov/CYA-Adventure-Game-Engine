@@ -39,7 +39,7 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="VOXI_Tests.txt">
+    <None Update="Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TableTest.txt">
@@ -51,7 +51,7 @@
     <None Update="Fibonnaci.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Gone Fishin.cya">
+    <None Update="Gone Fishin.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Samples\PlayerSheet_Tests.cya">
@@ -87,7 +87,7 @@
     <None Update="Somna (Type 2 Battle Library).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Somna (Type 2 CYA Combat).txt">
+    <None Update="Somna (Type 2 CYA Combat).cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -13,8 +13,8 @@ namespace Unit_Tests
         public void ImportNoAlias()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Import, "import", 1, 1),
-                                  new Token(TokenType.Identifier, "inventory", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Import, "import", 1, 1, ""),
+                                  new Token(TokenType.Identifier, "inventory", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new ImportStmt("inventory")
@@ -36,10 +36,10 @@ namespace Unit_Tests
         public void ImportWithAlias()
         {
             // Arrange
-            TokenList tokens = new([new Token(TokenType.Import, "import", 1, 1),
-                                  new Token(TokenType.Identifier, "inventory", 1, 1),
-                                  new Token(TokenType.As, "as", 1, 1),
-                                  new Token(TokenType.Identifier, "i", 1, 1)]);
+            TokenList tokens = new([new Token(TokenType.Import, "import", 1, 1, ""),
+                                  new Token(TokenType.Identifier, "inventory", 1, 1, ""),
+                                  new Token(TokenType.As, "as", 1, 1, ""),
+                                  new Token(TokenType.Identifier, "i", 1, 1, "")]);
 
             AbstSyntTree expectedTree = new([
                 new ImportStmt("inventory", "i")

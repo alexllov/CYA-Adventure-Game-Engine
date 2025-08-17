@@ -86,7 +86,7 @@ scene "opening"
 	
 	str_choice = (ask "How many points do you want to spend on strength? The rest will be assigned to arcane (0-"points"): ")
 	[	
-		if !(isnum str_choice)
+		if !(isint str_choice)
 		then 
 			(say "Invalid, you must enter a number.") -> "opening"
 		else 

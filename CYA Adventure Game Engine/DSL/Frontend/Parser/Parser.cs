@@ -67,7 +67,7 @@ public class Parser
             (TokenType.LBracket, TokenType.If) => IfStmt.Parse(this),
             (TokenType.LBracket, TokenType.String) => ChoiceStmt.Parse(this),
             (TokenType.LBracket, TokenType.Identifier) => ChoiceStmt.Parse(this),
-            (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line{token.position[0]}. Error started in {StartOfCurrentStmt}, and occurred during {CurrentStmtParsing}"),
+            (TokenType.LBracket, _) => throw new Exception($"Unexpected token type following '[': {token.Type}, on line: {token.position[0]} in file: {token.SourceFile}. Error started in {StartOfCurrentStmt}, and occurred during {CurrentStmtParsing}"),
             // GoTo.
             (TokenType.GoTo, _) => GoToStmt.Parse(this),
             // Scene & Components.

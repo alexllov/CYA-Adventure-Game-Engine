@@ -2,8 +2,12 @@
 {
     public class Tokenizer
     {
-        // Unprocessed source code as str.
-        private readonly string Source;
+        // Unprocessed source codes.
+        private readonly List<Source> Sources;
+
+        // Source currently being processed.
+        private Source ActiveSource;
+
         // Start is the start of the current token,
         // Pos is the current position in the source code.
         private int Start = 0, Pos = 0;
@@ -21,9 +25,9 @@
         /// Tokenizes the source code and stores it in the Tokens list.
         /// </summary>
         /// <param name="filepath">file path of game code</param>
-        public Tokenizer(string filepath, Dictionary<string, TokenType> keywords)
+        public Tokenizer(List<Source> sources, Dictionary<string, TokenType> keywords)
         {
-            Source = File.ReadAllText(filepath);
+            Sources = sources;
             Keywords = keywords;
 
         }
@@ -43,12 +47,20 @@
         /// <returns>List<Token> obj containing processed game code.</returns>
         public TokenList Tokenize()
         {
-            while (!IsAtEnd())
+            foreach (Source sourcefile in Sources)
             {
-                Start = Pos;
-                ScanToken();
+                ActiveSource = sourcefile;
+                Start = 0;
+                Pos = 0;
+                Line = 1;
+                Col = 1;
+                while (!IsAtEnd())
+                {
+                    Start = Pos;
+                    ScanToken();
+                }
             }
-            Tokens.Add(new Token(TokenType.EOF, "", Line, Col));
+            Tokens.Add(new Token(TokenType.EOF, "", Line, Col, ActiveSource.RelativePath));
             return new TokenList(Tokens);
         }
 
@@ -61,7 +73,7 @@
             switch (c)
             {
                 case '#':
-                    while (!IsAtEnd() && Source[Pos] != '\n')
+                    while (!IsAtEnd() && ActiveSource.Content[Pos] != '\n')
                     {
                         Advance();
                     }
@@ -195,7 +207,7 @@
                     }
                     else
                     {
-                        throw new Exception($"Unexpected character: `{c}` on line {Line}");
+                        throw new Exception($"Unexpected character: `{c}` on line {Line}, in file {ActiveSource.RelativePath}");
                     }
                     break;
             }
@@ -209,7 +221,7 @@
         {
             Pos++;
             Col++;
-            return Source[Pos - 1];
+            return ActiveSource.Content[Pos - 1];
         }
 
         /// <summary>
@@ -218,7 +230,7 @@
         /// <returns>Bool</returns>
         private bool IsAtEnd()
         {
-            return Pos >= Source.Length;
+            return Pos >= ActiveSource.Content.Length;
         }
 
         /// <summary>
@@ -229,11 +241,11 @@
         /// <returns></returns>
         private char Peek(int dist)
         {
-            if (Pos + dist >= Source.Length)
+            if (Pos + dist >= ActiveSource.Content.Length)
             {
                 return '\0';
             }
-            return Source[Pos + dist];
+            return ActiveSource.Content[Pos + dist];
         }
 
         /// <summary>
@@ -244,7 +256,7 @@
         /// <returns>Bool</returns>
         private bool Match(char expected)
         {
-            if (IsAtEnd() || Source[Pos] != expected)
+            if (IsAtEnd() || ActiveSource.Content[Pos] != expected)
             {
                 return false;
             }
@@ -284,8 +296,8 @@
             Advance();
 
             // Get string val & create token custom way as start & end need moving due to ""s.
-            string val = Source[(Start + 1)..(Pos - 1)];
-            Tokens.Add(new Token(TokenType.String, val, Line, Col));
+            string val = ActiveSource.Content[(Start + 1)..(Pos - 1)];
+            Tokens.Add(new Token(TokenType.String, val, Line, Col, ActiveSource.RelativePath));
 
         }
 
@@ -318,7 +330,7 @@
             {
                 Advance();
             }
-            string text = Source[Start..Pos];
+            string text = ActiveSource.Content[Start..Pos];
             TokenType type = Keywords.TryGetValue(text, out TokenType value) ? value : TokenType.Identifier;
             AddToken(type);
         }
@@ -329,8 +341,8 @@
         /// <param>TokenType</param>
         private void AddToken(TokenType type)
         {
-            string text = Source[Start..Pos];
-            Tokens.Add(new Token(type, text, Line, Col));
+            string text = ActiveSource.Content[Start..Pos];
+            Tokens.Add(new Token(type, text, Line, Col, ActiveSource.RelativePath));
         }
     }
 }

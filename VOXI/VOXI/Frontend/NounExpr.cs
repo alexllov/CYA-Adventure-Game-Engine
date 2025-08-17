@@ -29,7 +29,7 @@ namespace VOXI.Frontend
 
         public object Interpret(Environment state)
         {
-            return new NounObject(this);
+            return new NounObject(Noun, Verbs);
         }
 
         public static NounExpr Parse(Parser parser)
