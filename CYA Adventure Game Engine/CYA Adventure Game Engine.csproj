@@ -39,6 +39,9 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="RNG_Scene.cya">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -87,7 +90,7 @@
     <None Update="Somna (Type 2 Battle Library).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Somna (Type 2 CYA Combat).cya">
+    <None Update="Somna (Type 2 CYA Combat).txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

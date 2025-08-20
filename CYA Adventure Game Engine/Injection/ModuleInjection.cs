@@ -10,7 +10,6 @@ namespace CYA_Adventure_Game_Engine.Injection
             modules["dice"] = new Dice();
             modules["inventory"] = new Inventory();
             modules["sound"] = new Sound();
-            modules["baseplayer"] = new BasePlayer();
             return modules;
         }
 
@@ -18,9 +17,7 @@ namespace CYA_Adventure_Game_Engine.Injection
         {
             // Gets location that the exe is currently within.
             string location = AppDomain.CurrentDomain.BaseDirectory;
-            // "**/modules/**/*.dll"
             /*
-             * ** = go any # dirs deep
              * modules = match on modules folder
              * .dll = matches on the dll files.
              */

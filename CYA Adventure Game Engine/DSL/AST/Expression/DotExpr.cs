@@ -7,7 +7,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
     /// </summary>
     public class DotExpr : IExpr
     {
-        // TODO: CHANGE THIS S.T U CAN HAVE 1.2.3.4... work properly BCS it wont work rn
         public IExpr Left;
         public VariableExpr Right;
         public DotExpr(IExpr left, VariableExpr right)

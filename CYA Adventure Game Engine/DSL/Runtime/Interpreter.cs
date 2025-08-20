@@ -83,27 +83,19 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             // Reset local scope.
             Env.ClearLocal();
 
-            bool getUserInput = true;
-            // Check if the native choices are empty
-            // & no external ChoiceHandlers are active
-            // & the GoTo has been triggered,
-            // => auto-skip.
-            if (Env.LocalChoices.Count == 0
-                && !AnyActiveChoicers(out List<IChoiceHandler> _)
-                && Env.CheckGoToFlag())
-            {
-                getUserInput = false;
-            }
-            else
-            {
-                // Header for the scene - not shown if lacking interactables.
-                Console.WriteLine("\n========================================\n");
-            }
+            Console.WriteLine("\n========================================\n");
 
             scene.Body.Interpret(Env);
 
-            while (getUserInput)
+            while (true)
             {
+                if (Env.LocalChoices.Count == 0
+                && !AnyActiveChoicers(out List<IChoiceHandler> _)
+                && Env.CheckGoToFlag())
+                {
+                    break;
+                }
+
                 // Show the available native choices for the scene (if any).
                 ShowChoices();
 
@@ -175,7 +167,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 }
 
                 // Break from loop if GoTo updated.
-                if (Env.CheckGoToFlag()) { getUserInput = false; }
+                if (Env.CheckGoToFlag()) { break; }
             }
             return Env.GetScene(Env.GetGoTo());
         }

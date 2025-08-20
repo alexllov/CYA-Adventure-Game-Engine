@@ -1,7 +1,75 @@
 ﻿
+(say "Multi-file program")
 
-START "1"
+START "sample"
 
-scene "1"
-"Hello World"
-["" (say "hi")]
+var_ = 19
+(say var_)
+
+b = true
+val = "variable string"
+scene "here"
+"test string"
+["choice 1" 
+  [if b 
+    then
+    b = false
+    ["choice 2" (say "i was added by selecting 1")]
+    (say "added choice 2")
+  ]
+  (say "2 already added")]
+
+
+
+scene "sample"
+  "I am a string presented to the player"
+  ["annotation 1" (say "I am an annotation")]
+  ["choice 2" -> "next scene"]
+
+
+bool = true
+
+
+[
+  if bool == true
+  then 
+    (say "bool was set to true")
+]
+
+
+overlay "menu" access "m"
+  "Main Menu. Enter 'm' to return."
+  ["Save" (save)]
+  ["Load Save" (load)]
+  ["Inner Menu" run "inner_menu"]
+
+
+overlay "inner_menu"
+  "Secondary Menu"
+  ["exit" exit]
+end
+
+(say "")(say "")(say "")(say "")(say "")
+
+table monsters
+| "name"      | "type"        | "modifier"   |
+| "goblin"    | "strength"    | 2            |
+| "wolf"      | "strength"    | 3            |
+| "wizard"    | "arcane"      | 3            |
+end
+
+(say monsters)
+(say)
+
+goblin = (monsters.get "goblin")
+(say goblin)
+(say)
+
+(goblin.set "type" "arcane")
+(say goblin)
+(say)
+
+random = (monsters.getrandom)
+(say random)
+
+

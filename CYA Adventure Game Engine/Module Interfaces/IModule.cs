@@ -2,7 +2,7 @@
 {
     public interface IModule
     {
-        //Dictionary<string, MemberInfo> Exports { get; }
+
     }
 
 }

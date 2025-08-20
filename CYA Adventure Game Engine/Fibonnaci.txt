@@ -8,7 +8,6 @@ scene "fib"
 		if count < lim - 2
 		then 
 			count = count + 1
-			#(say "Fib #" count " = " a)
 			c=a+b
 			a=b
 			b=c
@@ -26,7 +25,6 @@ scene "setup"
 	b = 1
 	count = 0
 	-> "fib"
-
 
 scene "result"
 	(say "Fib #" lim " = " a)

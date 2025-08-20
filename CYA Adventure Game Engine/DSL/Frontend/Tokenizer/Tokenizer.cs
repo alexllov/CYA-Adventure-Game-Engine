@@ -273,6 +273,7 @@
         /// </summary>
         private void ReadString()
         {
+            int startLine = Line;
             while (Peek(0) != '"' && !IsAtEnd())
             {
                 if (Peek(0) == '\n')
@@ -289,7 +290,7 @@
 
             if (IsAtEnd())
             {
-                throw new Exception($"Unterminated string at line {Line}, column {Col}");
+                throw new Exception($"Unterminated string starting on line {startLine}.");
             }
 
             // Consume closing quote.

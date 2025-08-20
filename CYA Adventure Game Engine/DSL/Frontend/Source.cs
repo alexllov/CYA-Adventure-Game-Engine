@@ -21,7 +21,7 @@
             List<string> extraScripts = [];
             try
             {
-                extraScripts = [.. Directory.GetFiles(location, "scripts\\*.cya")];
+                extraScripts = [.. Directory.GetFiles(location + "\\scripts", "*.cya", SearchOption.AllDirectories)];
             }
             catch (DirectoryNotFoundException dirEx) { }
 

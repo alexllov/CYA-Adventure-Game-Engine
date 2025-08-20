@@ -2,7 +2,7 @@
 {
     public class Dice : IModule
     {
-        public static int Roll(string rollType)
+        public static float Roll(string rollType)
         {
             var rand = new Random();
             if (!(rollType.Contains('d')))
@@ -21,7 +21,7 @@
             {
                 total += rand.Next(1, diceSides + 1);
             }
-            return total;
+            return (float)total;
         }
     }
 }

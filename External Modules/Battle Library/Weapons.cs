@@ -79,7 +79,7 @@ namespace External_Modules.Battle_Library
         public int Run()
         {
             // Simulate rolling the damage roll.
-            var roll = Dice.Roll(DamageRoll);
+            int roll = (int)Dice.Roll(DamageRoll);
             return roll + DamageMod;
         }
     }
