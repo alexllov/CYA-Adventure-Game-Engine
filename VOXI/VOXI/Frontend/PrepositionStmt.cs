@@ -29,8 +29,9 @@ namespace VOXI.Frontend
         public void Interpret(Environment state)
         {
             VOXI voxi = (VOXI)state.Modules["voxi"];
+            VOXIEnvironment env = voxi.Env;
             // Get the command from the state.
-            string command = voxi.Env.GetCommand();
+            string command = env.GetCommand();
             if (command == "")
             {
                 throw new Exception("Preposition: Command not found! Engine error.");
@@ -48,18 +49,18 @@ namespace VOXI.Frontend
                     if (IndirectObjects.TryGetValue(command, out IStmt? indirectObject))
                     {
                         // Set the new command without the indirect object
-                        voxi.Env.SetCommand("");
-                        state.AddSuccessfulCommand(indirectObject);
+                        env.SetCommand("");
+                        env.AddSuccessfulVOXICommand(indirectObject);
                     }
                     // If not defined but present do default.
                     else
                     {
-                        state.AddSuccessfulCommand(IndirectObjects["default"]);
+                        env.AddSuccessfulVOXICommand(IndirectObjects["default"]);
                     }
                 }
                 else
                 {
-                    state.AddCommandError($"There is no {command} here.");
+                    env.AddVOXIError($"There is no {command} here.");
                 }
             }
         }

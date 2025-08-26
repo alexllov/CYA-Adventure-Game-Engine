@@ -32,8 +32,9 @@ namespace VOXI
              */
             Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> identifiedCommands = TryMatchVerbNouns(VOXIState, commands);
             // Check for errors to early return.
-            if (VOXIState.BaseEnv.CommandErrors.Count > 0)
+            if (VOXIState.VOXIErrors.Count > 0)
             {
+                VOXIState.UpdateCoreErrors();
                 return;
             }
 
@@ -47,8 +48,9 @@ namespace VOXI
             // 6. Match Verbs with argument types
             MatchVerbsWithArgNumber(VOXIState, verbDict);
             // Check for errors to early return.
-            if (VOXIState.BaseEnv.CommandErrors.Count > 0)
+            if (VOXIState.VOXIErrors.Count > 0)
             {
+                VOXIState.UpdateCoreErrors();
                 return;
             }
 
@@ -67,6 +69,12 @@ namespace VOXI
                 VOXIState.SetCommand(command.String);
                 verb.Interpret(VOXIState.BaseEnv);
             }
+            if (VOXIState.VOXIErrors.Count > 0)
+            {
+                VOXIState.UpdateCoreErrors();
+                return;
+            }
+            VOXIState.UpdateCoreSuccessfulCommands();
             return;
         }
 
@@ -106,12 +114,12 @@ namespace VOXI
         }
 
 
-        public static Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> TryMatchVerbNouns(VOXIEnvironment VOXIstate, List<CommandPhrase> commands)
+        public static Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> TryMatchVerbNouns(VOXIEnvironment VOXIState, List<CommandPhrase> commands)
         {
             Dictionary<(VerbPhrase, NounPhrase), CommandPhrase> identifiedCommands = [];
 
             // 3i. Construct all Verb-NounObject strings from local scope.
-            VerbNounObject localVerbNouns = CreateVerbNouns(VOXIstate);
+            VerbNounObject localVerbNouns = CreateVerbNouns(VOXIState);
 
             foreach (CommandPhrase command in commands)
             {
@@ -120,17 +128,15 @@ namespace VOXI
                 switch (matches.Count)
                 {
                     case 0:
-                        // TODO: Need cleaner message here somehow.
-                        VOXIstate.BaseEnv.AddCommandError($"Could not understand {command.String}");
+                        VOXIState.AddVOXIError($"Could not understand {command.String}");
                         break;
                     case 1:
                         // If only one match, is fine.
-                        // TODO:: PUT THE COMMAND CONST HERE......
                         identifiedCommands[matches.First().Key] = matches.First().Value;
                         break;
                     default:
                         // If multiple matches, prompt user to choose.
-                        VOXIstate.BaseEnv.AddCommandError($"Multiple matches found for {command}. Please disambiguate the noun using 'the, a, or an'.");
+                        VOXIState.AddVOXIError($"Multiple matches found for {command}.");
                         break;
                 }
             }
@@ -188,12 +194,12 @@ namespace VOXI
                 // Too many args error.
                 if (kvp.Key is TransitiveVerbStmt && kvp.Value.Item1.String != "")
                 {
-                    VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too many arguments.");
+                    VOXIState.AddVOXIError($"{kvp.Value.Item2} has too many arguments.");
                 }
                 // Too few args error.
                 else if (kvp.Key is DitransitiveVerbStmt && kvp.Value.Item1.String == "")
                 {
-                    VOXIState.BaseEnv.AddCommandError($"{kvp.Value.Item2} has too few arguments.");
+                    VOXIState.AddVOXIError($"{kvp.Value.Item2} has too few arguments.");
                 }
                 // Just Right :)
             }

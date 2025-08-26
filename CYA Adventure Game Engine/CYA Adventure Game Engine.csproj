@@ -39,7 +39,7 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="RNG_Scene.cya">
+    <None Update="RNG_Scene.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Tests.txt">
@@ -54,7 +54,7 @@
     <None Update="Fibonnaci.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Gone Fishin.txt">
+    <None Update="Gone Fishin.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Samples\PlayerSheet_Tests.cya">

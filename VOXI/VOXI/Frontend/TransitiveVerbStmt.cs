@@ -20,13 +20,14 @@ namespace VOXI.Frontend
         public void Interpret(Environment state)
         {
             VOXI voxi = (VOXI)state.Modules["voxi"];
-            if (!(voxi.Env.GetCommand() == ""))
+            VOXIEnvironment env = voxi.Env;
+            if (!(env.GetCommand() == ""))
             {
-                state.AddCommandError($"Error, cannot perform '{Verb} ... {voxi.Env.GetCommand()}', too many arguments.");
+                env.AddVOXIError($"Error, cannot perform '{Verb} ... {env.GetCommand()}', too many arguments.");
             }
             else
             {
-                state.AddSuccessfulCommand(Action);
+                env.AddSuccessfulVOXICommand(Action);
             }
         }
     }

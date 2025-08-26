@@ -292,6 +292,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
             CommandErrors.Add(error);
         }
 
+        public void AddCommandError(List<string> error)
+        {
+            CommandErrors.AddRange(error);
+        }
+
         /// <summary>
         /// Gets & resets the list of Command errors.
         /// </summary>
@@ -311,6 +316,11 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         public void AddSuccessfulCommand(IStmt stmt)
         {
             SuccessfulCommands.Add(stmt);
+        }
+
+        public void AddSuccessfulCommand(List<IStmt> stmt)
+        {
+            SuccessfulCommands.AddRange(stmt);
         }
 
         /// <summary>

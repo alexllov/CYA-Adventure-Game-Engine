@@ -42,18 +42,18 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         {
             parser.CurrentStmtParsing = "block statement";
             List<IStmt> stmts = [];
+            Token token = parser.Tokens.Peek(0);
             while (!stoppingPoint.Contains(parser.Tokens.Peek(0).Type))
             {
                 stmts.Add(parser.ParseStmt());
+                token = parser.Tokens.Peek(0);
             }
-            if (stmts.Count > 1)
+            return stmts.Count switch
             {
-                return new BlockStmt(stmts);
-            }
-            else
-            {
-                return stmts[0];
-            }
+                > 1 => new BlockStmt(stmts),
+                1 => stmts[0],
+                _ => throw new Exception($"Error, a statement body was required and not provided. Last token checked was on line: {token.position[0]}, in file: {token.SourceFile}"),
+            };
         }
 
         /// <summary>
@@ -73,14 +73,12 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
                 stmts.Add(parser.ParseStmt());
                 token = parser.Tokens.Peek(0);
             }
-            if (stmts.Count > 1)
+            return stmts.Count switch
             {
-                return new BlockStmt(stmts);
-            }
-            else
-            {
-                return stmts[0];
-            }
+                > 1 => new BlockStmt(stmts),
+                1 => stmts[0],
+                _ => throw new Exception($"Error, a statement body was required and not provided. Last token checked was on line: {token.position[0]}, in file: {token.SourceFile}"),
+            };
         }
     }
 }

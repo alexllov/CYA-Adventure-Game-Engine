@@ -1,7 +1,4 @@
 ﻿import Inventory as i
-#import Sound as s
-door_open = "C:\Users\alexp\source\repos\CYA Adventure Game Engine\CYA Adventure Game Engine\Samples\Occult\sounds\world\door.wav"
-#(s.play door_open)
 
 noun rod = {noun "rod"
     verb "take" "get"
@@ -13,7 +10,7 @@ noun rod = {noun "rod"
         prep "into"
             noun "river" (say "casted into river.")
             noun "pond" (say "casted into pond.")
-            default (say "you can't do that here.")
+            default (say "you can't do that.")
     verb "examine" (say "Your dad gave you this in 1956...")
 }
 

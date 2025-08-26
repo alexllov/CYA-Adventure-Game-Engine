@@ -57,7 +57,7 @@ namespace VOXI.Frontend
             else
             {
                 Console.WriteLine($"Couldn't understand {parts[0]} as a preposition.");
-                state.AddCommandError($"Couldn't understand {parts[0]} as a preposition.");
+                voxi.Env.AddVOXIError($"Couldn't understand {parts[0]} as a preposition.");
                 return false;
             }
         }

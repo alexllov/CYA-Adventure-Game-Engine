@@ -103,9 +103,9 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                 string text = Env switch
                 {
                     { LocalChoices.Count: > 0 } => Env.ChoiceHandlers
-                        .Aggregate("Enter your choice", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
+                        .Aggregate("Enter your choice", (prevStr, currHandler) => currHandler.GetUserFacingText(prevStr)) + ": ",
                     { LocalChoices.Count: 0 } => Env.ChoiceHandlers
-                        .Aggregate("", (prev, curr) => curr.GetUserFacingText(prev)) + ": ",
+                        .Aggregate("", (prevStr, currHandler) => currHandler.GetUserFacingText(prevStr)) + ": ",
                 };
 
                 // If the choices are empty, then construct an end message.
@@ -141,8 +141,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     HandleCommand(activeChoicers, choice);
                     if (Env.CheckSuccessfulCommands())
                     {
-                        // Consider doing some sort of "errors from latest" check
-                        // to ensure the breaking CH didn't have any errors.
                         // Current: successfuls only added after all errors -> early return,
                         // however this means that needs to be properly implemented by every module writer.
                         foreach (IStmt stmt in Env.GetSuccessfulCommands())
@@ -175,7 +173,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         /// <summary>
         /// Gets the block statement associated with player's chosen 'Choice' & interpret's it.
         /// </summary>
-        /// <param name="i">int i</param>
+        /// <param name="i"></param>
         private void HandleChoice(int i)
         {
             ChoiceStmt iStmt = Env.GetLocalChoice(i - 1);
@@ -209,7 +207,6 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
         /// <param name="choice"></param>
         private void HandleCommand(List<IChoiceHandler> choicers, string choice)
         {
-            // RESET COMMAND ERRORS & SUCCESSFUL COMMANDS.
             foreach (IChoiceHandler choiceHandler in choicers)
             {
                 choiceHandler.HandleCommand(choice);

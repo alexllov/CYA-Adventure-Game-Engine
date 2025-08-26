@@ -1,4 +1,5 @@
-﻿using VOXI.Frontend;
+﻿using CYA_Adventure_Game_Engine.DSL.AST.Statement;
+using VOXI.Frontend;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace VOXI
 {
@@ -17,6 +18,10 @@ namespace VOXI
         public Dictionary<string, NounObject> LocalBackup = [];
 
         private string Command = new("");
+
+        private List<IStmt> SuccessfulVOXICommands = [];
+
+        public List<string> VOXIErrors = [];
 
         public bool GetNoun(string noun, out NounObject? value)
         {
@@ -58,6 +63,34 @@ namespace VOXI
         public string GetCommand()
         {
             return Command;
+        }
+
+        public void ClearErrorsAndSuccesses()
+        {
+            VOXIErrors = [];
+            SuccessfulVOXICommands = [];
+        }
+
+        public void AddVOXIError(string error)
+        {
+            VOXIErrors.Add(error);
+        }
+
+        public void UpdateCoreErrors()
+        {
+            BaseEnv.AddCommandError(VOXIErrors);
+            ClearErrorsAndSuccesses();
+        }
+
+        public void AddSuccessfulVOXICommand(IStmt command)
+        {
+            SuccessfulVOXICommands.Add(command);
+        }
+
+        public void UpdateCoreSuccessfulCommands()
+        {
+            BaseEnv.AddSuccessfulCommand(SuccessfulVOXICommands);
+            ClearErrorsAndSuccesses();
         }
     }
 }
