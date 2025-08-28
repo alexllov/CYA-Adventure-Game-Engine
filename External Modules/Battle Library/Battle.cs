@@ -3,8 +3,6 @@ namespace External_Modules.Battle_Library
 {
     public class Battle : IModule, IStatic
     {
-        //public Battle() { }
-
         /// <summary>
         /// Runs the core battle loop. Will return 1 of 3 strings:
         /// "ran" = player successfully ran away.

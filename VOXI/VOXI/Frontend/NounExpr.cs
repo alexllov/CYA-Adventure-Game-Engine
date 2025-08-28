@@ -60,9 +60,6 @@ namespace VOXI.Frontend
         private static List<IVerb> ParseVerbs(Parser parser)
         {
             parser.CurrentStmtParsing = "verb statement";
-            // Consume the 'verb' token.
-            //parser.Tokens.Advance();
-
             List<IVerb> verbs = [];
             List<string> aliases = [];
             while (parser.Tokens.Peek(0).Type is TokenType.String)

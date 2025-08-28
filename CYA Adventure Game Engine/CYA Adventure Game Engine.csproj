@@ -9,28 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Samples\Occult\sounds\.DS_Store" />
-    <None Include="Samples\Occult\sounds\battle\.DS_Store" />
-    <None Include="Samples\Occult\sounds\interface\.DS_Store" />
-    <None Include="Samples\Occult\sounds\inventory\.DS_Store" />
-    <None Include="Samples\Occult\sounds\misc\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\beetle\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\giant\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\gutteral beast\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\misc\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\ogre\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\shade\.DS_Store" />
-    <None Include="Samples\Occult\sounds\NPC\slime\.DS_Store" />
-    <None Include="Samples\Occult\sounds\world\.DS_Store" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Samples\Occult\modules\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Windows.Extensions" Version="8.0.0" />
   </ItemGroup>
@@ -39,58 +17,31 @@
     <None Update="DSL\Math_Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="RNG_Scene.txt">
+    <None Update="Samples\Sculptural Example.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Tests.txt">
+    <None Update="Samples\Scene Population example.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TableTest.txt">
+    <None Update="Samples\Tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Samples\Used in Dissertation\Example.txt">
+    <None Update="Samples\TableTest.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Fibonnaci.txt">
+    <None Update="Samples\Fibonnaci.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Gone Fishin.cya">
+    <None Update="Samples\Type Samples\Gone Fishin.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\PlayerSheet_Tests.cya">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Occult\Occult basic.cya">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Occult\Occult v6.cya">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Occult\setup.cya">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Occult\sounds\world\door.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Scene_Tests.cya">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Type Samples\Trial.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Samples\Type Samples\Type1.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Samples\Type Samples\Type2.cya">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Moonrunner.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Somna (Type 2 Battle Library).txt">
+    <None Update="Samples\Type Samples\Somna (Type 2 Battle Library).cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Somna (Type 2 CYA Combat).txt">
+    <None Update="Samples\Type Samples\Somna (Type 2 CYA Combat).cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -278,9 +278,7 @@
             {
                 if (Peek(0) == '\n')
                 {
-                    Line++;
-                    Col = 1;
-                    Advance();
+                    throw new Exception($"Unterminated string starting on line {startLine}.");
                 }
                 else
                 {

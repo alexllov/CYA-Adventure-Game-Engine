@@ -6,16 +6,12 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
     {
         public AbstSyntTree AST;
 
-        // Debug = print Expr results.
-        private bool DebugMode;
-
         private Environment Env;
 
-        public Interpreter(AbstSyntTree Tree, Environment env, string mode = "default")
+        public Interpreter(AbstSyntTree Tree, Environment env)
         {
             AST = Tree;
             Env = env;
-            DebugMode = mode == "debug";
         }
 
         /// <summary>
@@ -115,7 +111,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Runtime
                     {
                         text = "You have reached an end. Select an overlay: ";
                     }
-                    text = "You have reached an end.";
+                    else { text = "You have reached an end."; }
                 }
 
                 Console.Write(text);

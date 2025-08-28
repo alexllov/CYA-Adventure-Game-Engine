@@ -39,7 +39,7 @@ namespace Unit_Tests
                 new TableStmt
                 (
                     // name.
-                    new StringLitExpr("test"),
+                    new VariableExpr("test"),
                     // records.
                     [
                         [new StringLitExpr("test"), new StringLitExpr("value")],
@@ -55,7 +55,7 @@ namespace Unit_Tests
 
             // Assert
             Assert.Single(tree.Tree);
-            Assert.Equivalent(expectedTree, tree);
+            Assert.Equal(expectedTree.ToString(), tree.ToString());
         }
     }
 }

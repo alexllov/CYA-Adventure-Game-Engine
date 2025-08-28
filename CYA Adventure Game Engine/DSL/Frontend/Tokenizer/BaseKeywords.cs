@@ -18,7 +18,6 @@
             {"if", TokenType.If },
             {"then", TokenType.Then },
             {"else", TokenType.Else },
-            {"while", TokenType.While },
             {"and", TokenType.And },
             {"or", TokenType.Or },
             {"true", TokenType.Boolean },

@@ -19,8 +19,6 @@ public class Parser
         TokenType.EOF
     ];
 
-
-
     // Error Message Helpers.
     public Token StartOfCurrentStmt;
     public string CurrentStmtParsing;
@@ -46,7 +44,6 @@ public class Parser
         {
             StartOfCurrentStmt = Tokens.Peek(0);
             AST.Add(ParseStmt());
-            //Console.WriteLine(AST.Last());
         }
         return new AbstSyntTree(AST);
     }
@@ -54,7 +51,7 @@ public class Parser
     /// <summary>
     /// Parses the next statement. Returns an IStmt.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>IStmt</returns>
     public IStmt ParseStmt()
     {
         CurrentStmtParsing = "identifying statement type";

@@ -22,6 +22,7 @@ scene "0"
 	"Welcome to the Somna Adventure Game!"
 	["Continue" -> "1"]
 
+player_score = 0
 scene "1"
 	# Assign 6 stat points to char sheet.
 	(p.assignpoints 6)
@@ -36,12 +37,14 @@ scene "1"
 	if battle_result == "won"
 	then
 		(say "You won the battle!")
+		player_score = player_score + 1
 		-> "win"
 	else 
 		[
 		if battle_result == "lost"
 		then
 			(say "You lost the battle!")
+			player_score = player_score - 1
 			-> "lose"
 		else
 			(say "You RAN.")

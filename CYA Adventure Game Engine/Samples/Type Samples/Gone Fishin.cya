@@ -79,7 +79,7 @@ scene "home"
     local = home_contents
     "Good ol' shack."
     [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
-    "The door's ahead of ya, and the whole world's just beyond that."
+    "You have a shelf to your left, the door's ahead of ya, and the whole world's just beyond that."
     noun out = {
         noun "out"
         verb "go"
@@ -92,9 +92,9 @@ end
 outside_home_contents = (i.make)
 scene "outside home"
     local = outside_home_contents
-    "Oh, Sally's here."
+    "You're outside your home. Crystal Pond is just to the east, and the river's to the north. Town's over west"
+    [if (i.check "note") then {sally} (say "Oh, Sally's here.")]
     "Where to?"
-    [if 1==1 then (say "math holds true")]
     noun in = {noun "in" verb "go" -> "home"}
-    {local i in sally}
+    {local i in}
 end

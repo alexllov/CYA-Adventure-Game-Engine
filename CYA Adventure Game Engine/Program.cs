@@ -9,6 +9,8 @@ using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 
 // Find & load modules, create the initial game Env,
 // do the first pass of interpretation & then begin game.
+
+// Find & Load the modules.
 Dictionary<string, IModule> modules = ModuleInjection.LoadModules();
 
 // Create initial game env & Add modules to it.
@@ -35,7 +37,6 @@ Parser parser = new(tokens, ParserExtenders);
 AbstSyntTree AST = parser.Parse();
 //AST.Show();
 
-// add "debug" for debug mode.
 Interpreter interpreter = new(AST, env);
 // First pass for top-level setup.
 interpreter.Interpret();

@@ -26,13 +26,12 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         }
 
         /// <summary>
-        /// 
+        /// Calls on the Pratt parser to parse an expression and wraps it in an ExprStmt.
         /// </summary>
         /// <returns>IStmt</returns>
         public static ExprStmt Parse(Parser parser)
         {
             IExpr expr = parser.ParseExpression(0);
-            //if (expr is AssignExpr aExpr) { return ParseAssignStmt(aExpr); }
             return new ExprStmt(expr);
         }
     }

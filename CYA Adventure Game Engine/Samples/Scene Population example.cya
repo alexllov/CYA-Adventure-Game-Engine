@@ -1,0 +1,27 @@
+﻿
+
+
+START "1"
+
+scene "1"
+	"there is a second scene nested within me."
+	"i am a second string."
+
+
+	["scene 2"
+		scene "2"
+			"i am the second scene."
+			["scene 3" -> "3"]
+			end
+		-> "2"
+	]
+
+scene "3"
+	"i am the third scene."
+
+overlay "menu" access "m"
+	"this is an overlay."
+	"i am always on top."
+end
+
+

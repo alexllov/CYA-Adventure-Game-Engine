@@ -67,7 +67,7 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
             /*
              * Identify Infix (if there is one)
              * Take the precedence of the next token & compare to this expr's precedence.
-             * If next token isn't an infix, will return 0, which should signal the end of his expression.
+             * If next token isn't an infix, will return 0, which should signal the end of this expression.
              */
             while (precedence < GetPrecedence(parser))
             {

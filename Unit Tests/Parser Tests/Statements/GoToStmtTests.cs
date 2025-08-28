@@ -31,7 +31,7 @@ namespace Unit_Tests
 
             // Assert
             Assert.Single(tree.Tree);
-            Assert.Equivalent(expectedTree, tree);
+            Assert.Equal(expectedTree.ToString(), tree.ToString());
         }
 
 
@@ -57,7 +57,7 @@ namespace Unit_Tests
 
             // Assert
             Assert.Single(tree.Tree);
-            Assert.Equivalent(expectedTree, tree);
+            Assert.Equal(expectedTree.ToString(), tree.ToString());
         }
 
         // START "scene"
@@ -82,7 +82,7 @@ namespace Unit_Tests
 
             // Assert
             Assert.Single(tree.Tree);
-            Assert.Equivalent(expectedTree, tree);
+            Assert.Equal(expectedTree.ToString(), tree.ToString());
         }
     }
 }
