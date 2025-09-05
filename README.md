@@ -1,4 +1,4 @@
-# **RINO, a CYA - Choose Your Adventure DSL & Game Engine**
+# **RINO, a CYA (Choose Your own Adventure) DSL & Game Engine**
 
 A text and audio based program to write, load, and play 'interactive fiction' games. The base engine is designed to be extendable through optional modules to extend functionality. This includes some presets, as well as allowing for users to implement their own.
 
