@@ -32,7 +32,7 @@
      * Unlike Nystom's, this does not include a object literal field, and does include the added SourceFile string.
      * This is used in accordance with the MIT lisence granted to Nystrom, R. for "Crafting Interpreters".
      * 
-     * Nystrom, R. (2019) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
+     * Nystrom, R. (2021) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
      */
     public class Token
     {

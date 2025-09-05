@@ -6,7 +6,7 @@
      * Nystrom, R. in Chapter 4 of "Crafting Interpreters".
      * This is used in accordance with the MIT lisence granted to Nystrom, R. for "Crafting Interpreters".
      * 
-     * Nystrom, R. (2019) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
+     * Nystrom, R. (2021) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
      */
     public class Tokenizer
     {
