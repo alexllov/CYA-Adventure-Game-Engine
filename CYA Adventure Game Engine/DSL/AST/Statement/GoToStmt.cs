@@ -23,7 +23,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
 
         public void Interpret(Environment state)
         {
-            string loc = (string)Location.Interpret(state);
+            string loc = Location.Interpret(state).ToString();
             state.SetGoTo(loc);
         }
 

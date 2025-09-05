@@ -14,22 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DSL\Math_Tests.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Sculptural Example.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Samples\Scene Population example.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Samples\Tests.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\TableTest.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Fibonnaci.txt">
+    <None Update="Samples\Fibonnaci.cya">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Samples\Type Samples\Gone Fishin.cya">
@@ -43,6 +31,9 @@
     </None>
     <None Update="Samples\Type Samples\Somna (Type 2 CYA Combat).cya">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Active Game.cya">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

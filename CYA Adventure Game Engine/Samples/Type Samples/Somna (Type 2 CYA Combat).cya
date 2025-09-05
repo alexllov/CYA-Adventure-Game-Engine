@@ -106,28 +106,24 @@ scene "opening"
 	]
 
 scene "1"
-	back = "1"
-	[
-	if trigger_battle
-	then
-		(say "The moon is high in the sky. The stars are out. You should be asleep but instead you've been hunched over your laptop for the past several hours. Its time to reclaim your sleep.")
-		(say "You storm out the door, flashlight in hand, gum in pocket, and big O notation in mind.")
-		(say "You hear a rustling to your right.")
-		["Investigate rustling" 
-			monster = (monsters.getrandom)
-			run "battle"
-		]
-		["Ignore it" 
-			(say "You ignore the rustling and continue on your way. You hear a growl behind you.")
-			monster = (monsters2.getrandom)
-			run "battle"
-		]
-	else
-		(say "Your first fight is already over. Well done for surviving.")
-		["Head north towards the scary twisty woods" -> "twisty woods"]
-		["Head south towards the riverbank" -> "riverbank"]
-			
+	"The moon is high in the sky. The stars are out. You should be asleep but instead you've been hunched over your laptop for the past several hours. Its time to reclaim your sleep."
+	"You storm out the door, flashlight in hand, gum in pocket, and big O notation in mind."
+	"You hear a rustling to your right."
+	next = "survived 1"
+	["Investigate rustling" 
+		monster = (monsters.getrandom)
+		run "battle"
 	]
+	["Ignore it" 
+		(say "You ignore the rustling and continue on your way. You hear a growl behind you.")
+		monster = (monsters2.getrandom)
+		run "battle"
+	]
+
+scene "survived 1"
+	"Your first fight is already over. Well done for surviving."
+	["Head north towards the scary twisty woods" -> "twisty woods"]
+	["Head south towards the riverbank" -> "riverbank"]
 	
 
 overlay "battle"
@@ -149,7 +145,7 @@ overlay "battle"
 			then (say "You defeated the "enemy_name"!")
 				(say "You gain "enemy_mod" experience.")
 				(p_exp.set "value" (p_exp.get "value")+enemy_mod)
-				-> back
+				-> next
 
 			else (say "You were defeated by the "enemy_name"!")
 				(say "You lose 1 health.")
@@ -158,15 +154,14 @@ overlay "battle"
 					then (say "You have no health left. You are defeated.")
 						-> "gameover"
 					else (say "The monster loses interest in you and leaves.")
-						-> back
+						-> next
 				]
-
 		]
 	]
 	["Run!!!"
 		[if player_mod > enemy_mod
 			then (say "You run away safely.")
-				-> back
+				-> next
 			else (say "You can't run away from a monster stronger than you.")
 		]
 	]

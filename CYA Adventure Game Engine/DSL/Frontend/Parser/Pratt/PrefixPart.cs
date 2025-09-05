@@ -36,6 +36,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
      * Author: jfcardinal
      * Source: https://github.com/jfcardinal/BantamCs
      * Used under MIT Lisence
+     * 
+     * Cardinal, J.F. (2021) BantamCs. Available at: https://github.com/jfcardinal/BantamCs (Accessed: 31 August 2025)
      */
     /// <summary>
     /// Handles prefix operators like '+' Plus, '-' Minus, & '!' Not.

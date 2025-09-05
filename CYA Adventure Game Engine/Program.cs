@@ -25,7 +25,6 @@ foreach (var module in modules)
     if (module.Value is IParserExtender pe) { ParserExtenders.Add(pe); }
 }
 
-
 // Load up the keywords dict, find the local '.cya' game file, & all within 'scripts' & Tokenize.
 Dictionary<string, TokenType> keywords = BaseKeywords.Keywords;
 List<Source> sources = Source.LoadSources();
@@ -45,6 +44,5 @@ if (env.CheckGoToFlag())
 {
     interpreter.RunGame();
 }
-
 
 

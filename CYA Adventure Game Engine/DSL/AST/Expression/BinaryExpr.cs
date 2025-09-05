@@ -36,7 +36,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             {
                 if (!type.IsInstanceOfType(item))
                 {
-                    throw new Exception($"Invalid argument type detected. Expeected {type}, but got {item.GetType()} instead.");
+                    throw new Exception($"Invalid argument type detected. Expected {type}, but got {item.GetType()} instead.");
                 }
             }
             return true;
@@ -67,8 +67,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             if (BinaryOperatorType.BinaryOperators["arithmetic"].Contains(Operator))
             {
                 // Check type validity for numeric operators
-                //CheckType(typeof(float), [left, right]);
-
                 List<float> result = CoerceToFloat([left, right]);
                 left = result[0];
                 right = result[1];

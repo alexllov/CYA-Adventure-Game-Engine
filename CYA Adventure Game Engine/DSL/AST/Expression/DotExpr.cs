@@ -25,8 +25,8 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             var left = Left.Interpret(state);
             var type = left.GetType();
 
-            // TODO: Need to add a check in here to find if left is an IModule or not.
-
+            // Flags: must be Public & (Static or Instance) - covers all the publics,
+            // IgnoreCase - to allow for case insensitive access.
             var member = type.GetMember(Right.Value,
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance
                 | BindingFlags.IgnoreCase);
@@ -35,9 +35,10 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
             {
                 case []:
                     throw new Exception($"Failed to find a member of {type} with the name {Right.Value}");
+                // Method -> Create a standardised curried func call using Invoke() & the 'left' object.
+                // This is used for pattern matching in FuncExpr.
                 case [MethodInfo method, ..]:
-                    Func<object[], object?> func = (object[] args) =>
-                    method.Invoke(left, args);
+                    Func<object[], object?> func = (object[] args) => method.Invoke(left, args);
                     return func;
                 case [FieldInfo field, ..]:
                     return field.GetValue(left);

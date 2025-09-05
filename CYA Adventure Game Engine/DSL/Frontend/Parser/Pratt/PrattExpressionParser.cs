@@ -46,6 +46,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
          * Author: jfcardinal
          * Source: https://github.com/jfcardinal/BantamCs
          * Used under MIT Lisence
+         * 
+         * Cardinal, J.F. (2021) BantamCs. Available at: https://github.com/jfcardinal/BantamCs (Accessed: 31 August 2025)
          */
         /// <summary>
         /// Expression Parsing - Implements a Pratt Parser.
@@ -88,6 +90,8 @@ namespace CYA_Adventure_Game_Engine.DSL.Frontend.Parser.Pratt
          * Author: jfcardinal
          * Source: https://github.com/jfcardinal/BantamCs
          * Used under MIT Lisence
+         * 
+         * Cardinal, J.F. (2021) BantamCs. Available at: https://github.com/jfcardinal/BantamCs (Accessed: 31 August 2025)
          */
         /// <summary>
         /// Helper func to get precedence of the next token.

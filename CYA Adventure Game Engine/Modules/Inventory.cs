@@ -18,40 +18,25 @@ namespace CYA_Adventure_Game_Engine.Modules
             return $"[{string.Join(", ", Items)}]";
         }
 
-        public void Add(object body)
+        public void Add(object item)
         // Add item to inventory.
         {
-            Items.Add(body);
-            //foreach (string item in body)
-            //{
-            //    Items.Add(item);
-            //}
+            Items.Add(item);
         }
 
         public void Remove(object body)
         // Remove item from inventory
         {
             Items.Remove(body);
-            //foreach (string item in body)
-            //{
-            //    Items.Remove(item);
-            //}
         }
 
         public bool Check(object body)
         {
             if (!(Items.Contains(body))) { return false; } else { return true; }
-            //foreach (string item in body)
-            //{
-            //    if (!(Items.Contains(item))) { return false; }
-            //}
-            //return true;
         }
 
         public List<string> All()
         {
-            //var readList = new ReadOnlyCollection<object>(Items);
-
             List<string> strings = [];
             foreach (object item in Items) { strings.Add(item.ToString()); }
             return strings;

@@ -25,6 +25,15 @@
         Comment,
         EOF,
     }
+
+    /*
+     * The following object, Token is modified from the Token object implemented by
+     * Nystrom, R. in Chapter 4 of "Crafting Interpreters".
+     * Unlike Nystom's, this does not include a object literal field, and does include the added SourceFile string.
+     * This is used in accordance with the MIT lisence granted to Nystrom, R. for "Crafting Interpreters".
+     * 
+     * Nystrom, R. (2019) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
+     */
     public class Token
     {
         public TokenType Type { get; }
@@ -44,7 +53,7 @@
 
         public override string ToString()
         {
-            return $"{Type} '{Lexeme}', at line {position[0]}, column {position[1]}, in file: {SourceFile}";
+            return $"{Type} '{Lexeme}', at line {position[0]}, in file: {SourceFile}";
         }
     }
 }

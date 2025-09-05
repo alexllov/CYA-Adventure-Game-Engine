@@ -19,10 +19,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
         {
             if (Arguments != null)
             {
-                //foreach (Expr arg in Arguments)
-                //{
-                //    Console.WriteLine($"arg: {arg}, type: {arg.GetType()}");
-                //}
                 return $"FuncExpr(Method: {Method}, Arguments: [{string.Join(", ", Arguments)}])";
             }
             else
@@ -33,36 +29,38 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Expression
 
         public object Interpret(Environment state)
         {
-            // TODO: this needs reworign s.t. proper funcs & dot funcs will work & other things can throw appropriate errors.
             var function = Method.Interpret(state);
             List<object> args = [];
+
             foreach (IExpr arg in Arguments)
             {
                 args.Add(arg.Interpret(state));
             }
-            if (function is Func<List<object>, object> multArgFunc)
+
+            switch (function)
             {
-                return multArgFunc(args);
+                case Func<object, object> singleArgFunc:
+                    if (args.Count > 1) { throw new Exception("Error, too many arguments passed in function call."); }
+                    return singleArgFunc(args[0]);
+
+                case Func<List<object>, object> multArgFunc:
+                    return multArgFunc(args);
+
+                case Action<List<object>> action:
+                    action(args);
+                    return null;
+
+                case Action arglessAction:
+                    arglessAction();
+                    return null;
+
+                // Curried function from DotExpr.
+                case Func<object[], object?> DotExprFunc:
+                    return DotExprFunc([.. args]);
+
+                default:
+                    throw new Exception("Function call of unsupported argument type found.");
             }
-            else if (function is Func<List<object>, object> arglessFunc)
-            {
-                return arglessFunc(args);
-            }
-            else if (function is Action<List<object>> action)
-            {
-                action(args);
-                return null;
-            }
-            else if (function is Action arglessAction)
-            {
-                arglessAction();
-                return null;
-            }
-            else if (function is Func<object[], object?> DotExprFunc)
-            {
-                return DotExprFunc([.. args]);
-            }
-            else { throw new Exception("Function call of unsupported argument type found."); }
         }
     }
 }

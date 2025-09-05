@@ -33,9 +33,9 @@
         /// Converts a string to number & returns the float. Throws error if unable.
         /// </summary>
         /// <param name="arg"></param>
-        public static object Num(List<object> arg)
+        public static object Num(object arg)
         {
-            if (float.TryParse(arg[0].ToString(), out float fl)) { return fl; }
+            if (float.TryParse(arg.ToString(), out float fl)) { return fl; }
             else { throw new Exception($"Error, could not convert arg: {arg} of type: {arg.GetType()} to num."); }
         }
 
@@ -44,9 +44,9 @@
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static object IsNum(List<object> arg)
+        public static object IsNum(object arg)
         {
-            if (float.TryParse(arg[0].ToString(), out float fl)) { return true; }
+            if (float.TryParse(arg.ToString(), out float fl)) { return true; }
             return false;
         }
 
@@ -55,9 +55,9 @@
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public static object IsInt(List<object> arg)
+        public static object IsInt(object arg)
         {
-            if (int.TryParse(arg[0].ToString(), out int i)) { return true; }
+            if (int.TryParse(arg.ToString(), out int i)) { return true; }
             return false;
         }
     }

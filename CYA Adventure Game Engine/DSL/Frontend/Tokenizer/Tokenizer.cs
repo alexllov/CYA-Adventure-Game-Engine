@@ -1,5 +1,13 @@
 ﻿namespace CYA_Adventure_Game_Engine.DSL.Frontend.Tokenizer
 {
+
+    /*
+     * The following object, Tokenizer is modified from the Scanner object implemented by
+     * Nystrom, R. in Chapter 4 of "Crafting Interpreters".
+     * This is used in accordance with the MIT lisence granted to Nystrom, R. for "Crafting Interpreters".
+     * 
+     * Nystrom, R. (2019) Scanning. Available at: https://craftinginterpreters.com/scanning.html (Accessed 5 September 2025)
+     */
     public class Tokenizer
     {
         // Unprocessed source codes.
