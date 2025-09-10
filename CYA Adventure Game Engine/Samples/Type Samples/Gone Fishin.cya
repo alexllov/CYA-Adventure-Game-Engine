@@ -16,20 +16,10 @@ scene "intro"
 end
 
 # Nouns within "home"
-home_shelf = (i.make)
-(home_shelf.add "note")
-noun shelf = {noun "shelf" 
-    verb "examine" "look"
-        [if (home_shelf.check "note") 
-            then (say "There's a note on your shelf") {note}
-            else (say "Your shelf is empty")
-        ]
-}
-
 noun rod = {noun "rod"
     verb "take" "get"
-        [if !(i.check "rod") 
-        then (say "got rod.")(i.add "rod")
+        [if !(i.check rod) 
+        then (say "got rod.")(i.add rod)
         else (say "already got rod.")]
     verb "cast"
         prep "into"
@@ -42,22 +32,22 @@ noun rod = {noun "rod"
 noun note = {noun "note"
     verb "take"
         [
-            if !(i.check "note") 
+            if !(i.check note) 
             then 
                 (say "took note.")
-                [if (home_shelf.check "note")
-                then (home_shelf.remove "note")
-                else (local.remove "note")
+                [if (home_shelf.check note)
+                then (home_shelf.remove note)
+                else (local.remove note)
                 ]
-                (i.add "note")
+                (i.add note)
             else (say "already got note.")
         ]
     verb "drop"
-        [if (i.check "note")
+        [if (i.check note)
         then
             (say "dropped note.")
-            (i.remove "note")
-            (local.add "note")
+            (i.remove note)
+            (local.add note)
         else
             (say "you aren't holding that.")
         ]
@@ -67,8 +57,18 @@ noun note = {noun "note"
         prep "to"
             noun "sally"
                 (say "She reads it... She tells you she loves you too.")
-                (i.remove "note")
+                (i.remove note)
             default (say "they don't want it")
+}
+
+home_shelf = (i.make)
+(home_shelf.add note)
+noun shelf = {noun "shelf" 
+    verb "examine" "look"
+        [if (home_shelf.check note) 
+            then (say "There's a note on your shelf") {note}
+            else (say "Your shelf is empty")
+        ]
 }
 
 noun sally = {noun "sally"
@@ -77,25 +77,25 @@ noun sally = {noun "sally"
 }
 
 noun door = {noun "door"
-    verb "open" [if (i.check "rod") then -> "outside home" else (say "You should probably grab your rod first!")]
+    verb "open" [if (i.check rod) then -> "outside home" else (say "You should probably grab your rod first!")]
     verb "examine" "look" (say "Door's oak. There's a few nicks in it from fishhooks and whatnot. Mary's boy fixed it up for you a while back... That'd be about 20 years ago now.")
 }
 
 
 
 home_contents = (i.make)
-(home_contents.add "door")
-(home_contents.add "rod")
-(home_contents.add "shelf")
+(home_contents.add door)
+(home_contents.add rod)
+(home_contents.add shelf)
 scene "home"
     local = home_contents
     "Good ol' shack."
-    [if !(i.check "rod") then (say "Your rod's hangin' by the door.")]
+    [if !(i.check rod) then (say "Your rod's hangin' by the door.")]
     "You have a shelf to your left, the door's ahead of ya, and the whole world's just beyond that."
     noun out = {
         noun "out"
         verb "go"
-            [if (i.check "rod") then -> "outside home" else (say "you shouldn't leave without your rod")]
+            [if (i.check rod) then -> "outside home" else (say "you shouldn't leave without your rod")]
     }
     {local i out}
 end
@@ -105,7 +105,7 @@ outside_home_contents = (i.make)
 scene "outside home"
     local = outside_home_contents
     "You're outside your home. Crystal Pond is just to the east, and the river's to the north. Town's over west"
-    [if (i.check "note") then {sally} (say "Oh, Sally's here.")]
+    [if (i.check note) then {sally} (say "Oh, Sally's here.")]
     "Where to?"
     noun in = {noun "in" verb "go" -> "home"}
     noun east = {noun "east" verb "go" -> "Crystal Pond"}
@@ -114,13 +114,15 @@ end
 
 crystal_pond_contents = (i.make)
 noun pond = {noun "pond"
-                verb "look" "examine" (say "The water's clear. There's usually a group of Minnows hiding along the bank.")}
-(crystal_pond_contents.add "pond")
+                verb "look" "examine" 
+                    (say "The water's clear. There's usually a group of Minnows hiding along the bank.")}
+(crystal_pond_contents.add pond)
 scene "Crystal Pond"
     local = crystal_pond_contents
     "You arrive at Crystal Pond."
     noun west = {noun "west" verb "go" -> "outside home"}
     {local i west}
 end
+
 
 

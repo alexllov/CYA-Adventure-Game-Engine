@@ -30,8 +30,6 @@
 
         public override string ToString()
         {
-            // Grab the row data & separate separately, DONT rely on ToString() here.
-
             // Go through each record & calc the longest entry in each column for spacing.
             List<int> maxLenPerCol = [.. Attributes.Select(i => i.Length)];
             foreach (var row in Data)
@@ -46,9 +44,11 @@
                 }
             }
 
+            // Calc the necessary padding for each record & create the padded records.
             List<string> rows = [];
             int i = 0;
             List<string> attrRow = [];
+            // Header Row.
             foreach (string key in Attributes)
             {
                 int paddingRequired = maxLenPerCol[i] - key.Length;
@@ -57,6 +57,8 @@
                 attrRow.Add(key + spacing);
             }
             rows.Add(string.Join(" | ", attrRow));
+
+            // Record Rows.
             foreach (var row in Data)
             {
                 List<string> currentRow = [];

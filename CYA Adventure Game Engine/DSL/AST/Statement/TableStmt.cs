@@ -33,7 +33,6 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
         public Table BuildTable(Environment state)
         {
             // Get Attribute Names.
-            //List<IExpr> cols = Records[0];
             List<string> cols = Records[0].Select(i => (string)i.Interpret(state)).ToList();
             Dictionary<string, TableRow> table = new();
 

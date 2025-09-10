@@ -35,6 +35,7 @@ namespace VOXI.Frontend
             }
             else
             {
+                // ID The correct PrepositionStmt from the command.
                 if (TryMatchPreposition(state, command, out PrepositionStmt prep))
                 {
                     prep.Interpret(state);
@@ -42,6 +43,10 @@ namespace VOXI.Frontend
             }
         }
 
+        /// <summary>
+        /// Uses the remaining command string tracked in VOXIEnvironment to try & match the preposition.
+        /// </summary>
+        /// <returns>Bool, out PrepositionStmt if successful</returns>
         private bool TryMatchPreposition(Environment state, string command, out PrepositionStmt prep)
         {
             VOXI voxi = (VOXI)state.Modules["voxi"];
@@ -56,7 +61,6 @@ namespace VOXI.Frontend
             }
             else
             {
-                Console.WriteLine($"Couldn't understand {parts[0]} as a preposition.");
                 voxi.Env.AddVOXIError($"Couldn't understand {parts[0]} as a preposition.");
                 return false;
             }

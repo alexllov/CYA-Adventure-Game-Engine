@@ -36,7 +36,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             parser.CurrentStmtParsing = "overlay statement";
             //Consume overlay
             parser.Tokens.Advance();
-            // Very next Token should be string with ID for scene.
+            // Very next Token should be string with ID for overlay.
             Token ID = parser.Tokens.Consume(TokenType.String);
             bool Accessible = false;
             string AccessString = "";
@@ -50,8 +50,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             List<IStmt> parts = [];
             while (!parser.HeaderEnds.Contains(parser.Tokens.Peek(0).Type))
             {
-                // Scenes have special sugar for strings,
-                // & can contain special components: interactables.
+                // Overlays have the same semantic sugar for strings as scenes,
                 // So we will filter for those.
                 switch (parser.Tokens.Peek(0).Type)
                 {

@@ -40,8 +40,7 @@ namespace CYA_Adventure_Game_Engine.DSL.AST.Statement
             List<IStmt> parts = [];
             while (!parser.HeaderEnds.Contains(parser.Tokens.Peek(0).Type))
             {
-                // Scenes have special sugar for strings,
-                // & can contain special components: interactables.
+                // Scenes have semantic sugar for strings,
                 // So we will filter for those.
                 switch (parser.Tokens.Peek(0).Type)
                 {

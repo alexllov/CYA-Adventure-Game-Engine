@@ -50,13 +50,15 @@ namespace VOXI.Frontend
                 {
                     verbs[newSingleVerb.Verb] = newSingleVerb;
                 }
-                // Eat the commas at teh end of verbs segments with them.
-                if (parser.Tokens.Peek(0).Type is TokenType.Comma) { parser.Tokens.Consume(TokenType.Comma); }
             }
             parser.Tokens.Consume(TokenType.RCurly);
             return new NounExpr(noun, verbs);
         }
 
+        /// <summary>
+        /// Allows a list of verbs to be defined simultaneously, to enable the "aliasing" of verbs,
+        /// or the creation of synonyms for the same verb.
+        /// </summary>
         private static List<IVerb> ParseVerbs(Parser parser)
         {
             parser.CurrentStmtParsing = "verb statement";

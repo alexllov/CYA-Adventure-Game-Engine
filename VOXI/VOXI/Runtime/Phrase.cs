@@ -1,5 +1,8 @@
 ﻿namespace VOXI.Runtime
 {
+    /// <summary>
+    /// Used by the CommandHandler while attempting to handle player input.
+    /// </summary>
     public enum PhraseType
     {
         Verb,

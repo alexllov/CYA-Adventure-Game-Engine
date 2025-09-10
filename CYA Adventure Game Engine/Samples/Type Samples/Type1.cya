@@ -20,9 +20,23 @@ scene "1"
 scene "2"
 	"'Woah, what's your problem?' asks the knight, 'I just said hi'"
 
+reason = ""
 scene "3"
 	"'Its good to see you again! I'm really glad I got the time off to come this year now."
 	"How come you didn't mention you would be here in the group chat?' he asks."
+	["You couldn't get the time off work confirmed and didn't want to get your friend's hopes up."
+		reason = "My manager only confirmed my holiday yesterday, its been mad busy."
+		-> "4"
+	]
+	["You fell out with Toby and didn't want him to know you'd be here."
+		reason = "I really didn't want Toby to know I'd be here"
+		-> "4"
+	]
+
+scene "4"
+	(say "You tell him, '"reason"'")
+	"'Ah, I see,' he says, 'Well, I'm just glad you're here now. It's been too long.'"
+
 
 
 

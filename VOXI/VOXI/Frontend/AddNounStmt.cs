@@ -7,6 +7,9 @@ using CYA_Adventure_Game_Engine.Modules;
 using Environment = CYA_Adventure_Game_Engine.DSL.Runtime.Environment;
 namespace VOXI.Frontend
 {
+    /// <summary>
+    /// This is used to populate a scene with nouns.
+    /// </summary>
     public class AddNounStmt : IStmt
     {
         List<IExpr> Nouns;
@@ -26,12 +29,12 @@ namespace VOXI.Frontend
             foreach (IExpr nounExpr in Nouns)
             {
                 object noun = nounExpr.Interpret(state);
+                // Getting the Nouns from an Inventory object.
                 if (noun is Inventory inv)
                 {
                     inv.All().ForEach(i =>
                     {
-                        if (state.TryGetVal(i, out object value)
-                            && value is NounObject nObj)
+                        if (i is NounObject nObj)
                         {
                             voxi.Env.AddLocalNoun(nObj);
                         }

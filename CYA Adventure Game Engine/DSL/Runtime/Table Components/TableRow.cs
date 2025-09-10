@@ -36,6 +36,8 @@
 
             List<string> spacedHeads = [];
             List<string> spacedBody = [];
+            // Calc the required extra spacing for each item based on the max length of the column its in
+            // & add the required spacing.
             for (int i = 0; i < header.Count; i++)
             {
                 int headPadding = maxLen[i] - header[i].Length;

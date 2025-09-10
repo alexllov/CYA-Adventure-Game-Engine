@@ -35,11 +35,9 @@ namespace CYA_Adventure_Game_Engine.Modules
             if (!(Items.Contains(body))) { return false; } else { return true; }
         }
 
-        public List<string> All()
+        public List<object> All()
         {
-            List<string> strings = [];
-            foreach (object item in Items) { strings.Add(item.ToString()); }
-            return strings;
+            return Items;
         }
 
         public IEnumerator<object> GetEnumerator()

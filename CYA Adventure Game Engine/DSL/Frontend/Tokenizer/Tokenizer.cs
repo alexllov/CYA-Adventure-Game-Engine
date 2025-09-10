@@ -275,7 +275,6 @@
             }
         }
 
-        // TODO: Add {} support to id identifiers to create $strings, eg "hello {name}".
         /// <summary>
         /// Reads String literals, id'd by ""s
         /// </summary>
